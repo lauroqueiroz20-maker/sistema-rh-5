@@ -1,0 +1,837 @@
+/* ================================================================= */
+/* CONFIGURAÇÕES GERAIS E RESETS                                     */
+/* ================================================================= */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f3f6fb;
+  color: #111827;
+}
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.principal {
+  width: 100%;
+  padding: 0 18px 18px;
+}
+
+.topo {
+  background: #0057b8;
+  margin: 0 -18px 14px;
+  padding: 9px 18px;
+  color: white;
+}
+
+.topo h1 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.topo p {
+  display: none;
+}
+
+/* ================================================================= */
+/* DASHBOARD / CARDS DE RESUMO DO SISTEMA                            */
+/* ================================================================= */
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card {
+  height: 100px;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card span {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.card strong {
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.card.vermelho strong { color: #dc2626; }
+.card.azul strong { color: #0057b8; }
+.card.verde strong { color: #16a34a; }
+.card.cinza strong { color: #d97706; }
+
+/* ================================================================= */
+/* ÁREA DE TRABALHO / FORMULÁRIO DE CADASTRO                         */
+/* ================================================================= */
+.area-trabalho {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.central {
+  width: 370px;
+  min-width: 370px;
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.abas {
+  display: flex;
+  gap: 18px;
+  border-bottom: 1px solid #e5e7eb;
+  margin: -12px -12px 12px;
+  padding: 0 12px;
+}
+
+.abas button {
+  height: 44px;
+  border: none;
+  background: transparent;
+  font-weight: 700;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.abas .aba-ativa {
+  color: #0057b8;
+  border-bottom: 3px solid #0057b8;
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.formulario label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.formulario input,
+.formulario select {
+  width: 100%;
+  height: 36px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  padding: 0 8px;
+  font-size: 12px;
+  background: white;
+}
+
+.salvar {
+  width: 100%;
+  height: 40px;
+  margin-top: 14px;
+  border: none;
+  border-radius: 7px;
+  background: #0057b8;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ================================================================= */
+/* PAINEL DE VISUALIZAÇÃO GERAL (TABELA DA ESQUERDA)                 */
+/* ================================================================= */
+.painel-atualizacao {
+  flex: 1;
+  min-width: 0;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  height: calc(100vh - 185px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.painel-atualizacao table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 10px;
+}
+
+.painel-atualizacao th,
+.painel-atualizacao td {
+  border: 1px solid #e5e7eb;
+  padding: 3px 2px;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.painel-atualizacao th {
+  background: #002b66;
+  color: white;
+  font-weight: 800;
+}
+
+/* Estilos de Cores por Tipo */
+.tipo-pcd { color: #0057b8; font-weight: 800; }
+.tipo-ja { color: #16a34a; font-weight: 800; }
+.tipo-inv { color: #dc2626; font-weight: 800; }
+.tipo-adm { color: #7e22ce; font-weight: 800; }
+.tipo-estavel { color: #d97706; font-weight: 800; }
+
+.status {
+  display: inline-block;
+  padding: 3px 5px;
+  border-radius: 20px;
+  font-size: 8px;
+  font-weight: 700;
+}
+.status.ativo { background: #dcfce7; color: #166534; }
+.status.pendente { background: #fee2e2; color: #991b1b; }
+
+.acao {
+  background: white;
+  color: #0057b8;
+  border: 1px solid #0057b8;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.menu-paginas {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.menu-paginas button {
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: #e5e7eb;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 0 18px;
+  cursor: pointer;
+}
+
+.menu-paginas button.ativo {
+  background: #0057b8;
+  color: white;
+}
+
+/* ================================================================= */
+/* MINI INDICADORES INTERNOS (DISTRIBUIÇÃO DE CATEGORIAS)            */
+/* ================================================================= */
+.mini-indicadores {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  align-content: center;
+}
+
+.mini-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.mini-card span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.mini-card strong {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.mini-card strong.numero-ja { color: #2e7d32 !important; }
+.mini-card strong.numero-pcd { color: #0046ae !important; }
+.mini-card strong.numero-inv { color: #d32f2f !important; }
+.mini-card strong.numero-adm { color: #8e24aa !important; }
+
+/* ================================================================= */
+/* COMPONENTE: RELATÓRIO GERENCIAL (PROTÓTIPO DE TELA)               */
+/* ================================================================= */
+.relatorio-gerencial {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.relatorio-cabecalho {
+  background-color: #0046ae !important;
+  color: #ffffff !important;
+  padding: 18px 20px;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.relatorio-titulo h2 {
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px 0 !important;
+}
+
+.relatorio-titulo p {
+  color: #e0e0e0 !important;
+  font-size: 11px !important;
+  font-style: italic;
+  margin: 0 !important;
+}
+
+/* Indicadores Horizontais Contínuos */
+.relatorio-indicadores {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.relatorio-indicador-linha {
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 8px 14px;
+  border-left: 5px solid #0046ae;
+  border-radius: 4px;
+}
+
+.indicador-numero {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #0046ae;
+  margin-right: 10px;
+  min-width: 20px;
+}
+
+.indicador-titulo {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #333333;
+  text-transform: uppercase;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.indicador-texto {
+  font-size: 11px !important;
+  color: #555555;
+  line-height: 1.4;
+}
+
+/* Resumo Executivo */
+.relatorio-destaques {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 9px 12px;
+  margin-bottom: 25px;
+  background: #ffffff;
+}
+
+.relatorio-destaques h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #003b82;
+}
+
+.relatorio-destaques p {
+  margin: 3px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* ================================================================= */
+/* CONFIGURAÇÃO INTERFÁCICA DA TABELA DO RELATÓRIO                  */
+/* ================================================================= */
+.relatorio-tabela {
+  display: block;
+  max-height: 450px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.relatorio-tabela thead,
+.relatorio-tabela tbody,
+.relatorio-tabela tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.relatorio-tabela thead th {
+  position: sticky;
+  top: 0;
+  background-color: #0046ae;
+  color: white;
+  font-weight: 900;
+  z-index: 2;
+  vertical-align: middle;
+  font-size: 11px;
+  padding: 8px 4px;
+}
+
+.relatorio-tabela th, 
+.relatorio-tabela td {
+  word-break: break-word !important;
+  white-space: normal !important;
+  border: 1px solid #d1d5db;
+  padding: 8px 4px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Definição de Larguras Fixas por Coluna (Tela) */
+.relatorio-tabela th:nth-child(1), .relatorio-tabela td:nth-child(1) { width: 8%; }
+.relatorio-tabela th:nth-child(2), .relatorio-tabela td:nth-child(2) { width: 12%; }
+.relatorio-tabela th:nth-child(3), .relatorio-tabela td:nth-child(3) { width: 10%; }
+.relatorio-tabela th:nth-child(4), .relatorio-tabela td:nth-child(4) { width: 5%; }
+.relatorio-tabela th:nth-child(5), .relatorio-tabela td:nth-child(5) { width: 11%; }
+.relatorio-tabela th:nth-child(6), .relatorio-tabela td:nth-child(6) { width: 10%; }
+.relatorio-tabela th:nth-child(7), .relatorio-tabela td:nth-child(7) { width: 10%; }
+.relatorio-tabela th:nth-child(8), .relatorio-tabela td:nth-child(8) { width: 10%; }
+.relatorio-tabela th:nth-child(9), .relatorio-tabela td:nth-child(9) { width: 11%; }
+.relatorio-tabela th:nth-child(10), .relatorio-tabela td:nth-child(10) { width: 9%; }
+
+/* Customização de Linhas de Agrupamento e Totais */
+.linha-cabecalho-unidade td {
+  background: #0057b8 !important;
+  color: white !important;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+}
+
+.linha-total-unidade td {
+  background: #eaf3ff !important;
+  color: #003b82 !important;
+  font-weight: 900;
+}
+
+.linha-total-unidade td.numero-total-destaque {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0046ae !important;
+}
+
+/* Assinatura */
+.relatorio-assinatura {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.relatorio-assinatura .linha {
+  width: 260px;
+  height: 1px;
+  background: #111827;
+  margin: 0 auto 6px;
+}
+
+/* ================================================================= */
+/* CONFIGURAÇÃO SUPREMA E COMPLETA PARA IMPRESSÃO EM PDF A4          */
+/* ================================================================= */
+@media print {
+  /* 1. Oculta abas, botões de paginação, cabeçalhos e formulários da tela */
+  nav, 
+  button, 
+  .abas-container, 
+  .menu-sistema, 
+  .menu-paginas, 
+  .central, 
+  .topo, 
+  .resumo {
+    display: none !important;
+  }
+
+  /* 2. Trava a folha no padrão rígido A4 Portrait */
+  @page {
+    size: A4 portrait;
+    margin: 12mm 12mm 12mm 12mm;
+  }
+
+  html, body {
+    width: 210mm !important;
+    height: 297mm !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 3. Força o container principal a assumir 100% da área útil */
+  .principal {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .relatorio-gerencial {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  /* 4. ANULAÇÃO COMPLETA DE ROLAGEM: Expande a tabela verticalmente */
+  .relatorio-tabela {
+    display: table !important;
+    max-height: none !important;
+    overflow: visible !important;
+    width: 100% !important;
+    table-layout: fixed !important; /* Mantém a proporção exata das colunas */
+    border-collapse: collapse !important;
+  }
+
+  .relatorio-tabela thead {
+    display: table-header-group !important; /* Força reexibição do topo se quebrar página */
+  }
+
+  .relatorio-tabela tbody {
+    display: table-row-group !important;
+  }
+
+  /* 5. Ajuste milimétrico das células para não vazar a margem direita */
+  .relatorio-tabela tr {
+    display: table-row !important;
+    page-break-inside: avoid !important; /* Impede rachaduras no meio da linha */
+  }
+
+.relatorio-tabela th, 
+.relatorio-tabela td {
+  display: table-cell !important;
+  padding: 3px 2px !important;
+  font-size: 7px !important;
+  white-space: normal !important;
+  word-break: break-all !important;
+}
+
+/* Reduzindo a altura da barra azul principal */
+.relatorio-cabeçalho {
+  height: 40px !important; /* Ajuste para menos se quiser ainda menor */
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* Ajustando a tabela para ficar mais justa dentro do espaço reduzido */
+.tabela-resumo-turnover {
+  position: absolute;
+  right: 15px;
+  top: 5px; /* Ajustado para ficar centralizado na nova altura */
+  border-collapse: collapse;
+  z-index: 10;
+  font-size: 10px; /* Fonte menor para ocupar menos espaço */
+}
+
+/* Reduzindo o padding das células para a tabela ficar "fininha" */
+.tabela-resumo-turnover td {
+  padding: 1px 4px !important;
+}
+
+  .linha-cabecalho-unidade td {
+    background-color: #0057b8 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Força alinhamento limpo das descrições dos indicadores */
+  .relatorio-indicador-linha {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dddddd !important;
+    border-left: 5px solid #0046ae !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 6px 12px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .indicador-texto {
+    font-size: 10px !important;
+    color: #444444 !important;
+  }
+}
+
+/* Container que mantém o cabeçalho azul limpo */
+.cabecalho-container-relatorio {
+  position: relative;
+  width: 100%;
+  background-color: #003b82;
+  padding: 15px; /* Deixa o título respirar */
+  margin-bottom: 10px; /* Espaço para a tabela ficar isolada */
+}
+
+/* Tabela isolada e alinhada à direita */
+.tabela-resumo-turnover {
+  margin-left: auto; /* Empurra a tabela para a direita */
+  margin-right: 0;
+  display: table; /* Garante que ela ocupe apenas o espaço necessário */
+  border-collapse: collapse;
+  font-size: 11px;
+  width: 250px;
+}
+
+/* Células de Nome (Azul) */
+.tabela-resumo-turnover td.nome-indicador {
+  background-color: #003b82 !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  padding: 4px 8px;
+  border: 1px solid #ffffff;
+  text-transform: uppercase;
+}
+
+/* Vamos pegar a classe que você provavelmente está usando */
+.resumo-executivo {
+  padding: 5px 10px !important;
+  margin-top: 10px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+}
+
+.resumo-executivo h3 {
+  font-size: 12px !important;
+  margin: 0 !important;
+  color: #003b82 !important;
+}
+
+.resumo-executivo p {
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+  margin: 2px 0 !important;
+}
+
+/* --- Ajustes Visuais de Compactação --- */
+
+/* 1. Reduzir as linhas dos indicadores */
+.relatorio-indicador-linha {
+  padding: 4px 8px !important;
+  margin-bottom: 4px !important;
+  border-left-width: 3px !important;
+}
+
+.indicador-numero {
+  font-size: 12px !important;
+}
+
+.indicador-titulo {
+  font-size: 9px !important;
+}
+
+.indicador-texto {
+  font-size: 9px !important;
+  line-height: 1.1 !important;
+}
+
+/* 2. Reduzir o card de Resumo Executivo */
+.relatorio-destaques {
+  padding: 6px !important;
+  margin-bottom: 10px !important;
+}
+
+.relatorio-destaques h3 {
+  font-size: 12px !important;
+  margin-bottom: 2px !important;
+}
+
+.relatorio-destaques p {
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+}
+
+.relatorio-indicadores { display: flex; flex-direction: column; gap: 5px; }
+.relatorio-indicador-linha { display: flex; align-items: center; border-left: 4px solid #0046ae; background: #f9f9f9; padding: 8px; }
+.indicador-numero { font-weight: bold; color: #0046ae; margin-right: 10px; min-width: 30px; }
+.indicador-titulo { font-size: 10px; font-weight: bold; margin-right: 8px; }
+.indicador-texto { font-size: 10px; color: #555; }
+
+.relatorio-bloco-meio {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-top: 5px;
+}
+
+.painel-indicadores-relatorio {
+  width: 300PX;
+  justify-self: end;
+  align-self: flex-start;
+  margin-right: -30px;
+  border: 1px solid #d9e5f7;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: -147px;
+}
+
+.painel-indicadores-relatorio div {
+  display: grid;
+  grid-template-columns: 120px 70px;
+}
+
+.painel-indicadores-relatorio div:not(:last-child) {
+  border-bottom: 1px solid #d9e5f7;
+}
+
+.painel-indicadores-relatorio strong {
+  background: #0057b8;
+  color: #fff;
+  padding: 7px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.painel-indicadores-relatorio span {
+  background: #5f5f5f;
+  color: #fff;
+  padding: 7px 8px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.barra-acoes-relatorio {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 20px 0;
+}
+
+.botao-pdf {
+  background: #003b82;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao-pdf:hover {
+  background: #002b60;
+}
+
+.botao-pdf-cadastro {
+  margin-top: 10px;
+  background: #003b82 !important;
+}
+
+.relatorio-tabela {
+  display: table !important;
+  max-height: none !important;
+  overflow: visible !important;
+  width: 100% !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+}
+
+.relatorio-tabela thead,
+.relatorio-tabela tbody,
+.relatorio-tabela tr {
+  display: table-row-group !important;
+  width: 100% !important;
+}
+
+.relatorio-tabela tr {
+  display: table-row !important;
+}
+
+.relatorio-tabela th,
+.linha-total-unidade td {
+  background: #eaf3ff !important;
+  color: #003b82 !important;
+  font-weight: 700 !important;
+  font-size: 8px !important;
+}
+
+.relatorio-tabela th {
+  font-size: 6px !important;
+  font-weight: 600 !important;
+}
+
+.linha-cabecalho-unidade td {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  padding: 3px 2px !important;
+}
+
+.linha-total-unidade td {
+  font-size: 8px !important;
+  font-weight: 700 !important;
+}
+
+.relatorio-destaques h3 {
+  font-size: 11px !important;
+}
+
+.relatorio-destaques p {
+  font-size: 8px !important;
+  font-weight: 400 !important;
+  line-height: 1.15 !important;
+}
+
+.total-vagas {
+  background: #198754 !important;
+  color: #fff !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  width: 70px !important;
+}
