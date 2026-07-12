@@ -3545,3 +3545,64 @@ body {
     font-size: 8.2px !important;
   }
 }
+
+/* RESUMO EM CARDS NO ESPACO CENTRAL */
+.relatorio-gerencial .relatorio-destaques {
+  min-height: 0 !important;
+  padding: 8px !important;
+  background: #ffffff !important;
+}
+
+.relatorio-gerencial .relatorio-destaques h3 {
+  margin: 0 0 8px !important;
+  font-size: 15px !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+}
+
+.relatorio-gerencial .relatorio-cards-destaques {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+.relatorio-gerencial .relatorio-cards-destaques div {
+  min-height: 86px !important;
+  padding: 11px 12px !important;
+  border: 1px solid #b8c7d9 !important;
+  border-left: 6px solid #0057b8 !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+}
+
+.relatorio-gerencial .relatorio-cards-destaques strong {
+  font-weight: 900 !important;
+}
+
+@media print {
+  .relatorio-gerencial .relatorio-destaques {
+    padding: 5px !important;
+  }
+
+  .relatorio-gerencial .relatorio-destaques h3 {
+    margin-bottom: 5px !important;
+    font-size: 9px !important;
+  }
+
+  .relatorio-gerencial .relatorio-cards-destaques {
+    gap: 5px !important;
+  }
+
+  .relatorio-gerencial .relatorio-cards-destaques div {
+    min-height: 42px !important;
+    padding: 5px 6px !important;
+    border-left-width: 4px !important;
+    font-size: 7.4px !important;
+    line-height: 1.2 !important;
+  }
+}

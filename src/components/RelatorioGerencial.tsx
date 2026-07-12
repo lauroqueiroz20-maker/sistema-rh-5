@@ -290,17 +290,6 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
         <div className="relatorio-destaques">
           <h3>Resumo Executivo</h3>
 
-          <p>
-            O presente relatório apresenta a posição
-            consolidada das vagas sob gestão do RH durante o
-            ciclo analisado, contemplando a demanda acumulada,
-            contratações efetivadas e vagas pendentes.
-            <br />
-            As informações estão organizadas por unidade,
-            permitindo o acompanhamento das solicitações,
-            admissões realizadas e saldo de vagas em aberto.
-          </p>
-
           <div className="relatorio-cards-destaques">
             <div>
               As maiores demandas concentram-se nas unidades de{" "}
