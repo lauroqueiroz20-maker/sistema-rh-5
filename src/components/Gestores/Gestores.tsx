@@ -161,6 +161,12 @@ function formatarHorarioBrasilia() {
 function gerarLinkWhatsApp(
   telefone: string
 ) {
+  if (!telefone) {
+    return `https://wa.me/?text=${encodeURIComponent(
+      MENSAGEM_DISPARO
+    )}`;
+  }
+
   const numero =
     telefone.startsWith("55")
       ? telefone
@@ -727,13 +733,6 @@ function TelaGestores() {
       return;
     }
 
-    if (!gestor.telefone) {
-      alert(
-        "Cadastre o WhatsApp deste gestor antes de enviar."
-      );
-      return;
-    }
-
     window.open(
       gerarLinkWhatsApp(
         gestor.telefone
@@ -1001,7 +1000,8 @@ function TelaGestores() {
                     <span>
                       {gestor.unidade} -{" "}
                       {gestor.gestor}
-                      {!gestor.telefone
+                      {!gestor.telefone &&
+                      gestor.codigo !== "000"
                         ? " (sem WhatsApp)"
                         : ""}
                     </span>
@@ -1011,7 +1011,8 @@ function TelaGestores() {
                     type="button"
                     disabled={
                       !gestor.selecionado ||
-                      !gestor.telefone
+                      (!gestor.telefone &&
+                        gestor.codigo !== "000")
                     }
                     onClick={() =>
                       abrirWhatsAppGestor(
