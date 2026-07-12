@@ -38,7 +38,10 @@ function normalizarCodigo(
     .padStart(3, "0");
 }
 
-function chaveSenhaGestor(
+const CHAVE_SENHA_GESTORES =
+  "sistema-rh-senha-gestores";
+
+function chaveSenhaGestorLegada(
   codigo: string
 ) {
   return `sistema-rh-senha-gestor-${codigo}`;
@@ -180,13 +183,16 @@ function AuthGate({
     try {
       if (perfil === "GESTOR") {
         const chaveSenha =
-          chaveSenhaGestor(
-            codigoNormalizado
-          );
+          CHAVE_SENHA_GESTORES;
 
         const senhaSalva =
           localStorage.getItem(
             chaveSenha
+          ) ||
+          localStorage.getItem(
+            chaveSenhaGestorLegada(
+              codigoNormalizado
+            )
           );
 
         if (
@@ -203,6 +209,11 @@ function AuthGate({
           localStorage.setItem(
             chaveSenha,
             senha
+          );
+        } else {
+          localStorage.setItem(
+            chaveSenha,
+            senhaSalva
           );
         }
 
