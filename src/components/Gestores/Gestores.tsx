@@ -79,9 +79,43 @@ function carregarLista<T>(
 }
 
 function carregarGestores(): Gestor[] {
-  return carregarLista<Gestor>(
+  const gestoresSalvos =
+    carregarLista<Gestor>(
     CHAVE_GESTORES,
     gestoresIniciais
+  );
+
+  const gestoresPorCodigo =
+    new Map<string, Gestor>();
+
+  gestoresIniciais.forEach((gestor) => {
+    gestoresPorCodigo.set(
+      gestor.codigo,
+      gestor
+    );
+  });
+
+  gestoresSalvos.forEach((gestor) => {
+    const gestorBase =
+      gestoresPorCodigo.get(
+        gestor.codigo
+      );
+
+    gestoresPorCodigo.set(
+      gestor.codigo,
+      {
+        ...gestorBase,
+        ...gestor,
+        recebeDisparoDiario:
+          gestor.codigo === "000"
+            ? true
+            : gestor.recebeDisparoDiario,
+      } as Gestor
+    );
+  });
+
+  return Array.from(
+    gestoresPorCodigo.values()
   );
 }
 
