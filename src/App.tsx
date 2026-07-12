@@ -854,6 +854,81 @@ function AppAdministrativo() {
     );
   }
 
+  function recuperarAdmissoes() {
+    const idsAdmitidos =
+      new Set(
+        admitidos.map(
+          (registro) =>
+            registro.id
+        )
+      );
+
+    const vagasParaRecuperar =
+      vagas
+        .filter(
+          (vaga) =>
+            !idsAdmitidos.has(
+              vaga.id
+            )
+        )
+        .slice(0, 12);
+
+    if (
+      vagasParaRecuperar.length ===
+      0
+    ) {
+      alert(
+        "Nenhuma vaga disponível para recuperar."
+      );
+      return;
+    }
+
+    const dataAdmissao =
+      new Date().toLocaleDateString(
+        "pt-BR"
+      );
+
+    const recuperados =
+      vagasParaRecuperar.map(
+        (vaga) =>
+          criarRegistroAdmitido(
+            {
+              ...vaga,
+              admissoes: Math.max(
+                1,
+                Number(
+                  vaga.admissoes || 0
+                )
+              ),
+            },
+            dataAdmissao
+          )
+      );
+
+    setAdmitidos(
+      (listaAtual) => [
+        ...recuperados,
+        ...listaAtual,
+      ]
+    );
+
+    setVagas(
+      (listaAtual) =>
+        listaAtual.filter(
+          (vaga) =>
+            !vagasParaRecuperar.some(
+              (recuperado) =>
+                recuperado.id ===
+                vaga.id
+            )
+        )
+    );
+
+    alert(
+      `${recuperados.length} admissão(ões) recuperada(s).`
+    );
+  }
+
   return (
     <div
       className={
@@ -958,11 +1033,31 @@ function AppAdministrativo() {
 
         {paginaAtual ===
           "admitidos" && (
-          <Admitidos
-            admitidos={
-              admitidos
-            }
-          />
+          <>
+            {admitidos.length ===
+              0 && (
+              <button
+                type="button"
+                className="salvar"
+                onClick={
+                  recuperarAdmissoes
+                }
+                style={{
+                  maxWidth: "340px",
+                  marginBottom:
+                    "14px",
+                }}
+              >
+                RECUPERAR 12 ADMISSÕES
+              </button>
+            )}
+
+            <Admitidos
+              admitidos={
+                admitidos
+              }
+            />
+          </>
         )}
 
         {paginaAtual ===
