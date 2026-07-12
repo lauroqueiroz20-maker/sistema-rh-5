@@ -530,6 +530,29 @@ function TelaGestores() {
   }
 
   function dispararAgora() {
+    if (disparoGestores.length > 0) {
+      const selecionados =
+        disparoGestores.filter(
+          (gestor) =>
+            gestor.selecionado
+        );
+
+      if (selecionados.length === 0) {
+        alert(
+          "Marque pelo menos um gestor para enviar."
+        );
+        return;
+      }
+
+      selecionados.forEach(
+        (gestor) => {
+          abrirWhatsAppGestor(gestor);
+        }
+      );
+
+      return;
+    }
+
     const gestoresAtivos =
       gestores.filter(
         (gestor) =>
@@ -853,7 +876,9 @@ function TelaGestores() {
             className="botao-disparar"
             onClick={dispararAgora}
           >
-            DISPARAR AGORA
+            {disparoGestores.length > 0
+              ? "ENVIAR SELECIONADOS"
+              : "DISPARAR AGORA"}
           </button>
         </div>
       </div>
