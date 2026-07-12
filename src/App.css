@@ -35,6 +35,9 @@ body {
     background:#0057b8;
     margin:0 -18px 14px;
     padding:10px 18px;
+    position:sticky;
+    top:0;
+    z-index:1000;
 
     display:flex;
     align-items:center;
@@ -1285,6 +1288,9 @@ body {
   margin:0 -18px 14px;
   padding:10px 18px;
   color:#fff;
+  position:sticky;
+  top:0;
+  z-index:1000;
 }
 
 .menu-superior{

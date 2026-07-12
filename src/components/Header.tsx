@@ -91,7 +91,7 @@ function Header({
               : "Publicar nuvem"}
           </button>
         )}
-        TATYANA TRAVASSOS - Coordenadora de Recursos Humanos
+        TATYANA TRAVASSOS - Coordenação de Recrutamento e Seleção
       </div>
     </header>
   );
