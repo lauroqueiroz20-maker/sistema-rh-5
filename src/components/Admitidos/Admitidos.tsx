@@ -1,3 +1,8 @@
+import {
+  useMemo,
+  useState,
+} from "react";
+
 import { type Vaga } from "../../data/vagas";
 import "./Admitidos.css";
 
@@ -12,27 +17,82 @@ interface AdmitidosProps {
 function Admitidos({
   admitidos,
 }: AdmitidosProps) {
-  const registrosOrdenados = [
-    ...admitidos,
-  ].sort((a, b) => {
-    const porUnidade = String(
-      a.unidade || ""
-    ).localeCompare(
-      String(b.unidade || ""),
-      "pt-BR"
+  const [
+    unidadeSelecionada,
+    setUnidadeSelecionada,
+  ] = useState("");
+
+  const unidades = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          admitidos
+            .map((registro) =>
+              String(
+                registro.unidade || ""
+              ).trim()
+            )
+            .filter(Boolean)
+        )
+      ).sort((a, b) =>
+        a.localeCompare(b, "pt-BR")
+      ),
+    [admitidos]
+  );
+
+  const registrosFiltrados = useMemo(
+    () =>
+      unidadeSelecionada
+        ? admitidos.filter(
+            (registro) =>
+              registro.unidade ===
+              unidadeSelecionada
+          )
+        : admitidos,
+    [admitidos, unidadeSelecionada]
+  );
+
+  const registrosOrdenados =
+    useMemo(
+      () =>
+        [...registrosFiltrados].sort(
+          (a, b) => {
+            const porUnidade = String(
+              a.unidade || ""
+            ).localeCompare(
+              String(b.unidade || ""),
+              "pt-BR"
+            );
+
+            if (porUnidade !== 0) {
+              return porUnidade;
+            }
+
+            return String(
+              a.cargo || ""
+            ).localeCompare(
+              String(b.cargo || ""),
+              "pt-BR"
+            );
+          }
+        ),
+      [registrosFiltrados]
     );
 
-    if (porUnidade !== 0) {
-      return porUnidade;
-    }
-
-    return String(
-      a.cargo || ""
-    ).localeCompare(
-      String(b.cargo || ""),
-      "pt-BR"
+  const totalQuantidade =
+    registrosOrdenados.reduce(
+      (total, registro) =>
+        total +
+        Math.max(
+          Number(
+            registro.admissoes ||
+              registro.quantidade ||
+              0
+          ),
+          0
+        ),
+      0
     );
-  });
 
   return (
     <section className="pagina-admitidos">
@@ -46,7 +106,7 @@ function Admitidos({
         </div>
 
         <strong className="total-admitidos">
-          {registrosOrdenados.length}
+          {totalQuantidade}
         </strong>
       </div>
 
@@ -54,9 +114,33 @@ function Admitidos({
         <table>
           <thead>
             <tr>
-              <th>Unidade</th>
+              <th>
+                <select
+                  className="filtro-unidade-admitidos"
+                  value={unidadeSelecionada}
+                  onChange={(evento) =>
+                    setUnidadeSelecionada(
+                      evento.target.value
+                    )
+                  }
+                >
+                  <option value="">
+                    Todas as unidades
+                  </option>
+
+                  {unidades.map((unidade) => (
+                    <option
+                      key={unidade}
+                      value={unidade}
+                    >
+                      {unidade}
+                    </option>
+                  ))}
+                </select>
+              </th>
               <th>Tipo</th>
               <th>Cargo</th>
+              <th>Qtd.</th>
               <th>Setor</th>
               <th>Turno</th>
               <th>Motivo</th>
@@ -71,7 +155,7 @@ function Admitidos({
             {registrosOrdenados.length === 0 ? (
               <tr>
                 <td
-                  colSpan={10}
+                  colSpan={11}
                   className="sem-admitidos"
                 >
                   Nenhuma admissão registrada.
@@ -86,6 +170,16 @@ function Admitidos({
                     <td>{registro.unidade}</td>
                     <td>{registro.tipo}</td>
                     <td>{registro.cargo}</td>
+                    <td>
+                      {Math.max(
+                        Number(
+                          registro.admissoes ||
+                            registro.quantidade ||
+                            0
+                        ),
+                        0
+                      )}
+                    </td>
                     <td>{registro.setor}</td>
                     <td>{registro.turno}</td>
                     <td>{registro.motivo}</td>

@@ -38,6 +38,19 @@
   font-size: 20px;
 }
 
+.filtro-unidade-admitidos {
+  width: 100%;
+  min-width: 170px;
+  height: 30px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
 .tabela-admitidos {
   overflow-x: auto;
 }
