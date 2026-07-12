@@ -1,12 +1,14 @@
 ﻿import { useMemo } from "react";
 
 import motivos from "../data/motivos";
+import tipos from "../data/tipos";
 import { type Vaga } from "../data/vagas";
 
 interface TelaCadastroProps {
   vagas: Vaga[];
   modo: "novo" | "atualizar";
   admissoesPendentes: number[];
+  onAtualizarTipo: (id: number, tipo: string) => void;
   onAtualizarMotivo: (id: number, motivo: string) => void;
   onAtualizarEmergencia: (
     id: number,
@@ -46,6 +48,7 @@ function TelaCadastro({
   vagas,
   modo,
   admissoesPendentes,
+  onAtualizarTipo,
   onAtualizarMotivo,
   onAtualizarEmergencia,
   onAlternarAdmissao,
@@ -192,7 +195,43 @@ function TelaCadastro({
                         `${vaga.tipo} ${vaga.cargo}`
                       )}
                     >
-                      {vaga.tipo || "OPERAC."}
+                      {modo === "novo" && !concluida ? (
+                        <select
+                          className={`select-motivo-tabela ${classeTipo(
+                            `${vaga.tipo} ${vaga.cargo}`
+                          )}`}
+                          value={vaga.tipo || "OPERAC."}
+                          onChange={(evento) =>
+                            onAtualizarTipo(
+                              vaga.id,
+                              evento.target.value
+                            )
+                          }
+                        >
+                          {vaga.tipo && !tipos.includes(vaga.tipo) && (
+                            <option value={vaga.tipo}>
+                              {vaga.tipo}
+                            </option>
+                          )}
+
+                          {tipos.map((item) => (
+                            <option
+                              key={item}
+                              value={item}
+                            >
+                              {item}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span
+                          className={classeTipo(
+                            `${vaga.tipo} ${vaga.cargo}`
+                          )}
+                        >
+                          {vaga.tipo || "OPERAC."}
+                        </span>
+                      )}
                     </td>
 
                     <td className={destaqueEstavel}>
