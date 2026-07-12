@@ -35,7 +35,7 @@ const gestoresIniciais: Gestor[] = [
     telefone: "",
     email: "tatyanatravassos@gmail.com",
     ativo: true,
-    recebeDisparoDiario: false,
+    recebeDisparoDiario: true,
     criadoEm: DATA_BASE,
     atualizadoEm: DATA_BASE,
   },

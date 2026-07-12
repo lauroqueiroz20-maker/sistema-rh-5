@@ -554,16 +554,34 @@ function TelaGestores() {
     }
 
     const gestoresAtivos =
-      gestores.filter(
-        (gestor) =>
-          gestor.ativo &&
+      gestores.filter((gestor) => {
+        const telefone =
           obterTelefoneGestor(
             gestor
-          ).trim()
+          ).trim();
+
+        const recebeDisparo =
+          gestor.recebeDisparoDiario !==
+            false ||
+          gestor.codigo === "000";
+
+        return (
+          gestor.ativo &&
+          recebeDisparo &&
+          (telefone ||
+            gestor.codigo === "000")
+        );
+      });
+
+    const gestoresComTelefone =
+      gestoresAtivos.filter((gestor) =>
+        obterTelefoneGestor(
+          gestor
+        ).trim()
       );
 
     if (
-      gestoresAtivos.length === 0
+      gestoresComTelefone.length === 0
     ) {
       alert(
         "Nenhum gestor ativo com WhatsApp disponível para envio."
@@ -672,6 +690,13 @@ function TelaGestores() {
     gestor: GestorDisparo
   ) {
     if (!gestor.selecionado) {
+      return;
+    }
+
+    if (!gestor.telefone) {
+      alert(
+        "Cadastre o WhatsApp deste gestor antes de enviar."
+      );
       return;
     }
 
@@ -942,13 +967,17 @@ function TelaGestores() {
                     <span>
                       {gestor.unidade} -{" "}
                       {gestor.gestor}
+                      {!gestor.telefone
+                        ? " (sem WhatsApp)"
+                        : ""}
                     </span>
                   </label>
 
                   <button
                     type="button"
                     disabled={
-                      !gestor.selecionado
+                      !gestor.selecionado ||
+                      !gestor.telefone
                     }
                     onClick={() =>
                       abrirWhatsAppGestor(
