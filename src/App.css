@@ -3249,3 +3249,123 @@ body {
     line-height: 1.15 !important;
   }
 }
+
+/* AJUSTE FINAL DA TABELA DO RELATORIO */
+.relatorio-tabela {
+  table-layout: fixed !important;
+}
+
+.relatorio-tabela th,
+.relatorio-tabela td {
+  padding: 7px 6px !important;
+  font-size: 11.5px !important;
+  line-height: 1.18 !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+.relatorio-tabela th {
+  font-size: 10.5px !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+}
+
+.relatorio-tabela th:nth-child(1),
+.relatorio-tabela td:nth-child(1) {
+  width: 6.5% !important;
+}
+
+.relatorio-tabela th:nth-child(2),
+.relatorio-tabela td:nth-child(2) {
+  width: 20% !important;
+}
+
+.relatorio-tabela th:nth-child(3),
+.relatorio-tabela td:nth-child(3) {
+  width: 15.5% !important;
+}
+
+.relatorio-tabela th:nth-child(4),
+.relatorio-tabela td:nth-child(4),
+.relatorio-tabela th:nth-child(7),
+.relatorio-tabela td:nth-child(7),
+.relatorio-tabela th:nth-child(10),
+.relatorio-tabela td:nth-child(10) {
+  width: 6% !important;
+}
+
+.relatorio-tabela th:nth-child(5),
+.relatorio-tabela td:nth-child(5) {
+  width: 10% !important;
+}
+
+.relatorio-tabela th:nth-child(6),
+.relatorio-tabela td:nth-child(6),
+.relatorio-tabela th:nth-child(8),
+.relatorio-tabela td:nth-child(8) {
+  width: 10% !important;
+}
+
+.relatorio-tabela th:nth-child(9),
+.relatorio-tabela td:nth-child(9) {
+  width: 10% !important;
+}
+
+.linha-cabecalho-unidade td {
+  padding: 9px 10px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  letter-spacing: 0.2px !important;
+}
+
+.linha-total-unidade td {
+  padding: 7px 6px !important;
+  font-size: 11.5px !important;
+  vertical-align: middle !important;
+}
+
+.linha-total-unidade td:first-child {
+  text-align: center !important;
+  font-weight: 900 !important;
+}
+
+.numero-total-destaque {
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.relatorio-tabela td.tipo-operac,
+.relatorio-tabela td.tipo-adm,
+.relatorio-tabela td.tipo-pcd,
+.relatorio-tabela td.tipo-ja,
+.relatorio-tabela td.tipo-inv,
+.relatorio-tabela td.tipo-estavel {
+  font-weight: 500 !important;
+}
+
+@media print {
+  .relatorio-tabela th,
+  .relatorio-tabela td {
+    padding: 4px 4px !important;
+    font-size: 8.2px !important;
+    line-height: 1.12 !important;
+  }
+
+  .relatorio-tabela th {
+    font-size: 7.2px !important;
+    white-space: nowrap !important;
+  }
+
+  .linha-cabecalho-unidade td {
+    padding: 5px 6px !important;
+    font-size: 8.5px !important;
+  }
+
+  .linha-total-unidade td,
+  .numero-total-destaque {
+    padding: 4px 4px !important;
+    font-size: 8.2px !important;
+  }
+}

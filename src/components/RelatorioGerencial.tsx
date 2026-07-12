@@ -378,11 +378,11 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
             <th>SETOR</th>
             <th>VAGA</th>
             <th>MOTIVO</th>
-            <th>DATA DE SOLICITAÇÃO</th>
+            <th>DATA SOLIC.</th>
             <th>ADMISSÕES</th>
-            <th>DATA DE ADMISSÕES</th>
-            <th>TEMPO DE CONTRATAÇÃO</th>
-            <th>VAGAS PENDENTES</th>
+            <th>DATA ADM.</th>
+            <th>TEMPO CONTR.</th>
+            <th>PENDENTES</th>
           </tr>
         </thead>
 
