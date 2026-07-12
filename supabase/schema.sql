@@ -11,7 +11,16 @@ create table if not exists public.solicitacoes (
   criado_em timestamptz not null default now()
 );
 
+create table if not exists public.app_state (
+  id text primary key,
+  dados jsonb not null,
+  atualizado_em timestamptz not null default now()
+);
+
 alter table public.solicitacoes
+  enable row level security;
+
+alter table public.app_state
   enable row level security;
 
 drop policy if exists
@@ -24,7 +33,10 @@ create policy
   for insert
   to authenticated
   with check (
-    auth.jwt() -> 'user_metadata' ->> 'perfil' = 'GESTOR'
+    (
+      auth.jwt() -> 'user_metadata' ->> 'perfil' = 'GESTOR'
+      or auth.jwt() ->> 'email' = 'tatyanatravassos@gmail.com'
+    )
     and codigo_gestor = auth.jwt() -> 'user_metadata' ->> 'codigoGestor'
   );
 
@@ -39,6 +51,7 @@ create policy
   to authenticated
   using (
     auth.jwt() -> 'user_metadata' ->> 'perfil' = 'ADMIN'
+    or auth.jwt() ->> 'email' = 'tatyanatravassos@gmail.com'
     or codigo_gestor = auth.jwt() -> 'user_metadata' ->> 'codigoGestor'
   );
 
@@ -53,7 +66,27 @@ create policy
   to authenticated
   using (
     auth.jwt() -> 'user_metadata' ->> 'perfil' = 'ADMIN'
+    or auth.jwt() ->> 'email' = 'tatyanatravassos@gmail.com'
   )
   with check (
     auth.jwt() -> 'user_metadata' ->> 'perfil' = 'ADMIN'
+    or auth.jwt() ->> 'email' = 'tatyanatravassos@gmail.com'
+  );
+
+drop policy if exists
+  "admin gerencia estado"
+  on public.app_state;
+
+create policy
+  "admin gerencia estado"
+  on public.app_state
+  for all
+  to authenticated
+  using (
+    auth.jwt() -> 'user_metadata' ->> 'perfil' = 'ADMIN'
+    or auth.jwt() ->> 'email' = 'tatyanatravassos@gmail.com'
+  )
+  with check (
+    auth.jwt() -> 'user_metadata' ->> 'perfil' = 'ADMIN'
+    or auth.jwt() ->> 'email' = 'tatyanatravassos@gmail.com'
   );

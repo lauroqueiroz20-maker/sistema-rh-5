@@ -33,6 +33,10 @@ import {
   salvarCiclo,
   salvarVagas,
 } from "./Services/storageService";
+import {
+  carregarEstadoAdmin,
+  salvarEstadoAdmin,
+} from "./Services/adminCloudService";
 
 const CHAVE_ADMITIDOS =
   "sistema-rh-admitidos";
@@ -337,6 +341,16 @@ function AppAdministrativo() {
       : "dashboard"
   );
 
+  const [
+    nuvemCarregada,
+    setNuvemCarregada,
+  ] = useState(false);
+
+  const [
+    salvandoNuvem,
+    setSalvandoNuvem,
+  ] = useState(false);
+
   const temAtualizacaoPendente =
     admissoesPendentes.length >
     0;
@@ -388,6 +402,88 @@ function AppAdministrativo() {
       )
     );
   }, [admitidos]);
+
+  useEffect(() => {
+    let ativo = true;
+
+    carregarEstadoAdmin()
+      .then((estado) => {
+        if (!ativo) {
+          return;
+        }
+
+        if (estado) {
+          setVagas(estado.vagas);
+          setAdmitidos(
+            estado.admitidos
+          );
+          setCiclo({
+            ...estado.ciclo,
+            inicio:
+              CICLO_PADRAO.inicio,
+          });
+        }
+      })
+      .finally(() => {
+        if (ativo) {
+          setNuvemCarregada(
+            true
+          );
+        }
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!nuvemCarregada) {
+      return;
+    }
+
+    const timeout =
+      window.setTimeout(() => {
+        salvarEstadoAdmin({
+          vagas,
+          admitidos,
+          ciclo,
+        }).catch(() => undefined);
+      }, 900);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [
+    nuvemCarregada,
+    vagas,
+    admitidos,
+    ciclo,
+  ]);
+
+  async function publicarDadosNaNuvem() {
+    setSalvandoNuvem(true);
+
+    try {
+      await salvarEstadoAdmin({
+        vagas,
+        admitidos,
+        ciclo,
+      });
+
+      alert(
+        "Dados publicados na nuvem. Tatyana pode recarregar o sistema."
+      );
+    } catch (erro) {
+      alert(
+        erro instanceof Error
+          ? erro.message
+          : "Não foi possível publicar na nuvem."
+      );
+    } finally {
+      setSalvandoNuvem(false);
+    }
+  }
 
   function gerarPDF() {
     const hoje =
@@ -949,6 +1045,12 @@ function AppAdministrativo() {
             }
             setPaginaAtual={
               setPaginaAtual
+            }
+            onPublicarNuvem={
+              publicarDadosNaNuvem
+            }
+            salvandoNuvem={
+              salvandoNuvem
             }
           />
         )}
