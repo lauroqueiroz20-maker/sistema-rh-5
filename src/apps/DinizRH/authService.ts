@@ -128,6 +128,29 @@ export async function criarSenha(
   };
 }
 
+export async function entrarGestorAnonimo(
+  codigoGestor: string
+): Promise<AuthResultado> {
+  const { data, error } =
+    await supabase.auth
+      .signInAnonymously({
+        options: {
+          data: {
+            perfil: "GESTOR",
+            codigoGestor,
+          },
+        },
+      });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return {
+    session: data.session,
+  };
+}
+
 export async function sair() {
   await supabase.auth.signOut();
 }

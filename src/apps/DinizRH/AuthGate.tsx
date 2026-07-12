@@ -16,6 +16,7 @@ import {
   criarSenha,
   emailAdminTatyana,
   emailGestor,
+  entrarGestorAnonimo,
   entrarComSenha,
   obterUsuarioAcesso,
   sair,
@@ -37,6 +38,12 @@ function normalizarCodigo(
   return String(codigo || "")
     .trim()
     .padStart(3, "0");
+}
+
+function chaveSenhaGestor(
+  codigo: string
+) {
+  return `sistema-rh-senha-gestor-${codigo}`;
 }
 
 function AuthGate({
@@ -163,6 +170,61 @@ function AuthGate({
     setMensagem("");
 
     try {
+      if (perfil === "GESTOR") {
+        const chaveSenha =
+          chaveSenhaGestor(
+            codigoNormalizado
+          );
+
+        const senhaSalva =
+          localStorage.getItem(
+            chaveSenha
+          );
+
+        if (
+          senhaSalva &&
+          senhaSalva !== senha
+        ) {
+          setMensagem(
+            "Senha incorreta."
+          );
+          return;
+        }
+
+        if (!senhaSalva) {
+          localStorage.setItem(
+            chaveSenha,
+            senha
+          );
+        }
+
+        const usuarioAtual =
+          obterUsuarioAcesso(
+            session
+          );
+
+        if (
+          usuarioAtual?.perfil ===
+            "GESTOR" &&
+          usuarioAtual.codigoGestor ===
+            codigoNormalizado
+        ) {
+          return;
+        }
+
+        await sair();
+
+        const resultado =
+          await entrarGestorAnonimo(
+            codigoNormalizado
+          );
+
+        setSession(
+          resultado.session
+        );
+        return;
+      }
+
       const resultado =
         await entrarComSenha(
           email,
