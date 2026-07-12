@@ -1,5 +1,6 @@
 ﻿import { useMemo } from "react";
 
+import cargos from "../data/cargos";
 import motivos from "../data/motivos";
 import tipos from "../data/tipos";
 import { type Vaga } from "../data/vagas";
@@ -8,6 +9,11 @@ interface TelaCadastroProps {
   vagas: Vaga[];
   modo: "novo" | "atualizar";
   admissoesPendentes: number[];
+  onAtualizarCargo: (
+    id: number,
+    cargo: string,
+    setor: string
+  ) => void;
   onAtualizarTipo: (id: number, tipo: string) => void;
   onAtualizarMotivo: (id: number, motivo: string) => void;
   onAtualizarEmergencia: (
@@ -48,6 +54,7 @@ function TelaCadastro({
   vagas,
   modo,
   admissoesPendentes,
+  onAtualizarCargo,
   onAtualizarTipo,
   onAtualizarMotivo,
   onAtualizarEmergencia,
@@ -96,6 +103,11 @@ function TelaCadastro({
       vagasOrdenadas[index].unidade
     );
   }
+
+  const cargosAtivos = useMemo(
+    () => cargos.filter((cargo) => cargo.ativo),
+    []
+  );
 
   const totalVagasExibidas = vagasFiltradas.reduce(
     (total, vaga) =>
@@ -235,7 +247,48 @@ function TelaCadastro({
                     </td>
 
                     <td className={destaqueEstavel}>
-                      {vaga.cargo}
+                      {modo === "novo" && !concluida ? (
+                        <select
+                          className="select-motivo-tabela"
+                          value={vaga.cargo}
+                          onChange={(evento) => {
+                            const cargoSelecionado =
+                              cargosAtivos.find(
+                                (cargo) =>
+                                  cargo.cargo ===
+                                  evento.target.value
+                              );
+
+                            onAtualizarCargo(
+                              vaga.id,
+                              evento.target.value,
+                              cargoSelecionado?.setor ||
+                                vaga.setor
+                            );
+                          }}
+                        >
+                          {vaga.cargo &&
+                            !cargosAtivos.some(
+                              (cargo) =>
+                                cargo.cargo === vaga.cargo
+                            ) && (
+                              <option value={vaga.cargo}>
+                                {vaga.cargo}
+                              </option>
+                            )}
+
+                          {cargosAtivos.map((cargo) => (
+                            <option
+                              key={cargo.id}
+                              value={cargo.cargo}
+                            >
+                              {cargo.cargo}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        vaga.cargo
+                      )}
                     </td>
 
                     <td className={destaqueEstavel}>

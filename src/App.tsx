@@ -779,6 +779,26 @@ function AppAdministrativo() {
     );
   }
 
+  function atualizarCargo(
+    id: number,
+    novoCargo: string,
+    novoSetor: string
+  ) {
+    setVagas(
+      (listaAtual) =>
+        listaAtual.map(
+          (vaga) =>
+            vaga.id === id
+              ? {
+                  ...vaga,
+                  cargo: novoCargo,
+                  setor: novoSetor,
+                }
+              : vaga
+        )
+    );
+  }
+
   function atualizarEmergencia(
     id: number,
     novaEmergencia:
@@ -1134,6 +1154,9 @@ function AppAdministrativo() {
                 }
                 admissoesPendentes={
                   admissoesPendentes
+                }
+                onAtualizarCargo={
+                  atualizarCargo
                 }
                 onAtualizarTipo={
                   atualizarTipo
