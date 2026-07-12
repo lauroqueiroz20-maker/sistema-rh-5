@@ -2677,76 +2677,207 @@ body {
   }
 }
 
-/* AJUSTE FINAL DO PAINEL DE INDICES */
+/* AJUSTE FINAL DO RELATORIO */
+.relatorio-indicadores {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+  margin-bottom: 10px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+
+.relatorio-indicador-linha {
+  display: grid !important;
+  grid-template-columns: 88px 260px minmax(0, 1fr) !important;
+  min-height: 38px !important;
+  border: 0 !important;
+  border-top: 1px solid #cbd5e1 !important;
+  border-radius: 0 !important;
+  background: #f8fafc !important;
+  padding: 0 !important;
+  text-align: center !important;
+}
+
+.relatorio-indicador-linha:first-child {
+  border-top: 0 !important;
+}
+
+.indicador-numero {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+  color: #0057b8 !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+.indicador-titulo {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  background: #0057b8 !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+}
+
+.indicador-texto {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 5px 10px !important;
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+}
+
 .relatorio-bloco-meio {
-  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 1fr) 190px !important;
+  gap: 8px !important;
 }
 
 .painel-indicadores-relatorio {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 8px !important;
-  width: 100% !important;
-  border: 0 !important;
+  display: block !important;
+  width: 190px !important;
+  border: 1px solid #cbd5e1 !important;
   border-radius: 0 !important;
-  overflow: visible !important;
+  overflow: hidden !important;
+  align-self: start !important;
 }
 
 .painel-indicadores-relatorio div {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  gap: 4px !important;
-  min-height: 58px !important;
-  border: 1px solid #cfe0f6 !important;
-  border-top: 4px solid #0057b8 !important;
-  border-radius: 6px !important;
-  background: #f8fbff !important;
-  padding: 8px 10px !important;
-  text-align: center !important;
+  display: grid !important;
+  grid-template-columns: 96px 94px !important;
+  min-height: 24px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 .painel-indicadores-relatorio strong,
 .painel-indicadores-relatorio span {
   min-width: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
+  padding: 5px 7px !important;
+  font-size: 10px !important;
   line-height: 1.15 !important;
+  font-weight: 700 !important;
 }
 
 .painel-indicadores-relatorio strong {
-  color: #0f172a !important;
-  font-size: 10px !important;
-  font-weight: 900 !important;
+  background: #0057b8 !important;
+  color: #ffffff !important;
+  text-align: left !important;
 }
 
 .painel-indicadores-relatorio span {
-  color: #0057b8 !important;
-  font-size: 18px !important;
-  font-weight: 900 !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  text-align: center !important;
+}
+
+.relatorio-tabela th,
+.relatorio-tabela td {
+  font-size: 10.5px !important;
+}
+
+.relatorio-tabela th:nth-child(1),
+.relatorio-tabela td:nth-child(1) {
+  width: 6% !important;
+}
+
+.relatorio-tabela th:nth-child(2),
+.relatorio-tabela td:nth-child(2) {
+  width: 18% !important;
+}
+
+.relatorio-tabela th:nth-child(3),
+.relatorio-tabela td:nth-child(3) {
+  width: 14% !important;
+}
+
+.relatorio-tabela th:nth-child(4),
+.relatorio-tabela td:nth-child(4),
+.relatorio-tabela th:nth-child(7),
+.relatorio-tabela td:nth-child(7),
+.relatorio-tabela th:nth-child(10),
+.relatorio-tabela td:nth-child(10) {
+  width: 5.5% !important;
+}
+
+.relatorio-tabela th:nth-child(5),
+.relatorio-tabela td:nth-child(5),
+.relatorio-tabela th:nth-child(6),
+.relatorio-tabela td:nth-child(6),
+.relatorio-tabela th:nth-child(8),
+.relatorio-tabela td:nth-child(8) {
+  width: 9% !important;
+}
+
+.relatorio-tabela th:nth-child(9),
+.relatorio-tabela td:nth-child(9) {
+  width: 10% !important;
+}
+
+.relatorio-tabela td:first-child {
+  font-weight: 500 !important;
 }
 
 @media print {
+  .relatorio-indicador-linha {
+    grid-template-columns: 72px 215px minmax(0, 1fr) !important;
+    min-height: 28px !important;
+  }
+
+  .indicador-numero {
+    font-size: 18px !important;
+  }
+
+  .indicador-titulo {
+    font-size: 9px !important;
+  }
+
+  .indicador-texto {
+    font-size: 7.7px !important;
+    padding: 3px 7px !important;
+  }
+
   .relatorio-bloco-meio {
-    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-columns: minmax(0, 1fr) 155px !important;
   }
 
   .painel-indicadores-relatorio {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 5px !important;
+    width: 155px !important;
   }
 
   .painel-indicadores-relatorio div {
-    min-height: 40px !important;
-    padding: 5px 6px !important;
-    border-top-width: 3px !important;
+    grid-template-columns: 78px 77px !important;
+    min-height: 18px !important;
   }
 
-  .painel-indicadores-relatorio strong {
+  .painel-indicadores-relatorio strong,
+  .painel-indicadores-relatorio span {
+    padding: 3px 5px !important;
     font-size: 6.8px !important;
   }
 
-  .painel-indicadores-relatorio span {
-    font-size: 11px !important;
+  .relatorio-tabela th,
+  .relatorio-tabela td {
+    font-size: 8px !important;
+    padding: 3px 4px !important;
+  }
+
+  .relatorio-tabela th {
+    font-size: 7px !important;
   }
 }
