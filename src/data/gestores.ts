@@ -26,6 +26,20 @@ const DATA_BASE = "2026-07-09T17:30:00.000-03:00";
 
 const gestoresIniciais: Gestor[] = [
   {
+    id: "gestor-000",
+    codigo: "000",
+    unidade: "PORTAL DO GESTOR",
+    nome: "TATYANA",
+    cargo: "COORDENADORA DE RH",
+    tipoContato: "RH",
+    telefone: "",
+    email: "tatyanatravassos@gmail.com",
+    ativo: true,
+    recebeDisparoDiario: false,
+    criadoEm: DATA_BASE,
+    atualizadoEm: DATA_BASE,
+  },
+  {
     id: "gestor-001",
     codigo: "001",
     unidade: "AEROPORTO",

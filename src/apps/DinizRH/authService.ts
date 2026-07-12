@@ -36,6 +36,10 @@ export function emailGestor(
       .trim()
       .padStart(3, "0");
 
+  if (codigo === "000") {
+    return emailAdminTatyana();
+  }
+
   return `gestor-${codigo}@${DOMINIO_AUTH}`;
 }
 
