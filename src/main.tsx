@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 
 import "./index.css";
 import App from "./App.tsx";
+import ErrorBoundary from "./ErrorBoundary";
 
 async function limparAplicativoAntigo() {
   if (!("serviceWorker" in navigator)) {
@@ -38,7 +39,9 @@ limparAplicativoAntigo().finally(() => {
     document.getElementById("root")!
   ).render(
     <StrictMode>
-      <App />
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     </StrictMode>
   );
 });
