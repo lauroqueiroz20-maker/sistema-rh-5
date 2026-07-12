@@ -15,8 +15,6 @@ import type {
 import {
   criarSenha,
   emailAdminTatyana,
-  emailGestor,
-  entrarGestorAnonimo,
   entrarComSenha,
   obterUsuarioAcesso,
   sair,
@@ -44,6 +42,12 @@ function chaveSenhaGestor(
   codigo: string
 ) {
   return `sistema-rh-senha-gestor-${codigo}`;
+}
+
+function chaveAcessoGestor(
+  codigo: string
+) {
+  return `sistema-rh-acesso-gestor-${codigo}`;
 }
 
 function AuthGate({
@@ -76,22 +80,19 @@ function AuthGate({
     null
   );
 
+  const [
+    acessoGestorLocal,
+    setAcessoGestorLocal,
+  ] = useState(false);
+
   const codigoNormalizado =
     normalizarCodigo(
       codigoGestor
     );
 
   const email = useMemo(
-    () =>
-      perfil === "ADMIN"
-        ? emailAdminTatyana()
-        : emailGestor(
-            codigoNormalizado
-          ),
-    [
-      perfil,
-      codigoNormalizado,
-    ]
+    () => emailAdminTatyana(),
+    []
   );
 
   const titulo =
@@ -108,19 +109,26 @@ function AuthGate({
     obterUsuarioAcesso(session);
 
   const acessoValido =
-    (
-      session?.user.email === email ||
-      (
-        usuario?.perfil === perfil &&
-        (
-          perfil === "ADMIN" ||
-          usuario.codigoGestor ===
-            codigoNormalizado
-        )
-      )
-    );
+    perfil === "GESTOR"
+      ? acessoGestorLocal
+      : (
+          session?.user.email === email ||
+          usuario?.perfil === "ADMIN"
+        );
 
   useEffect(() => {
+    if (perfil === "GESTOR") {
+      setAcessoGestorLocal(
+        localStorage.getItem(
+          chaveAcessoGestor(
+            codigoNormalizado
+          )
+        ) === "SIM"
+      );
+      setCarregando(false);
+      return;
+    }
+
     let ativo = true;
 
     supabase.auth
@@ -152,7 +160,7 @@ function AuthGate({
       ativo = false;
       data.subscription.unsubscribe();
     };
-  }, []);
+  }, [perfil, codigoNormalizado]);
 
   async function enviar(
     evento: FormEvent<HTMLFormElement>
@@ -198,30 +206,22 @@ function AuthGate({
           );
         }
 
-        const usuarioAtual =
-          obterUsuarioAcesso(
-            session
-          );
-
-        if (
-          usuarioAtual?.perfil ===
-            "GESTOR" &&
-          usuarioAtual.codigoGestor ===
+        localStorage.setItem(
+          chaveAcessoGestor(
             codigoNormalizado
-        ) {
-          return;
-        }
-
-        await sair();
-
-        const resultado =
-          await entrarGestorAnonimo(
-            codigoNormalizado
-          );
-
-        setSession(
-          resultado.session
+          ),
+          "SIM"
         );
+
+        setAcessoGestorLocal(
+          true
+        );
+
+        setMensagem(
+          senhaSalva
+            ? ""
+            : "Senha criada com sucesso."
+          );
         return;
       }
 
@@ -266,6 +266,16 @@ function AuthGate({
   }
 
   async function encerrarSessao() {
+    if (perfil === "GESTOR") {
+      localStorage.removeItem(
+        chaveAcessoGestor(
+          codigoNormalizado
+        )
+      );
+      setAcessoGestorLocal(false);
+      return;
+    }
+
     await sair();
     setSession(null);
   }
