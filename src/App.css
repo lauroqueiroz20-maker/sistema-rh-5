@@ -909,6 +909,267 @@ body {
   }
 }
 
+/* RELATORIO COMPACTO FINAL */
+.relatorio-gerencial {
+  padding: 10px 14px !important;
+}
+
+.relatorio-cabecalho {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  padding: 8px 14px !important;
+  margin-bottom: 8px !important;
+  text-align: center !important;
+}
+
+.relatorio-titulo h2 {
+  font-size: 18px !important;
+  line-height: 1.1 !important;
+  margin: 0 0 3px !important;
+}
+
+.relatorio-titulo p {
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+}
+
+.relatorio-indicadores {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+  margin: 0 0 8px !important;
+  border: 1px solid #b8c7d9 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+
+.relatorio-indicador-linha {
+  display: grid !important;
+  grid-template-columns: 72px 230px minmax(0, 1fr) !important;
+  align-items: stretch !important;
+  min-height: 30px !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-top: 1px solid #b8c7d9 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  text-align: center !important;
+}
+
+.relatorio-indicador-linha:first-child {
+  border-top: 0 !important;
+}
+
+.indicador-numero {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  background: #ffffff !important;
+  color: #0057b8 !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+}
+
+.indicador-titulo {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  background: #0057b8 !important;
+  color: #ffffff !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+}
+
+.indicador-texto {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 3px 8px !important;
+  background: #eef2f7 !important;
+  color: #0f172a !important;
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+}
+
+.relatorio-bloco-meio {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 170px !important;
+  gap: 8px !important;
+  margin: 0 0 8px !important;
+  align-items: stretch !important;
+}
+
+.relatorio-destaques {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-height: 60px !important;
+  padding: 7px 10px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+.relatorio-destaques h3 {
+  font-size: 13px !important;
+  margin: 0 0 4px !important;
+}
+
+.relatorio-destaques p {
+  font-size: 10px !important;
+  line-height: 1.25 !important;
+}
+
+.painel-indicadores-relatorio {
+  display: block !important;
+  width: 170px !important;
+  margin: 0 !important;
+  border: 1px solid #b8c7d9 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+
+.painel-indicadores-relatorio div {
+  display: grid !important;
+  grid-template-columns: 88px 82px !important;
+  min-height: 20px !important;
+  border: 0 !important;
+  border-bottom: 1px solid #b8c7d9 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.painel-indicadores-relatorio div:last-child {
+  border-bottom: 0 !important;
+}
+
+.painel-indicadores-relatorio strong,
+.painel-indicadores-relatorio span {
+  display: flex !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  padding: 4px 6px !important;
+  font-size: 9px !important;
+  line-height: 1.1 !important;
+  font-weight: 700 !important;
+  background: transparent !important;
+}
+
+.painel-indicadores-relatorio strong {
+  justify-content: flex-start !important;
+  background: #0057b8 !important;
+  color: #ffffff !important;
+}
+
+.painel-indicadores-relatorio span {
+  justify-content: center !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.relatorio-tabela th,
+.relatorio-tabela td {
+  font-size: 10.5px !important;
+}
+
+.relatorio-tabela td.tipo-operac,
+.relatorio-tabela td.tipo-adm,
+.relatorio-tabela td.tipo-pcd,
+.relatorio-tabela td.tipo-ja,
+.relatorio-tabela td.tipo-inv,
+.relatorio-tabela td.tipo-estavel {
+  font-weight: 500 !important;
+}
+
+@media print {
+  .relatorio-gerencial {
+    padding: 0 !important;
+  }
+
+  .relatorio-cabecalho {
+    min-height: 34px !important;
+    padding: 5px 10px !important;
+    margin-bottom: 5px !important;
+  }
+
+  .relatorio-titulo h2 {
+    font-size: 14px !important;
+  }
+
+  .relatorio-titulo p {
+    font-size: 8px !important;
+  }
+
+  .relatorio-indicador-linha {
+    grid-template-columns: 58px 190px minmax(0, 1fr) !important;
+    min-height: 22px !important;
+  }
+
+  .indicador-numero {
+    font-size: 16px !important;
+  }
+
+  .indicador-titulo {
+    font-size: 8px !important;
+  }
+
+  .indicador-texto {
+    font-size: 7px !important;
+    padding: 2px 5px !important;
+  }
+
+  .relatorio-bloco-meio {
+    grid-template-columns: minmax(0, 1fr) 140px !important;
+    gap: 5px !important;
+    margin-bottom: 5px !important;
+  }
+
+  .relatorio-destaques {
+    min-height: 42px !important;
+    padding: 4px 7px !important;
+  }
+
+  .relatorio-destaques h3 {
+    font-size: 9px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .relatorio-destaques p {
+    font-size: 6.8px !important;
+    line-height: 1.15 !important;
+  }
+
+  .painel-indicadores-relatorio {
+    width: 140px !important;
+  }
+
+  .painel-indicadores-relatorio div {
+    grid-template-columns: 72px 68px !important;
+    min-height: 15px !important;
+  }
+
+  .painel-indicadores-relatorio strong,
+  .painel-indicadores-relatorio span {
+    padding: 2px 4px !important;
+    font-size: 6px !important;
+  }
+
+  .relatorio-tabela th,
+  .relatorio-tabela td {
+    font-size: 7.6px !important;
+    padding: 3px 4px !important;
+  }
+}
+
 @media print {
   body {
     background: white !important;
