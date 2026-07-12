@@ -10,6 +10,13 @@ import {
 
 const ESTADO_ID = "principal";
 
+type AppStateRegistro = {
+  id: string;
+  key?: string;
+  dados: EstadoAdmin;
+  atualizado_em: string;
+};
+
 export type EstadoAdmin = {
   vagas: Vaga[];
   admitidos: RegistroAdmitido[];
@@ -75,15 +82,39 @@ export async function salvarEstadoAdmin(
       new Date().toISOString(),
   };
 
-  const { error } =
-    await supabase
-      .from("app_state")
-      .upsert({
-        id: ESTADO_ID,
-        dados,
-        atualizado_em:
-          dados.atualizadoEm,
-      });
+  const registro: AppStateRegistro = {
+    id: ESTADO_ID,
+    dados,
+    atualizado_em:
+      dados.atualizadoEm,
+  };
+
+  const { error } = await supabase
+    .from("app_state")
+    .upsert(registro);
+
+  if (
+    error &&
+    error.message.includes(
+      'null value in column "key"'
+    )
+  ) {
+    const { error: erroComChave } =
+      await supabase
+        .from("app_state")
+        .upsert({
+          ...registro,
+          key: ESTADO_ID,
+        });
+
+    if (erroComChave) {
+      throw new Error(
+        erroComChave.message
+      );
+    }
+
+    return;
+  }
 
   if (error) {
     throw new Error(error.message);

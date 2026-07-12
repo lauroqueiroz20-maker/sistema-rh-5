@@ -1232,6 +1232,17 @@ function App() {
       parametros.get("codigo") ||
       "001";
 
+    if (
+      codigoGestor.trim() ===
+      "000"
+    ) {
+      return (
+        <AuthGate perfil="ADMIN">
+          <AppAdministrativo />
+        </AuthGate>
+      );
+    }
+
     return (
       <AuthGate
         perfil="GESTOR"

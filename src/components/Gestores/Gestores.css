@@ -480,6 +480,29 @@
   cursor: not-allowed;
 }
 
+.acoes-monitor-gestores {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.botao-excluir-monitor {
+  min-width: 72px;
+  min-height: 34px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 7px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.botao-excluir-monitor:hover {
+  background: #b91c1c;
+}
+
 /* ===========================
    TABELA ANTIGA
 =========================== */

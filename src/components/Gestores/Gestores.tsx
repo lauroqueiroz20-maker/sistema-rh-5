@@ -14,6 +14,7 @@ import gestoresIniciais, {
 import eventBus from "../../Services/eventBus";
 
 import {
+  arquivarRegistroMonitor,
   carregarMonitor as carregarMonitorLocal,
   carregarMonitorRemoto,
 } from "../../apps/DinizRH/storage";
@@ -299,6 +300,7 @@ function TelaGestores() {
       sincronizarMonitor
     );
 
+    sincronizarMonitor();
     sincronizarMonitorRemoto();
 
     const intervalo =
@@ -580,6 +582,56 @@ function TelaGestores() {
     );
   }
 
+  async function excluirSolicitacao(
+    solicitacao: SolicitacaoGestor
+  ) {
+    const confirmar = window.confirm(
+      `Excluir a resposta de teste da unidade ${solicitacao.unidade}?`
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    setMonitor((listaAtual) =>
+      listaAtual.filter(
+        (item) =>
+          item.id !==
+          solicitacao.id
+      )
+    );
+
+    setIdsProcessando(
+      (listaAtual) =>
+        listaAtual.filter(
+          (id) =>
+            id !==
+            solicitacao.id
+        )
+    );
+
+    const filaAtual =
+      carregarLista<SolicitacaoGestor>(
+        CHAVE_SOLICITACOES,
+        []
+      );
+
+    localStorage.setItem(
+      CHAVE_SOLICITACOES,
+      JSON.stringify(
+        filaAtual.filter(
+          (item) =>
+            item.id !==
+            solicitacao.id
+        )
+      )
+    );
+
+    await arquivarRegistroMonitor(
+      solicitacao.id
+    );
+  }
+
   return (
     <div className="gestores-container">
       <div className="gestores-header">
@@ -856,7 +908,7 @@ function TelaGestores() {
                 <th>Turno</th>
                 <th>Motivo</th>
                 <th>Emergência</th>
-                <th>Atualizar</th>
+                <th>Ação</th>
               </tr>
             </thead>
 
@@ -939,26 +991,40 @@ function TelaGestores() {
                         </td>
 
                         <td>
+                          <div className="acoes-monitor-gestores">
+                            <button
+                              type="button"
+                              className={
+                                processando
+                                  ? "botao-atualizar-monitor atualizado"
+                                  : "botao-atualizar-monitor"
+                              }
+                              disabled={
+                                processando
+                              }
+                              onClick={() =>
+                                atualizarSolicitacao(
+                                  solicitacao
+                                )
+                              }
+                            >
+                              {processando
+                                ? "PROCESSANDO"
+                                : "ATUALIZAR"}
+                            </button>
+
                           <button
                             type="button"
-                            className={
-                              processando
-                                ? "botao-atualizar-monitor atualizado"
-                                : "botao-atualizar-monitor"
-                            }
-                            disabled={
-                              processando
-                            }
+                            className="botao-excluir-monitor"
                             onClick={() =>
-                              atualizarSolicitacao(
+                              excluirSolicitacao(
                                 solicitacao
                               )
                             }
                           >
-                            {processando
-                              ? "PROCESSANDO"
-                              : "ATUALIZAR"}
+                            EXCLUIR
                           </button>
+                          </div>
                         </td>
                       </tr>
                     );

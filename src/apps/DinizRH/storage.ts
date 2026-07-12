@@ -6,6 +6,7 @@ import type {
   RegistroMonitor,
   RespostaSemSolicitacao,
   SolicitacaoGestor,
+  StatusMonitor,
 } from "./types";
 
 const CHAVE_SOLICITACOES =
@@ -16,6 +17,9 @@ const CHAVE_SEM_SOLICITACAO =
 
 const CHAVE_MONITOR =
   "sistema-rh-monitor-gestores";
+
+const CHAVE_MONITOR_ARQUIVADOS =
+  "sistema-rh-monitor-gestores-arquivados";
 
 type ItemSolicitacaoRemoto = {
   id?: unknown;
@@ -34,7 +38,12 @@ type SolicitacaoRemota = {
   unidade: string | null;
   itens: unknown;
   data_resposta: string | null;
-  status: SolicitacaoGestor["status"] | null;
+  status: StatusMonitor | null;
+};
+
+type SolicitacaoArquivamentoRemota = {
+  id: string;
+  itens: unknown;
 };
 
 type SolicitacaoLocal = {
@@ -46,7 +55,7 @@ type SolicitacaoLocal = {
   itens: unknown[];
   totalVagas: number;
   dataResposta: string;
-  status: SolicitacaoGestor["status"];
+  status: StatusMonitor;
 };
 
 function normalizarTexto(
@@ -217,6 +226,13 @@ function obterItensRemotos(
 function converterSolicitacaoRemota(
   solicitacao: SolicitacaoRemota
 ): RegistroMonitor[] {
+  if (
+    solicitacao.status ===
+    "ARQUIVADA"
+  ) {
+    return [];
+  }
+
   return obterItensRemotos(
     solicitacao.itens
   ).map((item, indice) => ({
@@ -260,6 +276,13 @@ function converterSolicitacaoRemota(
 function converterSolicitacaoLocal(
   solicitacao: SolicitacaoLocal
 ): RegistroMonitor[] {
+  if (
+    solicitacao.status ===
+    "ARQUIVADA"
+  ) {
+    return [];
+  }
+
   return obterItensRemotos(
     solicitacao.itens
   ).map((item, indice) => ({
@@ -304,6 +327,12 @@ function mesclarMonitorRemoto(
   remotos: RegistroMonitor[]
 ): RegistroMonitor[] {
   const locais = carregarMonitor();
+  const idsArquivados =
+    new Set(
+      carregarLista<string>(
+        CHAVE_MONITOR_ARQUIVADOS
+      )
+    );
 
   const locaisPorId =
     new Map(
@@ -353,11 +382,110 @@ function mesclarMonitorRemoto(
   const registros = [
     ...remotosMesclados,
     ...apenasLocais,
-  ];
+  ].filter(
+    (registro) =>
+      !idsArquivados.has(
+        registro.id
+      )
+  );
 
   salvarMonitor(registros);
 
   return registros;
+}
+
+function salvarIdsArquivados(
+  ids: string[]
+) {
+  localStorage.setItem(
+    CHAVE_MONITOR_ARQUIVADOS,
+    JSON.stringify(ids)
+  );
+}
+
+function removerRegistroLocal(
+  id: string
+) {
+  const idsArquivados =
+    new Set(
+      carregarLista<string>(
+        CHAVE_MONITOR_ARQUIVADOS
+      )
+    );
+
+  idsArquivados.add(id);
+
+  salvarIdsArquivados([
+    ...idsArquivados,
+  ]);
+
+  salvarMonitor(
+    carregarMonitor().filter(
+      (registro) =>
+        registro.id !== id
+    )
+  );
+}
+
+async function arquivarNoSupabase(
+  id: string
+): Promise<void> {
+  const { data, error: erroBusca } =
+    await supabase
+      .from("solicitacoes")
+      .select("id,itens");
+
+  if (erroBusca) {
+    throw new Error(
+      erroBusca.message
+    );
+  }
+
+  const solicitacao =
+    (
+      (data ?? []) as SolicitacaoArquivamentoRemota[]
+    ).find((item) =>
+      obterItensRemotos(item.itens)
+        .some(
+          (registro) =>
+            textoRemoto(
+              registro.id
+            ) === id
+        )
+    );
+
+  if (!solicitacao) {
+    return;
+  }
+
+  const { error } =
+    await supabase
+      .from("solicitacoes")
+      .update({
+        status: "ARQUIVADA",
+      })
+      .eq("id", solicitacao.id);
+
+  if (error) {
+    throw new Error(
+      error.message
+    );
+  }
+}
+
+export async function arquivarRegistroMonitor(
+  id: string
+): Promise<void> {
+  removerRegistroLocal(id);
+
+  try {
+    await arquivarNoSupabase(id);
+  } catch (erro) {
+    console.warn(
+      "Falha ao arquivar no Supabase:",
+      erro
+    );
+  }
 }
 
 export async function carregarMonitorRemoto():
