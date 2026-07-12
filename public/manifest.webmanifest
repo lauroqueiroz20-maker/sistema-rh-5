@@ -1,9 +1,9 @@
 {
-  "id": "/?gestor=000&app=20260712-logo",
+  "id": "/?gestor=000&app=20260712-diniz",
   "name": "DINIZ RH Tatyana",
   "short_name": "DINIZ RH",
   "description": "Sistema RH - Tatyana Travassos",
-  "start_url": "/?gestor=000&app=20260712-logo",
+  "start_url": "/?gestor=000&app=20260712-diniz",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f4f7fb",
