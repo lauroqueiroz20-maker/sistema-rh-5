@@ -1,9 +1,9 @@
 {
-  "id": "/?gestor=001",
+  "id": "/?gestor=001&app=20260712",
   "name": "DINIZ RH Mobile",
   "short_name": "DINIZ RH",
   "description": "Portal do Gestor - Diniz Supermercados",
-  "start_url": "/?gestor=001",
+  "start_url": "/?gestor=001&app=20260712",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f4f7fb",
