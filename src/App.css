@@ -3142,3 +3142,110 @@ body {
     font-size: 7px !important;
   }
 }
+
+/* AJUSTE VISUAL SOLICITADO */
+.relatorio-indicador-linha {
+  grid-template-columns: 76px 220px minmax(0, 1fr) !important;
+  min-height: 34px !important;
+}
+
+.indicador-numero {
+  font-size: 25px !important;
+}
+
+.indicador-titulo {
+  justify-content: flex-start !important;
+  padding-left: 12px !important;
+  text-align: left !important;
+  font-size: 13px !important;
+}
+
+.indicador-texto {
+  justify-content: flex-start !important;
+  text-align: left !important;
+  font-size: 12px !important;
+  padding: 5px 12px !important;
+}
+
+.relatorio-destaques {
+  justify-content: flex-start !important;
+  min-height: 0 !important;
+}
+
+.relatorio-destaques h3 {
+  margin-bottom: 6px !important;
+}
+
+.relatorio-cards-destaques {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+  margin-top: 8px !important;
+}
+
+.relatorio-cards-destaques div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 45px !important;
+  border: 1px solid #b8c7d9 !important;
+  border-left: 5px solid #0057b8 !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  padding: 7px 9px !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+}
+
+.relatorio-cards-destaques strong {
+  font-weight: 800 !important;
+}
+
+.linha-total-unidade td:first-child {
+  text-align: center !important;
+  font-weight: 900 !important;
+}
+
+.relatorio-tabela td.tipo-operac,
+.relatorio-tabela td.tipo-adm,
+.relatorio-tabela td.tipo-pcd,
+.relatorio-tabela td.tipo-ja,
+.relatorio-tabela td.tipo-inv,
+.relatorio-tabela td.tipo-estavel {
+  font-weight: 500 !important;
+}
+
+@media print {
+  .relatorio-indicador-linha {
+    grid-template-columns: 60px 178px minmax(0, 1fr) !important;
+    min-height: 24px !important;
+  }
+
+  .indicador-numero {
+    font-size: 17px !important;
+  }
+
+  .indicador-titulo {
+    font-size: 8px !important;
+    padding-left: 7px !important;
+  }
+
+  .indicador-texto {
+    font-size: 7.4px !important;
+    padding: 2px 6px !important;
+  }
+
+  .relatorio-cards-destaques {
+    gap: 4px !important;
+    margin-top: 5px !important;
+  }
+
+  .relatorio-cards-destaques div {
+    min-height: 29px !important;
+    padding: 4px 5px !important;
+    border-left-width: 3px !important;
+    font-size: 6.9px !important;
+    line-height: 1.15 !important;
+  }
+}

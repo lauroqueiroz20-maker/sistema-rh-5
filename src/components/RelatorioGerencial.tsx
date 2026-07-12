@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+﻿import React, { useMemo } from "react";
 import { type Vaga } from "../data/vagas";
 
 type Ciclo = {
@@ -22,6 +22,16 @@ type GrupoUnidade = {
   totalAdmissoes: number;
   totalPendentes: number;
 };
+
+function juntarNomes(nomes: string[]) {
+  if (nomes.length <= 1) {
+    return nomes[0] || "sem destaque";
+  }
+
+  return `${nomes.slice(0, -1).join(", ")} e ${
+    nomes[nomes.length - 1]
+  }`;
+}
 
 function classeTipo(tipo: string) {
   const tipoNormalizado = String(tipo || "")
@@ -160,6 +170,43 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
     }, []);
   }, [vagas]);
 
+  const destaques = useMemo(() => {
+    const unidades = [...grupos]
+      .sort((a, b) => b.totalVagas - a.totalVagas)
+      .slice(0, 3)
+      .map((grupo) => grupo.unidade);
+
+    const cargos = Array.from(
+      vagas.reduce<Map<string, number>>((mapa, vaga) => {
+        const cargo = String(vaga.cargo || "NÃO INFORMADO")
+          .trim()
+          .toUpperCase();
+
+        mapa.set(
+          cargo,
+          (mapa.get(cargo) || 0) +
+            Math.max(0, Number(vaga.quantidade || 0))
+        );
+
+        return mapa;
+      }, new Map())
+    )
+      .sort(([, totalA], [, totalB]) => totalB - totalA)
+      .slice(0, 3)
+      .map(([cargo]) => cargo);
+
+    const unidadesEstaveis = grupos
+      .filter((grupo) => grupo.totalPendentes === 0)
+      .slice(0, 3)
+      .map((grupo) => grupo.unidade);
+
+    return {
+      unidades,
+      cargos,
+      unidadesEstaveis,
+    };
+  }, [grupos, vagas]);
+
   if (vagas.length === 0) {
     return (
       <section className="relatorio-gerencial">
@@ -191,6 +238,7 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
             Relatório gerado automaticamente pelo RH |
             Tatyana Travassos - Coord. R&amp;S
           </p>
+
         </div>
       </div>
 
@@ -252,6 +300,27 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
             permitindo o acompanhamento das solicitações,
             admissões realizadas e saldo de vagas em aberto.
           </p>
+
+          <div className="relatorio-cards-destaques">
+            <div>
+              As maiores demandas concentram-se nas unidades de{" "}
+              <strong>{juntarNomes(destaques.unidades)}</strong>.
+            </div>
+
+            <div>
+              As funcoes com maior necessidade de reposicao sao{" "}
+              <strong>{juntarNomes(destaques.cargos)}</strong>.
+            </div>
+
+            <div>
+              As unidades{" "}
+              <strong>
+                {juntarNomes(destaques.unidadesEstaveis)}
+              </strong>{" "}
+              encontram-se estaveis, sem pendencias de
+              contratacao.
+            </div>
+          </div>
         </div>
 
         <div className="painel-indicadores-relatorio">
