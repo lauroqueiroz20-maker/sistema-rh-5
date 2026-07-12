@@ -388,47 +388,9 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
               })}
 
               <tr className="linha-total-unidade linha-total-menor">
-                <td
-                  style={{
-                    position: "relative",
-                    padding: "2px 0",
-                    borderRight: "none",
-                    verticalAlign: "middle",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: "160px",
-                      top: "50%",
-                      transform: "translate(-50%, -50%)",
-                      whiteSpace: "nowrap",
-                      fontWeight: "bold",
-                      color: "#003b82",
-                      fontSize: "10px",
-                      zIndex: 2,
-                      width: "320px",
-                      textAlign: "left",
-                    }}
-                  >
+                <td colSpan={3}>
                     UNIDADE {grupo.unidade} - TOTAL
-                  </div>
                 </td>
-
-                <td
-                  style={{
-                    borderLeft: "none",
-                    borderRight: "none",
-                    padding: "2px 0",
-                  }}
-                />
-
-                <td
-                  style={{
-                    borderLeft: "none",
-                    padding: "2px 0",
-                  }}
-                />
 
                 <td className="numero-total-destaque">
                   {grupo.totalVagas}
