@@ -162,7 +162,7 @@ function gerarLinkWhatsApp(
   telefone: string
 ) {
   if (!telefone) {
-    return `https://wa.me/?text=${encodeURIComponent(
+    return `https://web.whatsapp.com/send?text=${encodeURIComponent(
       MENSAGEM_DISPARO
     )}`;
   }
@@ -172,7 +172,7 @@ function gerarLinkWhatsApp(
       ? telefone
       : `55${telefone}`;
 
-  return `https://wa.me/${numero}?text=${encodeURIComponent(
+  return `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(
     MENSAGEM_DISPARO
   )}`;
 }
@@ -737,8 +737,7 @@ function TelaGestores() {
       gerarLinkWhatsApp(
         gestor.telefone
       ),
-      "_blank",
-      "noopener,noreferrer"
+      "diniz-rh-whatsapp"
     );
   }
 
