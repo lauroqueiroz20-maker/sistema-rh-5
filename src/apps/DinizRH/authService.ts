@@ -25,7 +25,7 @@ export type AuthResultado = {
 };
 
 export function emailAdminTatyana() {
-  return `tatyana@${DOMINIO_AUTH}`;
+  return "tatyanatravassos@gmail.com";
 }
 
 export function emailGestor(
@@ -120,7 +120,7 @@ export async function criarSenha(
     session: data.session,
     aviso: data.session
       ? undefined
-      : "Conta criada. Confirme o e-mail ou desative a confirmação no Supabase.",
+      : "Conta criada. Abra o e-mail e confirme o acesso.",
   };
 }
 
