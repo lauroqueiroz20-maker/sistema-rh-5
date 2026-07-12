@@ -2676,3 +2676,77 @@ body {
     font-size: 9px !important;
   }
 }
+
+/* AJUSTE FINAL DO PAINEL DE INDICES */
+.relatorio-bloco-meio {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.painel-indicadores-relatorio {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  width: 100% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+.painel-indicadores-relatorio div {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  min-height: 58px !important;
+  border: 1px solid #cfe0f6 !important;
+  border-top: 4px solid #0057b8 !important;
+  border-radius: 6px !important;
+  background: #f8fbff !important;
+  padding: 8px 10px !important;
+  text-align: center !important;
+}
+
+.painel-indicadores-relatorio strong,
+.painel-indicadores-relatorio span {
+  min-width: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  line-height: 1.15 !important;
+}
+
+.painel-indicadores-relatorio strong {
+  color: #0f172a !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+}
+
+.painel-indicadores-relatorio span {
+  color: #0057b8 !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+}
+
+@media print {
+  .relatorio-bloco-meio {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .painel-indicadores-relatorio {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+
+  .painel-indicadores-relatorio div {
+    min-height: 40px !important;
+    padding: 5px 6px !important;
+    border-top-width: 3px !important;
+  }
+
+  .painel-indicadores-relatorio strong {
+    font-size: 6.8px !important;
+  }
+
+  .painel-indicadores-relatorio span {
+    font-size: 11px !important;
+  }
+}
