@@ -46,13 +46,15 @@ export function obterUsuarioAcesso(
     return null;
   }
 
+  const metadados =
+    session.user.user_metadata ??
+    {};
+
   const perfil =
-    session.user.user_metadata
-      .perfil;
+    metadados.perfil;
 
   const codigoGestor =
-    session.user.user_metadata
-      .codigoGestor;
+    metadados.codigoGestor;
 
   if (
     perfil !== "ADMIN" &&

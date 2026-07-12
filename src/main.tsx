@@ -6,29 +6,8 @@ import "leaflet/dist/leaflet.css";
 import "./index.css";
 import App from "./App.tsx";
 
-function registrarAplicativoMobile() {
-  if (
-    !("serviceWorker" in navigator) ||
-    !import.meta.env.PROD
-  ) {
-    return;
-  }
-
-  window.addEventListener(
-    "load",
-    () => {
-      navigator.serviceWorker.register(
-        "/service-worker.js"
-      );
-    }
-  );
-}
-
 async function limparAplicativoAntigo() {
-  if (
-    !("serviceWorker" in navigator) ||
-    import.meta.env.PROD
-  ) {
+  if (!("serviceWorker" in navigator)) {
     return;
   }
 
@@ -53,8 +32,6 @@ async function limparAplicativoAntigo() {
     )
   );
 }
-
-registrarAplicativoMobile();
 
 limparAplicativoAntigo().finally(() => {
   createRoot(
