@@ -1,0 +1,87 @@
+.pagina-admitidos {
+  margin: 18px 24px 28px;
+  background: #ffffff;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.cabecalho-admitidos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cabecalho-admitidos h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.cabecalho-admitidos p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.total-admitidos {
+  min-width: 54px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #e8f7ee;
+  color: #16803c;
+  text-align: center;
+  font-size: 20px;
+}
+
+.tabela-admitidos {
+  overflow-x: auto;
+}
+
+.tabela-admitidos table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-admitidos th,
+.tabela-admitidos td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tabela-admitidos th {
+  background: #f8fafc;
+  color: #334155;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.tabela-admitidos td {
+  color: #1e293b;
+  font-size: 13px;
+}
+
+.status-admitido {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.sem-admitidos {
+  padding: 28px !important;
+  text-align: center !important;
+  color: #64748b !important;
+  font-weight: 700;
+}

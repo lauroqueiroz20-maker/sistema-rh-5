@@ -1,0 +1,81 @@
+.mapa-visual {
+  height: 425px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(3, 24, 39, .35), rgba(3, 24, 39, .65)),
+    radial-gradient(circle at 35% 35%, #174f7a, #062238 55%, #031522);
+}
+
+.area {
+  position: absolute;
+  color: white;
+  font-weight: 900;
+  text-align: center;
+  font-size: 22px;
+  text-shadow: 0 2px 8px #000;
+  border: 1px solid rgba(255,255,255,.5);
+  opacity: .9;
+}
+
+.juazeiro {
+  left: 22%;
+  top: 12%;
+  width: 42%;
+  height: 38%;
+  background: rgba(29,140,255,.55);
+  border-radius: 45% 55% 50% 45%;
+  padding-top: 95px;
+}
+
+.crato {
+  left: 13%;
+  top: 46%;
+  width: 37%;
+  height: 34%;
+  background: rgba(34,197,94,.55);
+  border-radius: 55% 40% 50% 45%;
+  padding-top: 85px;
+}
+
+.barbalha {
+  left: 57%;
+  top: 34%;
+  width: 28%;
+  height: 28%;
+  background: rgba(245,158,11,.65);
+  border-radius: 45% 50% 40% 55%;
+  padding-top: 70px;
+}
+
+.missao {
+  left: 52%;
+  top: 66%;
+  width: 25%;
+  height: 25%;
+  background: rgba(168,85,247,.55);
+  border-radius: 45%;
+  padding-top: 55px;
+}
+
+.pin {
+  position: absolute;
+  font-size: 28px;
+  color: #38bdf8;
+  text-shadow: 0 2px 8px #000;
+}
+
+.p1 { left: 29%; top: 22%; }
+.p2 { left: 38%; top: 18%; }
+.p3 { left: 47%; top: 24%; }
+.p4 { left: 32%; top: 35%; }
+.p5 { left: 24%; top: 48%; color:#22c55e; }
+.p6 { left: 32%; top: 56%; color:#22c55e; }
+.p7 { left: 42%; top: 52%; color:#22c55e; }
+.p8 { left: 61%; top: 43%; color:#f59e0b; }
+.p9 { left: 71%; top: 40%; color:#f59e0b; }
+.p10 { left: 59%; top: 73%; color:#a855f7; }
+.p11 { left: 49%; top: 31%; }
+.p12 { left: 18%; top: 60%; color:#22c55e; }
+.p13 { left: 36%; top: 28%; }

@@ -1,0 +1,560 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #eef3f8;
+  color: #1f2937;
+  font-family:
+    "Segoe UI",
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #eef3f8;
+}
+
+.auth-card {
+  width: min(100%, 420px);
+  padding: 26px;
+  border: 1px solid #dbe5ef;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 12px 30px
+    rgba(15, 23, 42, 0.12);
+}
+
+.auth-marca {
+  margin-bottom: 18px;
+  color: #005eb8;
+  font-size: 24px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  color: #0f4f92;
+  font-size: 25px;
+  text-align: center;
+}
+
+.auth-card p {
+  margin: 0 0 22px;
+  color: #64748b;
+  text-align: center;
+}
+
+.auth-card label {
+  display: block;
+  margin-bottom: 7px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auth-card input {
+  width: 100%;
+  height: 50px;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  outline: none;
+}
+
+.auth-card input:focus {
+  border-color: #0a66c2;
+  box-shadow:
+    0 0 0 3px
+    rgba(10, 102, 194, 0.12);
+}
+
+.auth-card button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 13px;
+  background:
+    linear-gradient(
+      135deg,
+      #005eb8 0%,
+      #0a66c2 100%
+    );
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.auth-card button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.auth-mensagem {
+  display: block;
+  margin-top: 14px;
+  color: #b45309;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.auth-sair {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 999;
+  min-width: 78px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow:
+    0 8px 20px
+    rgba(15, 23, 42, 0.18);
+}
+
+.diniz-rh-app {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(
+      180deg,
+      #eef4fb 0%,
+      #f8fafc 100%
+    );
+}
+
+.diniz-rh-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background:
+    linear-gradient(
+      135deg,
+      #004a98 0%,
+      #0a66c2 100%
+    );
+  color: #ffffff;
+  box-shadow:
+    0 4px 18px
+    rgba(15, 23, 42, 0.18);
+}
+
+.diniz-rh-header-conteudo {
+  width: 100%;
+  max-width: 760px;
+  min-height: 76px;
+  margin: 0 auto;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns:
+    44px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+}
+
+.diniz-rh-identidade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.diniz-rh-identidade strong {
+  font-size: 24px;
+  line-height: 1.1;
+  letter-spacing: 0.4px;
+}
+
+.diniz-rh-identidade span {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.92;
+}
+
+.diniz-rh-header-espaco {
+  width: 44px;
+  height: 44px;
+}
+
+.diniz-rh-botao-voltar {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background:
+    rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.diniz-rh-botao-voltar:hover {
+  background:
+    rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+.diniz-rh-conteudo {
+  flex: 1;
+  width: 100%;
+  padding: 24px 16px 30px;
+}
+
+.diniz-rh-container {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.diniz-rh-card {
+  width: 100%;
+  margin: 0 0 18px;
+  padding: 22px;
+  border:
+    1px solid #dbe5ef;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 8px 24px
+    rgba(15, 23, 42, 0.08);
+}
+
+.diniz-rh-card h2 {
+  margin: 0 0 8px;
+  color: #0f4f92;
+  font-size: 23px;
+  line-height: 1.2;
+}
+
+.diniz-rh-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.diniz-rh-info {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.diniz-rh-info-box {
+  min-width: 0;
+  padding: 15px;
+  border:
+    1px solid #dce6f1;
+  border-radius: 14px;
+  background: #f8fbff;
+}
+
+.diniz-rh-info-box span {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+}
+
+.diniz-rh-info-box strong {
+  display: block;
+  color: #0f2747;
+  font-size: 15px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.diniz-rh-card label {
+  display: block;
+  margin-bottom: 7px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.diniz-rh-input,
+.diniz-rh-select {
+  width: 100%;
+  height: 48px;
+  padding: 0 13px;
+  border:
+    1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.diniz-rh-input:focus,
+.diniz-rh-select:focus {
+  border-color: #0a66c2;
+  box-shadow:
+    0 0 0 3px
+    rgba(10, 102, 194, 0.12);
+}
+
+.diniz-rh-botao {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 13px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.15px;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.diniz-rh-botao:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+.diniz-rh-botao:active {
+  transform: translateY(0);
+}
+
+.diniz-rh-botao-primario {
+  background:
+    linear-gradient(
+      135deg,
+      #005eb8 0%,
+      #0a66c2 100%
+    );
+  color: #ffffff;
+  box-shadow:
+    0 6px 14px
+    rgba(10, 102, 194, 0.22);
+}
+
+.diniz-rh-botao-verde {
+  background:
+    linear-gradient(
+      135deg,
+      #119447 0%,
+      #16a34a 100%
+    );
+  color: #ffffff;
+  box-shadow:
+    0 6px 14px
+    rgba(22, 163, 74, 0.22);
+}
+
+.diniz-rh-botao-cinza {
+  border:
+    1px solid #cbd5e1;
+  background: #eef2f7;
+  color: #334155;
+}
+
+.diniz-rh-botao-quantidade {
+  width: 44px;
+  height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: #e7eef6;
+  color: #0f4f92;
+  font-size: 21px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.diniz-rh-item-solicitacao {
+  display: flex;
+  align-items: center;
+  justify-content:
+    space-between;
+  gap: 16px;
+  padding: 15px;
+  border:
+    1px solid #dbe5ef;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.diniz-rh-item-solicitacao > div:first-child {
+  min-width: 0;
+}
+
+.diniz-rh-item-solicitacao strong {
+  display: block;
+  color: #0f2747;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.diniz-rh-item-solicitacao span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.diniz-rh-item-acoes {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.diniz-rh-item-acoes button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: #e2e8f0;
+  color: #0f2747;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.diniz-rh-item-acoes > strong {
+  min-width: 24px;
+  text-align: center;
+}
+
+.diniz-rh-item-acoes
+.diniz-rh-excluir {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.diniz-rh-confirmacao-icone {
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      135deg,
+      #16a34a 0%,
+      #15803d 100%
+    );
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 900;
+  box-shadow:
+    0 10px 22px
+    rgba(22, 163, 74, 0.22);
+}
+
+.diniz-rh-footer {
+  width: 100%;
+  padding: 18px;
+  border-top:
+    1px solid #dbe5ef;
+  background: #ffffff;
+  text-align: center;
+}
+
+.diniz-rh-footer span {
+  display: block;
+  color: #0f4f92;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.diniz-rh-footer small {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+@media (
+  max-width: 640px
+) {
+  .diniz-rh-app {
+    min-height:
+      calc(100vh - 56px);
+  }
+
+  .diniz-rh-header-conteudo {
+    min-height: 68px;
+    padding: 0 12px;
+  }
+
+  .diniz-rh-identidade strong {
+    font-size: 21px;
+  }
+
+  .diniz-rh-conteudo {
+    padding: 16px 10px 24px;
+  }
+
+  .diniz-rh-card {
+    padding: 17px;
+    border-radius: 16px;
+  }
+
+  .diniz-rh-card h2 {
+    font-size: 20px;
+  }
+
+  .diniz-rh-info {
+    grid-template-columns: 1fr;
+  }
+
+  .diniz-rh-item-solicitacao {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .diniz-rh-item-acoes {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

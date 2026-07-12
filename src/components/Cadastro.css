@@ -1,0 +1,197 @@
+.central{
+    padding:14px;
+}
+
+.cabecalho-cadastro{
+    margin-bottom:14px;
+}
+
+.cabecalho-cadastro h2{
+    font-size:17px;
+    text-align:center;
+}
+
+.formulario{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    gap:12px;
+}
+
+.formulario>div{
+    display:flex;
+    flex-direction:column;
+}
+
+.unidade-destaque{
+    min-width:0;
+    padding:8px 12px;
+    border:1px solid #d7dee8;
+    border-radius:10px;
+    background:#eef4fb;
+}
+
+.unidade-destaque span{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:#6b7280;
+}
+
+.unidade-destaque strong{
+    margin-top:4px;
+    font-size:14px;
+    color:#003b8e;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.formulario label{
+    margin-bottom:4px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.formulario input,
+.formulario select{
+    height:40px;
+    padding:0 10px;
+    font-size:13px;
+}
+
+.formulario>div:nth-child(3),
+.formulario>div:nth-child(4),
+.formulario>div:nth-child(5),
+.formulario>div:nth-child(6),
+.formulario>div:nth-child(7),
+.formulario>div:nth-child(8),
+.formulario>div:nth-child(9){
+    grid-column:span 1;
+}
+
+.campo-salvar-lateral{
+    grid-column:2;
+}
+
+.btn-cadastro{
+    height:42px;
+    font-size:15px;
+    font-weight:700;
+}
+
+.linha-atualizar{
+    margin-top:12px;
+}
+
+.botoes-cadastro-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:12px;
+}
+
+/* BOTÃO IMPRIMIR */
+
+.btn-imprimir{
+    background:#d92525 !important;
+    color:#fff !important;
+    font-weight:700;
+    font-size:15px;
+    border:none;
+}
+
+.btn-imprimir:hover{
+    background:#b71c1c !important;
+}
+
+.btn-imprimir:active{
+    transform:scale(.98);
+}
+
+button.btn-imprimir,
+.btn-cadastro.btn-imprimir{
+    background:#d61f26 !important;
+    color:#ffffff !important;
+    border:none !important;
+}
+
+button.btn-imprimir:hover,
+.btn-cadastro.btn-imprimir:hover{
+    background:#b5161c !important;
+}
+
+.botoes-cadastro-grid .btn-imprimir{
+    background:#d32f2f !important;
+    background-image:none !important;
+    color:#fff !important;
+    border:none !important;
+}
+
+.botoes-cadastro-grid .btn-imprimir:hover{
+    background:#b71c1c !important;
+}
+
+.central .botoes-cadastro-grid button.btn-imprimir-cadastro {
+  background-color: #dc2626 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-indent: 0 !important;
+}
+
+.central .botoes-cadastro-grid button.btn-imprimir-cadastro:hover {
+  background-color: #b91c1c !important;
+}
+
+.central .botoes-cadastro-grid .btn-imprimir-cadastro {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  height: 42px !important;
+
+  background: #dc2626 !important;
+  background-image: none !important;
+
+  border: none !important;
+  border-radius: 8px !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.central .botoes-cadastro-grid .btn-imprimir-cadastro .texto-imprimir {
+  display: inline-block !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-indent: 0 !important;
+}
+
+.central .botoes-cadastro-grid .btn-imprimir-cadastro:hover,
+.central .botoes-cadastro-grid .btn-imprimir-cadastro:focus,
+.central .botoes-cadastro-grid .btn-imprimir-cadastro:active {
+  background: #b91c1c !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.central .botoes-cadastro-grid .btn-imprimir-cadastro:hover .texto-imprimir,
+.central .botoes-cadastro-grid .btn-imprimir-cadastro:focus .texto-imprimir,
+.central .botoes-cadastro-grid .btn-imprimir-cadastro:active .texto-imprimir {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
