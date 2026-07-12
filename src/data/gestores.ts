@@ -221,6 +221,20 @@ const gestoresIniciais: Gestor[] = [
     criadoEm: DATA_BASE,
     atualizadoEm: DATA_BASE,
   },
+  {
+    id: "gestor-014",
+    codigo: "014",
+    unidade: "TESTE",
+    nome: "GESTOR TESTE",
+    cargo: "PERFIL DE TESTE",
+    tipoContato: "GESTOR",
+    telefone: "",
+    email: "",
+    ativo: true,
+    recebeDisparoDiario: false,
+    criadoEm: DATA_BASE,
+    atualizadoEm: DATA_BASE,
+  },
 ];
 
 export default gestoresIniciais;
