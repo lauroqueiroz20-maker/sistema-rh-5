@@ -169,22 +169,14 @@ function calcularPorTipo(
 
       const quantidade =
         Math.max(
-          0,
-          numero(vaga.quantidade)
-        );
-
-      const admissoes =
-        Math.max(
-          0,
-          numero(vaga.admissoes)
+          numero(vaga.admissoes),
+          numero(vaga.quantidade),
+          0
         );
 
       return (
         total +
-        Math.max(
-          0,
-          quantidade - admissoes
-        )
+        quantidade
       );
     },
     0
@@ -271,7 +263,8 @@ function calcularUnidadesEstaveis(
 }
 
 export function getDashboardCards(
-  vagasBase?: Vaga[]
+  vagasBase?: Vaga[],
+  indicadoresBase?: Vaga[]
 ) {
   const vagas =
     vagasBase ||
@@ -293,27 +286,30 @@ export function getDashboardCards(
       vagas
     );
 
+  const vagasIndicadores =
+    indicadoresBase || vagas;
+
   const totalPCD =
     calcularPorTipo(
-      vagas,
+      vagasIndicadores,
       "PCD"
     );
 
   const totalAprendiz =
     calcularPorTipo(
-      vagas,
+      vagasIndicadores,
       "J. APRENDIZ"
     );
 
   const totalADM =
     calcularPorTipo(
-      vagas,
+      vagasIndicadores,
       "ADM"
     );
 
   const totalInventario =
     calcularPorTipo(
-      vagas,
+      vagasIndicadores,
       "INVENTÁRIO"
     );
 
@@ -337,11 +333,18 @@ export function getPainelExecutivo(
   vagas: Vaga[],
   unidadeSelecionada?:
     | string
-    | null
+    | null,
+  indicadoresBase?: Vaga[]
 ) {
   const vagasFiltradas =
     filtrarPorUnidade(
       vagas,
+      unidadeSelecionada
+    );
+
+  const indicadoresFiltrados =
+    filtrarPorUnidade(
+      indicadoresBase || vagas,
       unidadeSelecionada
     );
 
@@ -367,25 +370,25 @@ export function getPainelExecutivo(
 
   const pcd =
     calcularPorTipo(
-      vagasFiltradas,
+      indicadoresFiltrados,
       "PCD"
     );
 
   const aprendiz =
     calcularPorTipo(
-      vagasFiltradas,
+      indicadoresFiltrados,
       "J. APRENDIZ"
     );
 
   const adm =
     calcularPorTipo(
-      vagasFiltradas,
+      indicadoresFiltrados,
       "ADM"
     );
 
   const inventario =
     calcularPorTipo(
-      vagasFiltradas,
+      indicadoresFiltrados,
       "INVENTÁRIO"
     );
 

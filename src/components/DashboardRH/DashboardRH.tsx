@@ -305,7 +305,10 @@ function DashboardRH({
     ...admitidos,
   ];
 
-  const cards = getDashboardCards(vagasCadastro);
+  const cards = getDashboardCards(
+    vagasCadastro,
+    admitidos
+  );
 
   const [tipoIndicadorAberto, setTipoIndicadorAberto] =
     useState<TipoIndicador | null>(null);
@@ -316,9 +319,7 @@ function DashboardRH({
     const tipoProcurado = normalizarTexto(tipoIndicadorAberto);
     const agrupamento: Record<string, number> = {};
 
-    vagasCadastro.forEach((vaga) => {
-      if (!vaga.ativo) return;
-
+    admitidos.forEach((vaga) => {
       const tipoVaga = normalizarTexto(vaga.tipo);
 
       if (tipoVaga !== tipoProcurado) return;
@@ -327,11 +328,12 @@ function DashboardRH({
         String(vaga.unidade || "").trim().toUpperCase() ||
         "UNIDADE NÃO INFORMADA";
 
-      const quantidade = Math.max(
-        0,
-        numero(vaga.quantidade) -
-          numero(vaga.admissoes)
-      );
+      const quantidade =
+        Math.max(
+          numero(vaga.admissoes),
+          numero(vaga.quantidade),
+          0
+        );
 
       if (quantidade <= 0) return;
 
@@ -347,7 +349,7 @@ function DashboardRH({
       .sort((a, b) =>
         a.unidade.localeCompare(b.unidade, "pt-BR")
       );
-  }, [tipoIndicadorAberto, vagasCadastro]);
+  }, [tipoIndicadorAberto, admitidos]);
 
   const totalIndicadorAberto = unidadesPorIndicador.reduce(
     (total, item) => total + item.quantidade,
@@ -358,7 +360,8 @@ function DashboardRH({
     return unidadesMapaBase.map((unidade) => {
       const indicadores = getPainelExecutivo(
         vagasCadastro,
-        unidade.nome
+        unidade.nome,
+        admitidos
       );
 
       return {

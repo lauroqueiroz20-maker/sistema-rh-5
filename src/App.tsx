@@ -1063,6 +1063,7 @@ function AppAdministrativo() {
                 ...vagas,
                 ...admitidos,
               ]}
+              admitidos={admitidos}
             />
 
             <div

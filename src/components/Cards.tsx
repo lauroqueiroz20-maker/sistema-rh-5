@@ -4,6 +4,7 @@ import { type Vaga } from "../data/vagas";
 
 interface CardsProps {
   vagas: Vaga[];
+  admitidos?: Vaga[];
 }
 
 function normalizar(
@@ -54,8 +55,13 @@ function quantidadePorIndicador(
         );
 
       const quantidade =
-        numeroSeguro(
-          vaga.quantidade
+        Math.max(
+          numeroSeguro(
+            vaga.admissoes
+          ),
+          numeroSeguro(
+            vaga.quantidade
+          )
         );
 
       return tipo.includes(
@@ -74,6 +80,7 @@ function quantidadePorIndicador(
 
 function Cards({
   vagas,
+  admitidos = [],
 }: CardsProps) {
   const indicadores =
     useMemo(() => {
@@ -150,27 +157,30 @@ function Cards({
             .filter(Boolean)
         ).size;
 
+      const baseIndicadores =
+        admitidos;
+
       const jovemAprendiz =
         quantidadePorIndicador(
-          vagas,
+          baseIndicadores,
           "APRENDIZ"
         );
 
       const pcd =
         quantidadePorIndicador(
-          vagas,
+          baseIndicadores,
           "PCD"
         );
 
       const inventario =
         quantidadePorIndicador(
-          vagas,
+          baseIndicadores,
           "INVENTARIO"
         );
 
       const adm =
         quantidadePorIndicador(
-          vagas,
+          baseIndicadores,
           "ADM"
         );
 
@@ -184,7 +194,7 @@ function Cards({
         inventario,
         adm,
       };
-    }, [vagas]);
+    }, [vagas, admitidos]);
 
   return (
     <section className="resumo">

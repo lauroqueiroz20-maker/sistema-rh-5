@@ -64,13 +64,21 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
   const indicadoresRelatorio = useMemo(() => {
     return vagas.reduce(
       (acc, vaga) => {
+        if (!vaga.dataAdmissao) {
+          return acc;
+        }
+
         const tipo = String(vaga.tipo || "")
           .toUpperCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .trim();
 
-        const qtd = Math.max(0, Number(vaga.quantidade || 0));
+        const qtd = Math.max(
+          Number(vaga.admissoes || 0),
+          Number(vaga.quantidade || 0),
+          0
+        );
 
         if (tipo.includes("APRENDIZ")) {
           acc.totalAprendiz += qtd;
