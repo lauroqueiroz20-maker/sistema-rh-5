@@ -27,6 +27,21 @@ const CHAVE_GESTORES = "sistema-rh-gestores";
 const CHAVE_MONITOR = "sistema-rh-monitor-gestores";
 const CHAVE_SOLICITACOES =
   "sistema-rh-solicitacoes-gestores";
+const CHAVE_DISPARO =
+  "sistema-rh-disparo-gestores";
+
+const MENSAGEM_DISPARO =
+  "Olá! Você tem solicitação de vaga para hoje?\n\nSe SIM, acesse o app DINIZ RH e envie pelo Portal do Gestor.\n\nSe NÃO, responda: NÃO.\n\nObrigado.";
+
+type GestorDisparo = {
+  codigo: string;
+  unidade: string;
+  gestor: string;
+  telefone: string;
+  dataDisparo: string;
+  status: "PREPARADO";
+  selecionado: boolean;
+};
 
 type GestorEditavel = Gestor & {
   nome?: string;
@@ -96,8 +111,30 @@ function obterTelefoneGestor(
   return String(
     gestorEditavel.telefone ||
       gestorEditavel.whatsapp ||
-      ""
+    ""
   );
+}
+
+function formatarHorarioBrasilia() {
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date());
+}
+
+function gerarLinkWhatsApp(
+  telefone: string
+) {
+  const numero =
+    telefone.startsWith("55")
+      ? telefone
+      : `55${telefone}`;
+
+  return `https://wa.me/${numero}?text=${encodeURIComponent(
+    MENSAGEM_DISPARO
+  )}`;
 }
 
 function TelaGestores() {
@@ -132,6 +169,16 @@ function TelaGestores() {
     setIdsProcessando,
   ] = useState<string[]>([]);
 
+  const [
+    horarioBrasilia,
+    setHorarioBrasilia,
+  ] = useState(formatarHorarioBrasilia);
+
+  const [
+    disparoGestores,
+    setDisparoGestores,
+  ] = useState<GestorDisparo[]>([]);
+
   const totalUnidades = 13;
   const totalGestores = gestores.length;
 
@@ -143,6 +190,12 @@ function TelaGestores() {
     0,
     totalUnidades - totalGestores
   );
+
+  const totalDisparoSelecionado =
+    disparoGestores.filter(
+      (gestor) =>
+        gestor.selecionado
+    ).length;
 
   const gestoresOrdenados = useMemo(
     () =>
@@ -201,6 +254,19 @@ function TelaGestores() {
       JSON.stringify(gestores)
     );
   }, [gestores]);
+
+  useEffect(() => {
+    const intervalo =
+      window.setInterval(() => {
+        setHorarioBrasilia(
+          formatarHorarioBrasilia()
+        );
+      }, 1000);
+
+    return () => {
+      window.clearInterval(intervalo);
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(
@@ -482,7 +548,7 @@ function TelaGestores() {
       return;
     }
 
-    const dadosDisparo =
+    const dadosDisparo: GestorDisparo[] =
       gestoresAtivos.map((gestor) => ({
         codigo: gestor.codigo,
         unidade: gestor.unidade,
@@ -495,11 +561,16 @@ function TelaGestores() {
         dataDisparo:
           new Date().toISOString(),
         status: "PREPARADO",
+        selecionado: true,
       }));
 
     localStorage.setItem(
-      "sistema-rh-disparo-gestores",
+      CHAVE_DISPARO,
       JSON.stringify(dadosDisparo)
+    );
+
+    setDisparoGestores(
+      dadosDisparo
     );
 
     window.dispatchEvent(
@@ -512,7 +583,81 @@ function TelaGestores() {
     );
 
     alert(
-      `Disparo preparado para ${gestoresAtivos.length} gestores ativos.`
+      `Disparo preparado para ${gestoresAtivos.length} gestores ativos. Desmarque quem não deve receber.`
+    );
+  }
+
+  function alternarGestorDisparo(
+    codigo: string
+  ) {
+    setDisparoGestores((listaAtual) => {
+      const novaLista =
+        listaAtual.map((gestor) =>
+          gestor.codigo === codigo
+            ? {
+                ...gestor,
+                selecionado:
+                  !gestor.selecionado,
+              }
+            : gestor
+        );
+
+      localStorage.setItem(
+        CHAVE_DISPARO,
+        JSON.stringify(novaLista)
+      );
+
+      return novaLista;
+    });
+  }
+
+  function selecionarTodosDisparo() {
+    setDisparoGestores((listaAtual) => {
+      const novaLista =
+        listaAtual.map((gestor) => ({
+          ...gestor,
+          selecionado: true,
+        }));
+
+      localStorage.setItem(
+        CHAVE_DISPARO,
+        JSON.stringify(novaLista)
+      );
+
+      return novaLista;
+    });
+  }
+
+  function limparSelecaoDisparo() {
+    setDisparoGestores((listaAtual) => {
+      const novaLista =
+        listaAtual.map((gestor) => ({
+          ...gestor,
+          selecionado: false,
+        }));
+
+      localStorage.setItem(
+        CHAVE_DISPARO,
+        JSON.stringify(novaLista)
+      );
+
+      return novaLista;
+    });
+  }
+
+  function abrirWhatsAppGestor(
+    gestor: GestorDisparo
+  ) {
+    if (!gestor.selecionado) {
+      return;
+    }
+
+    window.open(
+      gerarLinkWhatsApp(
+        gestor.telefone
+      ),
+      "_blank",
+      "noopener,noreferrer"
     );
   }
 
@@ -694,7 +839,7 @@ function TelaGestores() {
           </div>
 
           <div className="hora-disparo">
-            17:30
+            {horarioBrasilia}
           </div>
 
           <small>
@@ -712,6 +857,88 @@ function TelaGestores() {
           </button>
         </div>
       </div>
+
+      {disparoGestores.length > 0 && (
+        <section className="painel-lista-disparo">
+          <div className="titulo-lista-disparo">
+            <div>
+              <h2>
+                Disparo preparado
+              </h2>
+
+              <p>
+                Desmarque quem não deve
+                receber a mensagem agora.
+              </p>
+            </div>
+
+            <strong>
+              {totalDisparoSelecionado} de{" "}
+              {disparoGestores.length}
+            </strong>
+          </div>
+
+          <div className="acoes-lista-disparo">
+            <button
+              type="button"
+              onClick={selecionarTodosDisparo}
+            >
+              MARCAR TODOS
+            </button>
+
+            <button
+              type="button"
+              onClick={limparSelecaoDisparo}
+            >
+              DESMARCAR TODOS
+            </button>
+          </div>
+
+          <div className="lista-disparo-gestores">
+            {disparoGestores.map(
+              (gestor) => (
+                <div
+                  key={gestor.codigo}
+                  className="item-disparo-gestor"
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={
+                        gestor.selecionado
+                      }
+                      onChange={() =>
+                        alternarGestorDisparo(
+                          gestor.codigo
+                        )
+                      }
+                    />
+
+                    <span>
+                      {gestor.unidade} -{" "}
+                      {gestor.gestor}
+                    </span>
+                  </label>
+
+                  <button
+                    type="button"
+                    disabled={
+                      !gestor.selecionado
+                    }
+                    onClick={() =>
+                      abrirWhatsAppGestor(
+                        gestor
+                      )
+                    }
+                  >
+                    ENVIAR
+                  </button>
+                </div>
+              )
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="painel-cadastro-gestores">
         <div className="titulo-painel-gestores">

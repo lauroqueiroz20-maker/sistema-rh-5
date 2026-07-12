@@ -146,6 +146,117 @@
   transform: translateY(-1px);
 }
 
+.painel-lista-disparo {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.titulo-lista-disparo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.titulo-lista-disparo h2 {
+  margin: 0 0 5px;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.titulo-lista-disparo p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.titulo-lista-disparo strong {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.acoes-lista-disparo {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.acoes-lista-disparo button,
+.item-disparo-gestor button {
+  min-height: 34px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 7px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.acoes-lista-disparo button:last-child {
+  background: #64748b;
+}
+
+.lista-disparo-gestores {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.item-disparo-gestor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.item-disparo-gestor label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: #1f2937;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.item-disparo-gestor input {
+  width: 18px;
+  height: 18px;
+  accent-color: #16a34a;
+}
+
+.item-disparo-gestor span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-disparo-gestor button {
+  background: #16a34a;
+}
+
+.item-disparo-gestor button:disabled {
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
 /* ===========================
    PAINÉIS PRINCIPAIS
 =========================== */
@@ -667,6 +778,21 @@
 
   .titulo-painel-gestores {
     align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .titulo-lista-disparo,
+  .acoes-lista-disparo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .lista-disparo-gestores {
+    grid-template-columns: 1fr;
+  }
+
+  .item-disparo-gestor {
+    align-items: stretch;
     flex-direction: column;
   }
 
