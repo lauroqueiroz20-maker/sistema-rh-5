@@ -4477,16 +4477,6 @@ body {
   text-align: center;
 }
 
-.a4-tabela tr:has(td.tipo-pcd) td,
-.a4-tabela tr:has(td.tipo-ja) td,
-.a4-tabela tr:has(td.tipo-inv) td,
-.a4-tabela tr:has(td.tipo-adm) td,
-.a4-tabela tr:has(td.tipo-estavel) td {
-  color: #087f23;
-  font-weight: 700;
-  background: transparent !important;
-}
-
 .a4-tabela td.tipo-operac,
 .a4-tabela td.tipo-pcd,
 .a4-tabela td.tipo-ja,
@@ -4494,7 +4484,58 @@ body {
 .a4-tabela td.tipo-adm,
 .a4-tabela td.tipo-estavel {
   background: transparent !important;
+  font-weight: 400 !important;
   text-align: center !important;
+}
+
+.a4-destaques strong {
+  color: #002b67;
+  font-weight: 900;
+}
+
+.a4-tabela tr:has(td.tipo-pcd) td,
+.a4-tabela tr:has(td.tipo-ja) td,
+.a4-tabela tr:has(td.tipo-inv) td,
+.a4-tabela tr:has(td.tipo-adm) td,
+.a4-tabela tr:has(td.tipo-estavel) td {
+  font-weight: 900;
+  background: transparent !important;
+}
+
+.a4-tabela tr:has(td.tipo-pcd) td {
+  color: #7c3aed;
+}
+
+.a4-tabela tr:has(td.tipo-ja) td {
+  color: #087f23;
+}
+
+.a4-tabela tr:has(td.tipo-inv) td {
+  color: #c2410c;
+}
+
+.a4-tabela tr:has(td.tipo-adm) td {
+  color: #2563eb;
+}
+
+.a4-tabela tr:has(td.tipo-estavel) td {
+  color: #047857;
+}
+
+.a4-tabela tr:has(td.tipo-pcd) td:nth-child(2),
+.a4-tabela tr:has(td.tipo-ja) td:nth-child(2),
+.a4-tabela tr:has(td.tipo-inv) td:nth-child(2),
+.a4-tabela tr:has(td.tipo-adm) td:nth-child(2),
+.a4-tabela tr:has(td.tipo-estavel) td:nth-child(2) {
+  font-weight: 400 !important;
+}
+
+.a4-tabela tr:has(td.tipo-pcd) td:nth-child(9),
+.a4-tabela tr:has(td.tipo-ja) td:nth-child(9),
+.a4-tabela tr:has(td.tipo-inv) td:nth-child(9),
+.a4-tabela tr:has(td.tipo-adm) td:nth-child(9),
+.a4-tabela tr:has(td.tipo-estavel) td:nth-child(9) {
+  font-weight: 900 !important;
 }
 
 .a4-assinatura {
