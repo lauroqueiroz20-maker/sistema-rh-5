@@ -22,14 +22,7 @@ function Header({
   salvandoNuvem = false,
 }: HeaderProps) {
   return (
-    <header
-      className="topo"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
+    <header className="topo">
       <div className="menu-esquerda">
         {(
           [
@@ -57,39 +50,23 @@ function Header({
         ))}
       </div>
 
-      <div
-        style={{
-          color: "#fff",
-          fontWeight: 800,
-          fontSize: "18px",
-          whiteSpace: "nowrap",
-          marginLeft: "40px",
-        }}
-      >
+      <div className="responsavel-topo">
+        TATYANA TRAVASSOS - Coordenação de Recrutamento e Seleção
+      </div>
+
+      <div className="menu-direita">
         {onPublicarNuvem && (
           <button
             type="button"
+            className="aba-menu publicar-nuvem-discreto"
             onClick={onPublicarNuvem}
             disabled={salvandoNuvem}
-            style={{
-              height: "24px",
-              marginRight: "10px",
-              border: "1px solid #fff",
-              borderRadius: "5px",
-              background: "#16a34a",
-              color: "#fff",
-              fontSize: "11px",
-              fontWeight: 700,
-              padding: "0 8px",
-              cursor: "pointer",
-            }}
           >
             {salvandoNuvem
               ? "Salvando..."
-              : "Publicar nuvem"}
+              : "Nuvem"}
           </button>
         )}
-        TATYANA TRAVASSOS - Coordenação de Recrutamento e Seleção
       </div>
     </header>
   );

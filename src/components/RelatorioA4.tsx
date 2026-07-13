@@ -362,7 +362,16 @@ function RelatorioA4({ vagas, ciclo }: Props) {
                     <td>{vaga.motivo || "------"}</td>
                     <td>{vaga.data || "03/07/2026"}</td>
                     <td>{admissoes}</td>
-                    <td>
+                    <td
+                      style={
+                        admissoes > 0
+                          ? {
+                              color: "#002b67",
+                              fontWeight: 900,
+                            }
+                          : undefined
+                      }
+                    >
                       {admissoes > 0
                         ? vaga.dataAdmissao || "10/07/2026"
                         : "------"}

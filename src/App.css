@@ -4258,6 +4258,68 @@ body {
   color: #ffffff !important;
 }
 
+/* TOPO REORGANIZADO */
+.topo {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.menu-esquerda {
+  display: flex !important;
+  gap: 4px !important;
+  justify-content: flex-start !important;
+  min-width: 0 !important;
+}
+
+.responsavel-topo {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+.menu-direita {
+  display: flex !important;
+  justify-content: flex-start !important;
+  min-width: 0 !important;
+}
+
+.aba-menu {
+  min-height: 26px;
+  border: 1px solid #ffffff;
+  border-radius: 0;
+  background: #ffffff;
+  color: #003b82;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.aba-menu.ativa {
+  background: #eaf3ff;
+  color: #002b67;
+  font-weight: 800;
+}
+
+.publicar-nuvem-discreto {
+  min-height: 24px !important;
+  padding: 0 8px !important;
+  border-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #0057b8 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  opacity: 0.9 !important;
+}
+
 /* RELATORIO 2 A4 */
 .relatorio-a4 {
   width: 210mm;
