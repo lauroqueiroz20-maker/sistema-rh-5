@@ -309,11 +309,6 @@ function AppAdministrativo() {
   ] = useState("001");
 
   const [
-    cargoFiltro,
-    setCargoFiltro,
-  ] = useState("");
-
-  const [
     modoTela,
     setModoTela,
   ] = useState<
@@ -557,22 +552,7 @@ function AppAdministrativo() {
           : vaga.codigo ===
             codigoFiltro;
 
-      const cargoConfere =
-        cargoFiltro === ""
-          ? true
-          : String(
-              vaga.cargo || ""
-            )
-              .trim()
-              .toUpperCase() ===
-            cargoFiltro
-              .trim()
-              .toUpperCase();
-
-      return (
-        unidadeConfere &&
-        cargoConfere
-      );
+      return unidadeConfere;
     });
 
   function alterarModo(
@@ -1104,9 +1084,6 @@ function AppAdministrativo() {
                 ) => {
                   setCodigoFiltro(
                     codigo
-                  );
-                  setCargoFiltro(
-                    ""
                   );
                 }}
                 onAlterarModo={

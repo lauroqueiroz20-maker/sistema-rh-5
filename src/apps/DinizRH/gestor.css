@@ -123,22 +123,7 @@ select {
 }
 
 .auth-sair {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 999;
-  min-width: 78px;
-  height: 40px;
-  border: 0;
-  border-radius: 999px;
-  background: #0f172a;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow:
-    0 8px 20px
-    rgba(15, 23, 42, 0.18);
+  display: none !important;
 }
 
 .diniz-rh-app {
