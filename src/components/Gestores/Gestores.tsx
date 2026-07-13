@@ -55,6 +55,24 @@ type CadastroAtualizadoPayload = {
   solicitacaoIds?: string[];
 };
 
+const CODIGOS_INTERNOS = new Set([
+  "000",
+  "014",
+]);
+
+function ehContatoVisivel(gestor: Gestor) {
+  return !CODIGOS_INTERNOS.has(
+    gestor.codigo
+  );
+}
+
+function ehGestorDeUnidade(gestor: Gestor) {
+  return (
+    ehContatoVisivel(gestor) &&
+    gestor.tipoContato === "GESTOR"
+  );
+}
+
 function carregarLista<T>(
   chave: string,
   valorPadrao: T[]
@@ -219,10 +237,20 @@ function TelaGestores() {
     setDisparoGestores,
   ] = useState<GestorDisparo[]>([]);
 
-  const totalUnidades = 13;
-  const totalGestores = gestores.length;
+  const gestoresVisiveis = useMemo(
+    () => gestores.filter(ehContatoVisivel),
+    [gestores]
+  );
 
-  const totalAtivos = gestores.filter(
+  const gestoresDeUnidade = useMemo(
+    () => gestores.filter(ehGestorDeUnidade),
+    [gestores]
+  );
+
+  const totalUnidades = 13;
+  const totalGestores = gestoresDeUnidade.length;
+
+  const totalAtivos = gestoresDeUnidade.filter(
     (gestor) => gestor.ativo
   ).length;
 
@@ -239,7 +267,7 @@ function TelaGestores() {
 
   const gestoresOrdenados = useMemo(
     () =>
-      [...gestores].sort((a, b) =>
+      [...gestoresVisiveis].sort((a, b) =>
         a.unidade.localeCompare(
           b.unidade,
           "pt-BR",
@@ -248,7 +276,7 @@ function TelaGestores() {
           }
         )
       ),
-    [gestores]
+    [gestoresVisiveis]
   );
 
   const gestorSelecionado = useMemo(
@@ -602,14 +630,13 @@ function TelaGestores() {
 
         const recebeDisparo =
           gestor.recebeDisparoDiario !==
-            false ||
-          gestor.codigo === "000";
+            false;
 
         return (
+          ehGestorDeUnidade(gestor) &&
           gestor.ativo &&
           recebeDisparo &&
-          (telefone ||
-            gestor.codigo === "000")
+          telefone
         );
       });
 

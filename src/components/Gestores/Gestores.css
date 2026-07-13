@@ -6,6 +6,7 @@
 
 .gestores-header {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .gestores-header h1 {
@@ -32,6 +33,10 @@
 }
 
 .card-gestor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-height: 108px;
   padding: 18px;
   border-radius: 12px;
@@ -48,14 +53,17 @@
 .card-gestor span {
   display: block;
   font-size: 13px;
-  opacity: 0.9;
+  font-weight: 800;
+  opacity: 1;
+  text-align: center;
 }
 
 .card-gestor strong {
   display: block;
   margin-top: 8px;
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 900;
+  text-align: center;
 }
 
 /* ===========================
@@ -264,12 +272,13 @@
 .painel-cadastro-gestores,
 .painel-monitor-gestores {
   margin-bottom: 24px;
-  padding: 20px;
+  padding: 0;
   border: 1px solid #dbe3ee;
   border-radius: 12px;
   background: #ffffff;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .titulo-painel-gestores {
@@ -277,18 +286,22 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 18px;
+  margin-bottom: 0;
+  padding: 16px 20px;
+  background: #004aad;
+  color: #ffffff;
 }
 
 .titulo-painel-gestores h2 {
   margin: 0 0 5px;
-  color: #1f2937;
+  color: #ffffff;
   font-size: 18px;
+  font-weight: 900;
 }
 
 .titulo-painel-gestores p {
   margin: 0;
-  color: #6b7280;
+  color: #dbeafe;
   font-size: 13px;
 }
 
@@ -300,7 +313,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 18px;
+  margin: 18px 20px;
 }
 
 .busca-gestor-cadastrado label {
@@ -332,7 +345,7 @@
 =========================== */
 
 .formulario-gestor {
-  padding: 0;
+  padding: 0 20px 20px;
   margin: 0;
   background: transparent;
   border-radius: 0;
@@ -402,7 +415,7 @@
     minmax(170px, 1fr)
     130px;
   gap: 14px;
-  padding-top: 4px;
+  padding: 18px 20px 20px;
 }
 
 .campo-edicao-gestor {
@@ -492,7 +505,7 @@
   padding: 8px 12px;
   border-radius: 999px;
   background: #e0ecff;
-  color: #1d4ed8;
+  color: #004aad;
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
@@ -501,8 +514,8 @@
 .tabela-monitor-wrapper {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border: 0;
+  border-radius: 0;
 }
 
 .tabela-monitor-gestores {
@@ -513,9 +526,9 @@
 
 .tabela-monitor-gestores th {
   padding: 11px 10px;
-  border-bottom: 1px solid #d1d5db;
-  background: #f3f4f6;
-  color: #374151;
+  border-bottom: 1px solid #003b8a;
+  background: #004aad;
+  color: #ffffff;
   text-align: center;
   font-size: 11px;
   font-weight: 800;
