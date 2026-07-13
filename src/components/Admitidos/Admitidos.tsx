@@ -14,6 +14,48 @@ interface AdmitidosProps {
   admitidos: RegistroAdmitido[];
 }
 
+function normalizarTexto(valor: string) {
+  return valor
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .trim();
+}
+
+function classeTipoAdmitido(tipo: string) {
+  const tipoNormalizado =
+    normalizarTexto(tipo);
+
+  if (tipoNormalizado.includes("PCD")) {
+    return "tipo-pcd";
+  }
+
+  if (
+    tipoNormalizado.includes("APRENDIZ") ||
+    tipoNormalizado === "JA"
+  ) {
+    return "tipo-ja";
+  }
+
+  if (
+    tipoNormalizado.includes("INVENTARIO")
+  ) {
+    return "tipo-inv";
+  }
+
+  if (tipoNormalizado.includes("ADM")) {
+    return "tipo-adm";
+  }
+
+  if (
+    tipoNormalizado.includes("ESTAVEL")
+  ) {
+    return "tipo-estavel";
+  }
+
+  return "tipo-operac";
+}
+
 function Admitidos({
   admitidos,
 }: AdmitidosProps) {
@@ -105,9 +147,11 @@ function Admitidos({
           </p>
         </div>
 
-        <strong className="total-admitidos">
-          {totalQuantidade}
-        </strong>
+        <div className="total-admitidos">
+          <span>QTD</span>
+
+          <strong>{totalQuantidade}</strong>
+        </div>
       </div>
 
       <div className="tabela-admitidos">
@@ -140,7 +184,7 @@ function Admitidos({
               </th>
               <th>Tipo</th>
               <th>Cargo</th>
-              <th>Qtd.</th>
+              <th>QTD</th>
               <th>Setor</th>
               <th>Turno</th>
               <th>Motivo</th>
@@ -166,9 +210,18 @@ function Admitidos({
                 (registro) => (
                   <tr
                     key={`${registro.id}-${registro.dataAdmissao}`}
+                    className={`linha-${classeTipoAdmitido(
+                      registro.tipo
+                    )}`}
                   >
                     <td>{registro.unidade}</td>
-                    <td>{registro.tipo}</td>
+                    <td
+                      className={classeTipoAdmitido(
+                        registro.tipo
+                      )}
+                    >
+                      {registro.tipo}
+                    </td>
                     <td>{registro.cargo}</td>
                     <td>
                       {Math.max(
