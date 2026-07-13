@@ -327,7 +327,13 @@ function RelatorioA4({ vagas, ciclo }: Props) {
         <tbody>
           {grupos.map((grupo) => (
             <React.Fragment key={grupo.unidade}>
-              <tr className="a4-unidade">
+              <tr
+                className={`a4-unidade ${
+                  grupo.totalPendentes === 0
+                    ? "a4-unidade-estavel"
+                    : ""
+                }`}
+              >
                 <td colSpan={10}>
                   UNIDADE {grupo.unidade}
                 </td>
@@ -368,17 +374,19 @@ function RelatorioA4({ vagas, ciclo }: Props) {
                 );
               })}
 
-              <tr className="a4-total">
-                <td colSpan={4}>
-                  UNIDADE {grupo.unidade} - TOTAL
-                </td>
-                <td>{grupo.totalVagas}</td>
-                <td />
-                <td />
-                <td>{grupo.totalAdmissoes}</td>
-                <td />
-                <td>{grupo.totalPendentes}</td>
-              </tr>
+              {grupo.totalPendentes > 0 && (
+                <tr className="a4-total">
+                  <td colSpan={4}>
+                    UNIDADE {grupo.unidade} - TOTAL
+                  </td>
+                  <td>{grupo.totalVagas}</td>
+                  <td />
+                  <td />
+                  <td>{grupo.totalAdmissoes}</td>
+                  <td />
+                  <td>{grupo.totalPendentes}</td>
+                </tr>
+              )}
             </React.Fragment>
           ))}
         </tbody>
