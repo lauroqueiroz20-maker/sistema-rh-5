@@ -761,24 +761,6 @@ function AppAdministrativo() {
     );
   }
 
-  function atualizarTipo(
-    id: number,
-    novoTipo: string
-  ) {
-    setVagas(
-      (listaAtual) =>
-        listaAtual.map(
-          (vaga) =>
-            vaga.id === id
-              ? {
-                  ...vaga,
-                  tipo: novoTipo,
-                }
-              : vaga
-        )
-    );
-  }
-
   function atualizarCargo(
     id: number,
     novoCargo: string,
@@ -1157,9 +1139,6 @@ function AppAdministrativo() {
                 }
                 onAtualizarCargo={
                   atualizarCargo
-                }
-                onAtualizarTipo={
-                  atualizarTipo
                 }
                 onAtualizarMotivo={
                   atualizarMotivo

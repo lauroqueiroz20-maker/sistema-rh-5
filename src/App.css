@@ -2693,6 +2693,19 @@ body {
   font-size: 10px !important;
 }
 
+.filtro-cargo-cadastro {
+  width: 100%;
+  min-width: 150px;
+  height: 28px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
 /* RELATORIO PREMIUM */
 .relatorio-gerencial {
   width: 100%;

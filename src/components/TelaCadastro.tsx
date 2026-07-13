@@ -1,8 +1,10 @@
-﻿import { useMemo } from "react";
+﻿import {
+  useMemo,
+  useState,
+} from "react";
 
 import cargos from "../data/cargos";
 import motivos from "../data/motivos";
-import tipos from "../data/tipos";
 import { type Vaga } from "../data/vagas";
 
 interface TelaCadastroProps {
@@ -14,7 +16,6 @@ interface TelaCadastroProps {
     cargo: string,
     setor: string
   ) => void;
-  onAtualizarTipo: (id: number, tipo: string) => void;
   onAtualizarMotivo: (id: number, motivo: string) => void;
   onAtualizarEmergencia: (
     id: number,
@@ -55,14 +56,42 @@ function TelaCadastro({
   modo,
   admissoesPendentes,
   onAtualizarCargo,
-  onAtualizarTipo,
   onAtualizarMotivo,
   onAtualizarEmergencia,
   onAlternarAdmissao,
   onExcluirVaga,
 }: TelaCadastroProps) {
+  const [
+    cargoSelecionadoFiltro,
+    setCargoSelecionadoFiltro,
+  ] = useState("");
 
-  const vagasFiltradas = vagas;
+  const vagasFiltradas = useMemo(
+    () =>
+      cargoSelecionadoFiltro
+        ? vagas.filter(
+            (vaga) =>
+              vaga.cargo === cargoSelecionadoFiltro
+          )
+        : vagas,
+    [cargoSelecionadoFiltro, vagas]
+  );
+
+  const cargosFiltro = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          vagas
+            .map((vaga) =>
+              String(vaga.cargo || "").trim()
+            )
+            .filter(Boolean)
+        )
+      ).sort((a, b) =>
+        a.localeCompare(b, "pt-BR")
+      ),
+    [vagas]
+  );
 
   const vagasOrdenadas = useMemo(() => {
     return [...vagasFiltradas].sort((a, b) => {
@@ -133,7 +162,30 @@ function TelaCadastro({
             <tr>
               <th>Unidade</th>
               <th>Tipo</th>
-              <th>Cargo</th>
+              <th>
+                <select
+                  className="filtro-cargo-cadastro"
+                  value={cargoSelecionadoFiltro}
+                  onChange={(evento) =>
+                    setCargoSelecionadoFiltro(
+                      evento.target.value
+                    )
+                  }
+                >
+                  <option value="">
+                    Todos os cargos
+                  </option>
+
+                  {cargosFiltro.map((cargo) => (
+                    <option
+                      key={cargo}
+                      value={cargo}
+                    >
+                      {cargo}
+                    </option>
+                  ))}
+                </select>
+              </th>
               <th>Setor</th>
               <th className="total-vagas">
                 {totalVagasExibidas}
@@ -202,48 +254,8 @@ function TelaCadastro({
                       {vaga.unidade}
                     </td>
 
-                    <td
-                      className={classeTipo(
-                        `${vaga.tipo} ${vaga.cargo}`
-                      )}
-                    >
-                      {modo === "novo" && !concluida ? (
-                        <select
-                          className={`select-motivo-tabela ${classeTipo(
-                            `${vaga.tipo} ${vaga.cargo}`
-                          )}`}
-                          value={vaga.tipo || "OPERAC."}
-                          onChange={(evento) =>
-                            onAtualizarTipo(
-                              vaga.id,
-                              evento.target.value
-                            )
-                          }
-                        >
-                          {vaga.tipo && !tipos.includes(vaga.tipo) && (
-                            <option value={vaga.tipo}>
-                              {vaga.tipo}
-                            </option>
-                          )}
-
-                          {tipos.map((item) => (
-                            <option
-                              key={item}
-                              value={item}
-                            >
-                              {item}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <span
-                          className={classeTipo(
-                            `${vaga.tipo} ${vaga.cargo}`
-                          )}
-                        >
-                          {vaga.tipo || "OPERAC."}
-                        </span>
-                      )}
+                    <td className={destaqueEstavel}>
+                      {vaga.tipo || "OPERAC."}
                     </td>
 
                     <td className={destaqueEstavel}>
