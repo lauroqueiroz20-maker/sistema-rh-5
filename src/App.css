@@ -4286,8 +4286,8 @@ body {
 
 .a4-metricas div {
   display: grid;
-  grid-template-columns: 52px 158px minmax(0, 1fr);
-  min-height: 46px;
+  grid-template-columns: 46px 145px minmax(0, 1fr);
+  min-height: 38px;
   border-bottom: 1px solid #111827;
 }
 
@@ -4301,7 +4301,7 @@ body {
   justify-content: center;
   border-right: 1px solid #111827;
   color: #0057b8;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: 900;
   line-height: 1;
 }
@@ -4319,12 +4319,16 @@ body {
   text-align: center;
 }
 
+.a4-metricas div:nth-child(2) span {
+  background: #008542;
+}
+
 .a4-metricas small {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 9px;
-  font-size: 8px;
+  padding: 3px 7px;
+  font-size: 7.6px;
   font-weight: 700;
   line-height: 1.16;
   text-align: center;
@@ -4399,6 +4403,7 @@ body {
   color: #000000;
   font-size: 7.4px;
   line-height: 1.05;
+  text-align: center;
   vertical-align: middle;
 }
 
@@ -4413,6 +4418,7 @@ body {
 .a4-tabela th:nth-child(1),
 .a4-tabela td:nth-child(1) {
   width: 13%;
+  text-align: center;
 }
 
 .a4-tabela th:nth-child(2),
@@ -4424,11 +4430,13 @@ body {
 .a4-tabela th:nth-child(3),
 .a4-tabela td:nth-child(3) {
   width: 16%;
+  text-align: center;
 }
 
 .a4-tabela th:nth-child(4),
 .a4-tabela td:nth-child(4) {
   width: 14%;
+  text-align: center;
 }
 
 .a4-tabela th:nth-child(5),
@@ -4476,6 +4484,28 @@ body {
 .a4-tabela tr:has(td.tipo-estavel) td {
   color: #087f23;
   font-weight: 700;
+  background: transparent !important;
+}
+
+.a4-tabela td.tipo-operac,
+.a4-tabela td.tipo-pcd,
+.a4-tabela td.tipo-ja,
+.a4-tabela td.tipo-inv,
+.a4-tabela td.tipo-adm,
+.a4-tabela td.tipo-estavel {
+  background: transparent !important;
+  text-align: center !important;
+}
+
+.a4-assinatura {
+  margin-top: 6px;
+  padding: 5px 8px;
+  background: #002b67;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
 }
 
 @media print {
@@ -4499,6 +4529,11 @@ body {
     padding: 6mm !important;
     border: 0 !important;
     box-shadow: none !important;
+  }
+
+  .a4-assinatura {
+    padding: 4px 6px !important;
+    font-size: 7pt !important;
   }
 }
 

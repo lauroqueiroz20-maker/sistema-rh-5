@@ -224,7 +224,7 @@ function RelatorioA4({ vagas, ciclo }: Props) {
         <div className="a4-metricas">
           <div>
             <strong>{totais.vagas}</strong>
-            <span>DEMANDA ACUMULADA:</span>
+            <span>DEMANDA ACUMULADA</span>
             <small>
               As vagas não se referem exclusivamente às solicitações
               do mês, representa a demanda total sob gestão do RH,
@@ -235,7 +235,7 @@ function RelatorioA4({ vagas, ciclo }: Props) {
 
           <div>
             <strong>{totais.admissoes}</strong>
-            <span>CONTRATAÇÕES EFETIVADAS:</span>
+            <span>CONTRATAÇÕES EFETIVADAS</span>
             <small>
               Representa o total de admissões realizadas durante o
               ciclo analisado, contemplando todas as vagas
@@ -246,7 +246,7 @@ function RelatorioA4({ vagas, ciclo }: Props) {
 
           <div>
             <strong>{totais.pendentes}</strong>
-            <span>VAGAS:</span>
+            <span>VAGAS</span>
             <small>
               Representa vagas que permanecem em processo de
               recrutamento e seleção ao final do ciclo, incluindo
@@ -383,6 +383,10 @@ function RelatorioA4({ vagas, ciclo }: Props) {
           ))}
         </tbody>
       </table>
+
+      <footer className="a4-assinatura">
+        TATYANA TRAVASSOS - Coordenação de Recrutamento e Seleção
+      </footer>
     </section>
   );
 }
