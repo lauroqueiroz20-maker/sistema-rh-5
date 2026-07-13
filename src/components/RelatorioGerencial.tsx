@@ -227,9 +227,9 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
   }
 
   return (
-    <section className="relatorio-gerencial">
-      <div className="relatorio-cabecalho">
-        <div className="relatorio-titulo">
+    <section className="relatorio-planilha">
+      <div className="rp-cabecalho">
+        <div className="rp-titulo">
           <h2>
             RELATÓRIO SEMANAL DE RECRUTAMENTO E SELEÇÃO
           </h2>
@@ -242,77 +242,52 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
         </div>
       </div>
 
-      <div className="relatorio-indicadores">
-        <div className="relatorio-indicador-linha">
-          <span className="indicador-numero">
+      <div className="rp-topo">
+        <div className="rp-resumo">
+          <div className="rp-metrica">
+          <span className="rp-numero">
             {demandaAcumulada}
           </span>
 
-          <span className="indicador-titulo">
+          <span className="rp-label">
             DEMANDA ACUMULADA:
           </span>
 
-          <span className="indicador-texto">
+          <span className="rp-texto">
             Total de vagas sob gestão.
           </span>
         </div>
 
-        <div className="relatorio-indicador-linha">
-          <span className="indicador-numero">
+          <div className="rp-metrica">
+          <span className="rp-numero">
             {contratacoes}
           </span>
 
-          <span className="indicador-titulo">
+          <span className="rp-label">
             CONTRATAÇÕES EFETIVADAS:
           </span>
 
-          <span className="indicador-texto">
+          <span className="rp-texto">
             Total de admissões realizadas no período.
           </span>
         </div>
 
-        <div className="relatorio-indicador-linha">
-          <span className="indicador-numero">
+          <div className="rp-metrica">
+          <span className="rp-numero">
             {pendentes}
           </span>
 
-          <span className="indicador-titulo">
+          <span className="rp-label">
             VAGAS PENDENTES:
           </span>
 
-          <span className="indicador-texto">
+          <span className="rp-texto">
             Saldo de vagas ainda em processo de seleção.
           </span>
         </div>
-      </div>
-
-      <div className="relatorio-bloco-meio">
-        <div className="relatorio-destaques">
-          <h3>Resumo Executivo</h3>
-
-          <div className="relatorio-cards-destaques">
-            <div>
-              As maiores demandas concentram-se nas unidades de{" "}
-              <strong>{juntarNomes(destaques.unidades)}</strong>.
-            </div>
-
-            <div>
-              As funcoes com maior necessidade de reposicao sao{" "}
-              <strong>{juntarNomes(destaques.cargos)}</strong>.
-            </div>
-
-            <div>
-              As unidades{" "}
-              <strong>
-                {juntarNomes(destaques.unidadesEstaveis)}
-              </strong>{" "}
-              encontram-se estaveis, sem pendencias de
-              contratacao.
-            </div>
-          </div>
         </div>
 
-        <div className="painel-indicadores-relatorio">
+        <div className="rp-painel">
           <div>
             <strong>Turnover</strong>
             <span>0.00%</span>
@@ -359,9 +334,32 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
         </div>
       </div>
 
-      <table className="relatorio-tabela">
+      <div className="rp-destaques">
+        <h3>DESTAQUES</h3>
+
+        <p>
+          As maiores demandas concentram-se nas unidades de{" "}
+          <strong>{juntarNomes(destaques.unidades)}</strong>.
+        </p>
+
+        <p>
+          As funções com maior necessidade de reposição são{" "}
+          <strong>{juntarNomes(destaques.cargos)}</strong>.
+        </p>
+
+        <p>
+          As unidades{" "}
+          <strong>
+            {juntarNomes(destaques.unidadesEstaveis)}
+          </strong>{" "}
+          encontram-se estáveis, sem pendências de contratação.
+        </p>
+      </div>
+
+      <table className="rp-tabela">
         <thead>
           <tr>
+            <th>UNIDADE</th>
             <th>TIPO</th>
             <th>CARGO</th>
             <th>SETOR</th>
@@ -378,8 +376,8 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
         <tbody>
           {grupos.map((grupo) => (
             <React.Fragment key={grupo.unidade}>
-              <tr className="linha-cabecalho-unidade">
-                <td colSpan={10}>
+              <tr className="rp-unidade">
+                <td colSpan={11}>
                   UNIDADE {grupo.unidade}
                 </td>
               </tr>
@@ -402,6 +400,8 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
 
                 return (
                   <tr key={vaga.id}>
+                    <td>{grupo.unidade}</td>
+
                     <td className={classeTipo(vaga.tipo)}>
                       {vaga.tipo || "OPERAC."}
                     </td>
@@ -445,26 +445,26 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
                 );
               })}
 
-              <tr className="linha-total-unidade linha-total-menor">
-                <td colSpan={3}>
+              <tr className="rp-total">
+                <td colSpan={4}>
                     UNIDADE {grupo.unidade} - TOTAL
                 </td>
 
-                <td className="numero-total-destaque">
+                <td>
                   {grupo.totalVagas}
                 </td>
 
                 <td />
                 <td />
 
-                <td className="numero-total-destaque">
+                <td>
                   {grupo.totalAdmissoes}
                 </td>
 
                 <td />
                 <td />
 
-                <td className="numero-total-destaque">
+                <td>
                   {grupo.totalPendentes}
                 </td>
               </tr>
@@ -473,8 +473,8 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
         </tbody>
       </table>
 
-      <div className="relatorio-assinatura">
-        <div className="linha" />
+      <div className="rp-assinatura">
+        <div />
 
         <strong>Tatyana Travassos</strong>
 
