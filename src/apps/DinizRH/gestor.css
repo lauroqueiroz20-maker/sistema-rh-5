@@ -122,10 +122,6 @@ select {
   text-align: center;
 }
 
-.auth-sair {
-  display: none !important;
-}
-
 .diniz-rh-app {
   min-height: calc(100vh - 64px);
   display: flex;

@@ -61,8 +61,14 @@ const CODIGOS_INTERNOS = new Set([
 ]);
 
 function ehContatoVisivel(gestor: Gestor) {
+  const codigoNormalizado = String(
+    gestor.codigo || ""
+  )
+    .trim()
+    .padStart(3, "0");
+
   return !CODIGOS_INTERNOS.has(
-    gestor.codigo
+    codigoNormalizado
   );
 }
 
