@@ -35,9 +35,9 @@ function Header({
           [
             ["cadastro", "Cadastro"],
             ["admitidos", "Admitidos"],
-            ["relatorio2", "Relatório 2"],
+            ["relatorio2", "Relatório"],
             ["dashboard", "Dashboard"],
-            ["gestores", "Gestores"],
+            ["gestores", "Central Gestores"],
           ] as const
         ).map(([pagina, texto]) => (
           <button
@@ -72,13 +72,15 @@ function Header({
             onClick={onPublicarNuvem}
             disabled={salvandoNuvem}
             style={{
-              height: "34px",
-              marginRight: "14px",
+              height: "24px",
+              marginRight: "10px",
               border: "1px solid #fff",
-              borderRadius: "7px",
+              borderRadius: "5px",
               background: "#16a34a",
               color: "#fff",
-              fontWeight: 800,
+              fontSize: "11px",
+              fontWeight: 700,
+              padding: "0 8px",
               cursor: "pointer",
             }}
           >
