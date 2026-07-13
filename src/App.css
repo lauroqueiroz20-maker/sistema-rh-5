@@ -4224,3 +4224,17 @@ body {
     font-weight: 400 !important;
   }
 }
+
+/* EXPORTACAO EXCEL FINAL */
+.central .botoes-cadastro-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.central .botoes-cadastro-grid .btn-excel {
+  background: #15803d !important;
+  color: #ffffff !important;
+}
+
+.central .botoes-cadastro-grid .btn-excel:hover {
+  background: #166534 !important;
+}

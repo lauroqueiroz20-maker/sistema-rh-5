@@ -24,6 +24,7 @@ interface CadastroProps {
   temAtualizacaoPendente: boolean;
   onGerarPDF: () => void;
   onImprimir: () => void;
+  onExportarExcel: () => void;
 }
 
 type SolicitacaoGestor = {
@@ -116,6 +117,7 @@ function Cadastro({
   temAtualizacaoPendente,
   onGerarPDF,
   onImprimir,
+  onExportarExcel,
 }: CadastroProps) {
   const codigoRef =
     useRef<HTMLInputElement>(null);
@@ -1129,6 +1131,14 @@ function Cadastro({
           onClick={onGerarPDF}
         >
           Gerar PDF
+        </button>
+
+        <button
+          type="button"
+          className="btn-cadastro btn-excel"
+          onClick={onExportarExcel}
+        >
+          Excel
         </button>
       </div>
 
