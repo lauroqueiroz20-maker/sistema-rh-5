@@ -949,9 +949,13 @@ function Cadastro({
           <label>Cargo</label>
 
           <select
+            name="novo-cadastro-cargo"
             value={cargoSelecionado}
             disabled={
               emergencia === "ESTÁVEL"
+            }
+            onClick={(evento) =>
+              evento.stopPropagation()
             }
             onChange={(evento) =>
               selecionarCargo(
