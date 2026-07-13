@@ -3619,3 +3619,165 @@ body {
     line-height: 1.2 !important;
   }
 }
+
+/* AJUSTE FINAL PARA LEITURA E IMPRESSAO */
+.relatorio-gerencial .relatorio-cards-destaques div {
+  min-height: 54px !important;
+  padding: 8px 10px !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+}
+
+.relatorio-gerencial .relatorio-cards-destaques strong {
+  font-size: inherit !important;
+  font-weight: 700 !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th,
+.relatorio-gerencial .relatorio-tabela td {
+  padding: 5px 5px !important;
+  font-size: 12px !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th {
+  font-size: 10px !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(1),
+.relatorio-gerencial .relatorio-tabela td:nth-child(1) {
+  width: 7% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(2),
+.relatorio-gerencial .relatorio-tabela td:nth-child(2) {
+  width: 14% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(3),
+.relatorio-gerencial .relatorio-tabela td:nth-child(3) {
+  width: 10% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(4),
+.relatorio-gerencial .relatorio-tabela td:nth-child(4) {
+  width: 5% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(5),
+.relatorio-gerencial .relatorio-tabela td:nth-child(5) {
+  width: 10% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(6),
+.relatorio-gerencial .relatorio-tabela td:nth-child(6) {
+  width: 10% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(7),
+.relatorio-gerencial .relatorio-tabela td:nth-child(7) {
+  width: 7% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(8),
+.relatorio-gerencial .relatorio-tabela td:nth-child(8) {
+  width: 10% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(9),
+.relatorio-gerencial .relatorio-tabela td:nth-child(9) {
+  width: 14% !important;
+}
+
+.relatorio-gerencial .relatorio-tabela th:nth-child(10),
+.relatorio-gerencial .relatorio-tabela td:nth-child(10) {
+  width: 13% !important;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 5mm;
+  }
+
+  .relatorio-gerencial .relatorio-cabecalho {
+    min-height: 28px !important;
+    padding: 4px 8px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .relatorio-gerencial .relatorio-titulo h2 {
+    font-size: 13px !important;
+  }
+
+  .relatorio-gerencial .relatorio-titulo p {
+    font-size: 7px !important;
+  }
+
+  .relatorio-gerencial .relatorio-indicadores {
+    margin-bottom: 4px !important;
+  }
+
+  .relatorio-gerencial .relatorio-indicador-linha {
+    min-height: 20px !important;
+  }
+
+  .relatorio-gerencial .relatorio-bloco-meio {
+    margin-bottom: 5px !important;
+  }
+
+  .relatorio-gerencial .relatorio-destaques {
+    padding: 4px !important;
+  }
+
+  .relatorio-gerencial .relatorio-destaques h3 {
+    display: none !important;
+  }
+
+  .relatorio-gerencial .relatorio-cards-destaques {
+    gap: 4px !important;
+  }
+
+  .relatorio-gerencial .relatorio-cards-destaques div {
+    min-height: 30px !important;
+    padding: 4px 5px !important;
+    font-size: 7px !important;
+    line-height: 1.15 !important;
+  }
+
+  .relatorio-gerencial .relatorio-cards-destaques strong {
+    font-size: inherit !important;
+    font-weight: 700 !important;
+  }
+
+  .relatorio-gerencial .painel-indicadores-relatorio div {
+    min-height: 14px !important;
+  }
+
+  .relatorio-gerencial .painel-indicadores-relatorio strong,
+  .relatorio-gerencial .painel-indicadores-relatorio span {
+    padding: 2px 4px !important;
+    font-size: 6px !important;
+  }
+
+  .relatorio-gerencial .relatorio-tabela th,
+  .relatorio-gerencial .relatorio-tabela td {
+    padding: 3px 3px !important;
+    font-size: 9px !important;
+    line-height: 1.1 !important;
+  }
+
+  .relatorio-gerencial .relatorio-tabela th {
+    font-size: 7.4px !important;
+  }
+
+  .relatorio-gerencial .linha-cabecalho-unidade td {
+    padding: 4px 5px !important;
+    font-size: 8.8px !important;
+  }
+
+  .relatorio-gerencial .linha-total-unidade td,
+  .relatorio-gerencial .numero-total-destaque {
+    padding: 3px 3px !important;
+    font-size: 8.8px !important;
+  }
+}
