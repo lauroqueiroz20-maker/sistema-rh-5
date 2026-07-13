@@ -17,6 +17,7 @@ import Admitidos, {
 } from "./components/Admitidos/Admitidos";
 
 import RelatorioGerencial from "./components/RelatorioGerencial.tsx";
+import RelatorioA4 from "./components/RelatorioA4.tsx";
 
 import vagasIniciais, {
   type Vaga,
@@ -335,6 +336,7 @@ function AppAdministrativo() {
     | "cadastro"
     | "admitidos"
     | "relatorio"
+    | "relatorio2"
     | "dashboard"
     | "aso"
     | "gestores"
@@ -1423,6 +1425,17 @@ function AppAdministrativo() {
         {paginaAtual ===
           "relatorio" && (
           <RelatorioGerencial
+            vagas={[
+              ...vagas,
+              ...admitidos,
+            ]}
+            ciclo={ciclo}
+          />
+        )}
+
+        {paginaAtual ===
+          "relatorio2" && (
+          <RelatorioA4
             vagas={[
               ...vagas,
               ...admitidos,

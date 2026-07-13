@@ -2,6 +2,7 @@ type Pagina =
   | "cadastro"
   | "admitidos"
   | "relatorio"
+  | "relatorio2"
   | "dashboard"
   | "aso"
   | "gestores"
@@ -35,6 +36,7 @@ function Header({
             ["cadastro", "Cadastro"],
             ["admitidos", "Admitidos"],
             ["relatorio", "Relatório"],
+            ["relatorio2", "Relatório 2"],
             ["dashboard", "Dashboard"],
             ["gestores", "Gestores"],
             [
