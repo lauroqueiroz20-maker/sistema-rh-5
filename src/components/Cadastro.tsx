@@ -24,7 +24,6 @@ interface CadastroProps {
   temAtualizacaoPendente: boolean;
   onGerarPDF: () => void;
   onImprimir: () => void;
-  onExportarExcel: () => void;
 }
 
 type SolicitacaoGestor = {
@@ -117,7 +116,6 @@ function Cadastro({
   temAtualizacaoPendente,
   onGerarPDF,
   onImprimir,
-  onExportarExcel,
 }: CadastroProps) {
   const codigoRef =
     useRef<HTMLInputElement>(null);
@@ -418,6 +416,15 @@ function Cadastro({
     );
 
     limparCampos(false);
+  }
+
+  function salvarOuAtualizar() {
+    if (temAtualizacaoPendente) {
+      onConfirmarAtualizacao();
+      return;
+    }
+
+    salvarCadastro();
   }
 
   const processarSolicitacoesGestores =
@@ -1075,54 +1082,22 @@ function Cadastro({
           <button
             type="button"
             className="btn-cadastro btn-salvar"
-            onClick={salvarCadastro}
+            onClick={salvarOuAtualizar}
           >
-            Salvar
+            {temAtualizacaoPendente
+              ? "Salvar atualização"
+              : "Salvar"}
           </button>
         </div>
-      </div>
-
-      <div className="linha-atualizar">
-        <button
-          type="button"
-          className="btn-cadastro btn-atualizar"
-          onClick={
-            onConfirmarAtualizacao
-          }
-        >
-          {temAtualizacaoPendente
-            ? "Confirmar"
-            : "Atualizar"}
-        </button>
       </div>
 
 <div className="botoes-cadastro-grid">
         <button
           type="button"
-          className="btn-imprimir-final"
+          className="btn-cadastro btn-fim-ciclo"
           onClick={onImprimir}
-          style={{
-            width: "100%",
-            height: "42px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#d32f2f",
-            color: "#ffffff",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "14px",
-            fontWeight: 800,
-            fontFamily: "Arial, Helvetica, sans-serif",
-            lineHeight: 1,
-            letterSpacing: "normal",
-            textIndent: 0,
-            opacity: 1,
-            visibility: "visible",
-            cursor: "pointer",
-          }}
         >
-          Imprimir
+          Fim ciclo
         </button>
 
         <button
@@ -1131,14 +1106,6 @@ function Cadastro({
           onClick={onGerarPDF}
         >
           Gerar PDF
-        </button>
-
-        <button
-          type="button"
-          className="btn-cadastro btn-excel"
-          onClick={onExportarExcel}
-        >
-          Excel
         </button>
       </div>
 

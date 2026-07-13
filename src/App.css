@@ -4239,6 +4239,25 @@ body {
   background: #166534 !important;
 }
 
+/* CADASTRO BOTOES FINAIS */
+.central .linha-atualizar {
+  display: none !important;
+}
+
+.central .botoes-cadastro-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.central .botoes-cadastro-grid .btn-fim-ciclo {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+.central .botoes-cadastro-grid .btn-gerar {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
 /* RELATORIO 2 A4 */
 .relatorio-a4 {
   width: 210mm;
