@@ -4286,8 +4286,8 @@ body {
 
 .a4-metricas div {
   display: grid;
-  grid-template-columns: 44px 156px minmax(0, 1fr);
-  min-height: 42px;
+  grid-template-columns: 52px 158px minmax(0, 1fr);
+  min-height: 46px;
   border-bottom: 1px solid #111827;
 }
 
@@ -4299,8 +4299,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-right: 1px solid #111827;
   color: #0057b8;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 900;
   line-height: 1;
 }
@@ -4312,7 +4313,7 @@ body {
   padding: 0 6px;
   background: #002b67;
   color: #ffffff;
-  font-size: 10px;
+  font-size: 9.4px;
   font-weight: 900;
   line-height: 1.05;
   text-align: center;
@@ -4322,8 +4323,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 8px;
-  font-size: 8.2px;
+  padding: 4px 9px;
+  font-size: 8px;
   font-weight: 700;
   line-height: 1.16;
   text-align: center;
@@ -4548,8 +4549,8 @@ body {
 
 .rp-metrica {
   display: grid;
-  grid-template-columns: 54px 172px minmax(0, 1fr);
-  min-height: 46px;
+  grid-template-columns: 60px 178px minmax(0, 1fr);
+  min-height: 48px;
   border-bottom: 1px solid #111827;
 }
 
@@ -4561,8 +4562,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-right: 1px solid #111827;
   color: #0057b8;
-  font-size: 21px;
+  font-size: 24px;
   font-weight: 900;
   line-height: 1;
 }
@@ -4574,8 +4576,9 @@ body {
   padding: 0 6px;
   background: #002b67;
   color: #ffffff;
-  font-size: 10px;
+  font-size: 9.6px;
   font-weight: 900;
+  line-height: 1.05;
   text-align: center;
 }
 
@@ -4583,8 +4586,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 8px;
-  font-size: 9px;
+  padding: 4px 10px;
+  font-size: 8.5px;
   font-weight: 700;
   line-height: 1.16;
   text-align: center;
