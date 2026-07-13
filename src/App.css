@@ -4278,16 +4278,31 @@ body {
   padding: 0 !important;
   color: #ffffff !important;
   font-size: 15px !important;
-  font-weight: 800 !important;
+  font-weight: 400 !important;
   line-height: 1 !important;
   letter-spacing: 0 !important;
   text-align: center !important;
   white-space: nowrap !important;
 }
 
+.responsavel-topo strong {
+  display: inline !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+.responsavel-topo span {
+  display: inline !important;
+  margin: 0 !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+
 .menu-direita {
   display: flex !important;
-  justify-content: flex-start !important;
+  justify-content: flex-end !important;
   min-width: 0 !important;
 }
 
@@ -4310,14 +4325,14 @@ body {
 }
 
 .publicar-nuvem-discreto {
-  min-height: 24px !important;
-  padding: 0 8px !important;
+  min-height: 26px !important;
+  padding: 1px 6px !important;
   border-color: #ffffff !important;
   background: #ffffff !important;
-  color: #0057b8 !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  opacity: 0.9 !important;
+  color: #003b82 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
 }
 
 /* RELATORIO 2 A4 */

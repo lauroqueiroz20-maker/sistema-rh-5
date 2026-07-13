@@ -51,7 +51,10 @@ function Header({
       </div>
 
       <div className="responsavel-topo">
-        TATYANA TRAVASSOS - Coordenação de Recrutamento e Seleção
+        <strong>TATYANA TRAVASSOS</strong>
+        <span>
+          - Coordenação de Recrutamento e Seleção
+        </span>
       </div>
 
       <div className="menu-direita">
