@@ -35,15 +35,9 @@ function Header({
           [
             ["cadastro", "Cadastro"],
             ["admitidos", "Admitidos"],
-            ["relatorio", "Relatório"],
             ["relatorio2", "Relatório 2"],
             ["dashboard", "Dashboard"],
             ["gestores", "Gestores"],
-            [
-              "portalgestor",
-              "Portal do Gestor",
-            ],
-            ["aso", "Controle ASO"],
           ] as const
         ).map(([pagina, texto]) => (
           <button
