@@ -17,7 +17,6 @@ import {
   emailAdminTatyana,
   entrarComSenha,
   obterUsuarioAcesso,
-  sair,
   type PerfilAcesso,
 } from "./authService";
 import {
@@ -276,21 +275,6 @@ function AuthGate({
     }
   }
 
-  async function encerrarSessao() {
-    if (perfil === "GESTOR") {
-      localStorage.removeItem(
-        chaveAcessoGestor(
-          codigoNormalizado
-        )
-      );
-      setAcessoGestorLocal(false);
-      return;
-    }
-
-    await sair();
-    setSession(null);
-  }
-
   if (carregando) {
     return (
       <div className="auth-page">
@@ -304,16 +288,7 @@ function AuthGate({
 
   if (acessoValido) {
     return (
-      <>
-        <button
-          type="button"
-          className="auth-sair"
-          onClick={encerrarSessao}
-        >
-          Sair
-        </button>
-        {children}
-      </>
+      <>{children}</>
     );
   }
 

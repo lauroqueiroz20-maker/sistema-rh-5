@@ -1109,9 +1109,6 @@ function AppAdministrativo() {
                     ""
                   );
                 }}
-                onSelecionarCargoFiltro={
-                  setCargoFiltro
-                }
                 onAlterarModo={
                   alterarModo
                 }

@@ -18,7 +18,6 @@ interface CadastroProps {
   vagas: Vaga[];
   onAdicionarVagas: (novasVagas: Vaga[]) => void;
   onSelecionarCodigo: (codigo: string) => void;
-  onSelecionarCargoFiltro: (cargo: string) => void;
   onAlterarModo: (modo: "novo" | "atualizar") => void;
   onConfirmarAtualizacao: () => void;
   temAtualizacaoPendente: boolean;
@@ -111,7 +110,6 @@ function Cadastro({
   vagas,
   onAdicionarVagas,
   onSelecionarCodigo,
-  onSelecionarCargoFiltro,
   onConfirmarAtualizacao,
   temAtualizacaoPendente,
   onGerarPDF,
@@ -185,7 +183,6 @@ function Cadastro({
 
   function selecionarCargo(cargo: string) {
     setCargoSelecionado(cargo);
-    onSelecionarCargoFiltro(cargo);
 
     const cargoEncontrado = cargos.find(
       (item) =>
