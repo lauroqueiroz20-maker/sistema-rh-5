@@ -3,7 +3,6 @@
   useState,
 } from "react";
 
-import cargos from "../data/cargos";
 import motivos from "../data/motivos";
 import { type Vaga } from "../data/vagas";
 
@@ -55,7 +54,6 @@ function TelaCadastro({
   vagas,
   modo,
   admissoesPendentes,
-  onAtualizarCargo,
   onAtualizarMotivo,
   onAtualizarEmergencia,
   onAlternarAdmissao,
@@ -132,11 +130,6 @@ function TelaCadastro({
       vagasOrdenadas[index].unidade
     );
   }
-
-  const cargosAtivos = useMemo(
-    () => cargos.filter((cargo) => cargo.ativo),
-    []
-  );
 
   const totalVagasExibidas = vagasFiltradas.reduce(
     (total, vaga) =>
@@ -259,48 +252,7 @@ function TelaCadastro({
                     </td>
 
                     <td className={destaqueEstavel}>
-                      {modo === "novo" && !concluida ? (
-                        <select
-                          className="select-motivo-tabela"
-                          value={vaga.cargo}
-                          onChange={(evento) => {
-                            const cargoSelecionado =
-                              cargosAtivos.find(
-                                (cargo) =>
-                                  cargo.cargo ===
-                                  evento.target.value
-                              );
-
-                            onAtualizarCargo(
-                              vaga.id,
-                              evento.target.value,
-                              cargoSelecionado?.setor ||
-                                vaga.setor
-                            );
-                          }}
-                        >
-                          {vaga.cargo &&
-                            !cargosAtivos.some(
-                              (cargo) =>
-                                cargo.cargo === vaga.cargo
-                            ) && (
-                              <option value={vaga.cargo}>
-                                {vaga.cargo}
-                              </option>
-                            )}
-
-                          {cargosAtivos.map((cargo) => (
-                            <option
-                              key={cargo.id}
-                              value={cargo.cargo}
-                            >
-                              {cargo.cargo}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        vaga.cargo
-                      )}
+                      {vaga.cargo}
                     </td>
 
                     <td className={destaqueEstavel}>
