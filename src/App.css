@@ -4261,7 +4261,7 @@ body {
 /* TOPO REORGANIZADO */
 .topo {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
   align-items: center !important;
   gap: 10px !important;
 }
