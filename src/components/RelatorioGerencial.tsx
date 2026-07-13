@@ -254,7 +254,10 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
           </span>
 
           <span className="rp-texto">
-            Total de vagas sob gestão.
+            As vagas não se referem exclusivamente às solicitações
+            do mês, representa a demanda total sob gestão do RH,
+            incluindo: novas requisições e saldos pendentes de
+            períodos anteriores.
           </span>
         </div>
 
@@ -268,7 +271,10 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
           </span>
 
           <span className="rp-texto">
-            Total de admissões realizadas no período.
+            Representa o total de admissões realizadas durante o
+            ciclo analisado, contemplando todas as vagas
+            efetivamente preenchidas pelo RH, independentemente da
+            data de abertura da requisição.
           </span>
         </div>
 
@@ -278,11 +284,14 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
           </span>
 
           <span className="rp-label">
-            VAGAS PENDENTES:
+            VAGAS:
           </span>
 
           <span className="rp-texto">
-            Saldo de vagas ainda em processo de seleção.
+            Representa vagas que permanecem em processo de
+            recrutamento e seleção ao final do ciclo, incluindo
+            novas requisições ainda não preenchidas e vagas
+            remanescentes de períodos anteriores.
           </span>
         </div>
         </div>

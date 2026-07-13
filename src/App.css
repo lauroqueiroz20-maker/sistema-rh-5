@@ -4286,8 +4286,8 @@ body {
 
 .a4-metricas div {
   display: grid;
-  grid-template-columns: 44px 170px minmax(0, 1fr);
-  min-height: 22px;
+  grid-template-columns: 44px 156px minmax(0, 1fr);
+  min-height: 42px;
   border-bottom: 1px solid #111827;
 }
 
@@ -4300,7 +4300,8 @@ body {
   align-items: center;
   justify-content: center;
   color: #0057b8;
-  font-size: 19px;
+  font-size: 22px;
+  font-weight: 900;
   line-height: 1;
 }
 
@@ -4311,17 +4312,21 @@ body {
   padding: 0 6px;
   background: #002b67;
   color: #ffffff;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 900;
+  line-height: 1.05;
   text-align: center;
 }
 
 .a4-metricas small {
   display: flex;
   align-items: center;
-  padding: 0 8px;
-  font-size: 9px;
-  line-height: 1.15;
+  justify-content: center;
+  padding: 4px 8px;
+  font-size: 8.2px;
+  font-weight: 700;
+  line-height: 1.16;
+  text-align: center;
 }
 
 .a4-indicadores {
@@ -4543,8 +4548,8 @@ body {
 
 .rp-metrica {
   display: grid;
-  grid-template-columns: 54px 190px minmax(0, 1fr);
-  min-height: 24px;
+  grid-template-columns: 54px 172px minmax(0, 1fr);
+  min-height: 46px;
   border-bottom: 1px solid #111827;
 }
 
@@ -4577,9 +4582,12 @@ body {
 .rp-texto {
   display: flex;
   align-items: center;
-  padding: 0 8px;
-  font-size: 10px;
-  line-height: 1.15;
+  justify-content: center;
+  padding: 4px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.16;
+  text-align: center;
 }
 
 .rp-painel {

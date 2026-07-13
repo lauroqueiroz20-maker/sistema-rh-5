@@ -224,20 +224,35 @@ function RelatorioA4({ vagas, ciclo }: Props) {
         <div className="a4-metricas">
           <div>
             <strong>{totais.vagas}</strong>
-            <span>DEMANDA ACUMULADA</span>
-            <small>Total de vagas sob gestão.</small>
+            <span>DEMANDA ACUMULADA:</span>
+            <small>
+              As vagas não se referem exclusivamente às solicitações
+              do mês, representa a demanda total sob gestão do RH,
+              incluindo: novas requisições e saldos pendentes de
+              períodos anteriores.
+            </small>
           </div>
 
           <div>
             <strong>{totais.admissoes}</strong>
             <span>CONTRATAÇÕES EFETIVADAS</span>
-            <small>Total de admissões realizadas.</small>
+            <small>
+              Representa o total de admissões realizadas durante o
+              ciclo analisado, contemplando todas as vagas
+              efetivamente preenchidas pelo RH, independentemente da
+              data de abertura da requisição.
+            </small>
           </div>
 
           <div>
             <strong>{totais.pendentes}</strong>
-            <span>VAGAS PENDENTES</span>
-            <small>Saldo de vagas em seleção.</small>
+            <span>VAGAS</span>
+            <small>
+              Representa vagas que permanecem em processo de
+              recrutamento e seleção ao final do ciclo, incluindo
+              novas requisições ainda não preenchidas e vagas
+              remanescentes de períodos anteriores.
+            </small>
           </div>
         </div>
 
