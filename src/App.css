@@ -4238,3 +4238,138 @@ body {
 .central .botoes-cadastro-grid .btn-excel:hover {
   background: #166534 !important;
 }
+
+/* CORRECAO FINAL IMPRESSAO RELATORIO */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 4mm;
+  }
+
+  html,
+  body,
+  #root {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  .relatorio-gerencial {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+  }
+
+  .relatorio-gerencial .relatorio-cabecalho {
+    min-height: 42px !important;
+    padding: 7px 10px !important;
+    margin: 0 0 4px !important;
+    border-radius: 0 !important;
+  }
+
+  .relatorio-gerencial .relatorio-titulo h2 {
+    margin: 0 0 3px !important;
+    font-size: 17pt !important;
+    line-height: 1 !important;
+  }
+
+  .relatorio-gerencial .relatorio-titulo p {
+    margin: 0 !important;
+    font-size: 8.5pt !important;
+    line-height: 1 !important;
+  }
+
+  .relatorio-gerencial .relatorio-indicadores {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 5px !important;
+    border: 1px solid #9fb4cf !important;
+    background: #eef2f7 !important;
+  }
+
+  .relatorio-gerencial .relatorio-indicador-linha {
+    display: grid !important;
+    grid-template-columns: 58px 220px minmax(0, 1fr) !important;
+    width: 100% !important;
+    min-height: 28px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #9fb4cf !important;
+    background: #eef2f7 !important;
+  }
+
+  .relatorio-gerencial .relatorio-indicador-linha:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .relatorio-gerencial .indicador-numero {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #ffffff !important;
+    color: #0057b8 !important;
+    font-size: 21pt !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+
+  .relatorio-gerencial .indicador-titulo {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 0 9px !important;
+    background: #0057b8 !important;
+    color: #ffffff !important;
+    font-size: 9pt !important;
+    font-weight: 900 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+  }
+
+  .relatorio-gerencial .indicador-texto {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 0 10px !important;
+    color: #000000 !important;
+    font-size: 8.8pt !important;
+    line-height: 1.1 !important;
+    text-align: left !important;
+  }
+
+  .relatorio-gerencial .relatorio-bloco-meio,
+  .relatorio-gerencial .relatorio-assinatura {
+    display: none !important;
+  }
+
+  .relatorio-gerencial .relatorio-tabela {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+
+  .relatorio-gerencial .relatorio-tabela th,
+  .relatorio-gerencial .relatorio-tabela td {
+    padding: 3px 4px !important;
+    border: 1px solid #9fb4cf !important;
+    color: #000000 !important;
+    font-size: 8.8pt !important;
+    line-height: 1.08 !important;
+  }
+
+  .relatorio-gerencial .relatorio-tabela th {
+    background: #0057b8 !important;
+    color: #ffffff !important;
+    font-size: 7.8pt !important;
+    font-weight: 900 !important;
+    white-space: nowrap !important;
+  }
+}
