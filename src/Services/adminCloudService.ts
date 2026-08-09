@@ -39,6 +39,10 @@ export type EstadoAdmin = {
 
 function chavePermitida(chave: string) {
   const normalizada = chave.toLowerCase();
+  const chavePrincipal =
+    normalizada === "rh-diniz-vagas-pdf-20260710-v4" ||
+    normalizada === "sistema-rh-admitidos" ||
+    normalizada === "rh-diniz-ciclo";
   const chaveDoSistema =
     normalizada.startsWith("sistema-rh-") ||
     normalizada.startsWith("rh-diniz-") ||
@@ -46,6 +50,7 @@ function chavePermitida(chave: string) {
     normalizada === "respostasgestores";
 
   return chaveDoSistema &&
+    !chavePrincipal &&
     !normalizada.includes("senha") &&
     !normalizada.includes("auth") &&
     !normalizada.includes("token");
@@ -108,7 +113,11 @@ export async function carregarEstadoAdmin():
       .eq("id", ESTADO_ID)
       .maybeSingle<AppStateLeitura>();
 
-  if (error || !data) {
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data) {
     return null;
   }
 

@@ -1464,3 +1464,4 @@ function DashboardRH({
 
 export default DashboardRH;
 
+import "leaflet/dist/leaflet.css";

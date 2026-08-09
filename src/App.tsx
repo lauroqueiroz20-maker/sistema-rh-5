@@ -1,5 +1,7 @@
 ﻿import { useEffect, useRef, useState } from "react";
 
+import { lazy, Suspense } from "react";
+
 import "./App.css";
 
 import Sidebar from "./components/Sidebar";
@@ -8,19 +10,11 @@ import Cards from "./components/Cards";
 import Cadastro from "./components/Cadastro";
 import TelaCadastro from "./components/TelaCadastro";
 
-import Admitidos, { type RegistroAdmitido } from "./components/Admitidos/Admitidos";
-import RelatorioGerencial from "./components/RelatorioGerencial";
-import RelatorioA4 from "./components/RelatorioA4";
-import RelatorioPaisagem from "./components/Admitidos/RelatorioPaisagem/RelatorioPaisagem";
+import type { RegistroAdmitido } from "./components/Admitidos/Admitidos";
 import vagasIniciais, { type Vaga } from "./data/vagas";
-import DashboardRH from "./components/DashboardRH/DashboardRH";
-import TelaGestores from "./components/Gestores/Gestores";
-import GestaoASO from "./components/ASO/GestaoASO";
-import AppGestor from "./apps/DinizRH/AppGestor";
 import AuthGate from "./apps/DinizRH/AuthGate";
 
 import { carregarCiclo, carregarVagas, salvarCiclo, salvarVagas } from "./Services/storageService";
-import { importarPlanilhaExcel } from "./Services/excelImportService";
 import {
   aplicarArmazenamentoLocal,
   carregarEstadoAdmin,
@@ -36,12 +30,29 @@ import {
 } from "./Services/recrutamentoMetricasService";
 import eventBus from "./Services/eventBus";
 
+const Admitidos = lazy(() => import("./components/Admitidos/Admitidos"));
+const RelatorioGerencial = lazy(() => import("./components/RelatorioGerencial"));
+const RelatorioA4 = lazy(() => import("./components/RelatorioA4"));
+const RelatorioPaisagem = lazy(() => import("./components/Admitidos/RelatorioPaisagem/RelatorioPaisagem"));
+const DashboardRH = lazy(() => import("./components/DashboardRH/DashboardRH"));
+const TelaGestores = lazy(() => import("./components/Gestores/Gestores"));
+const GestaoASO = lazy(() => import("./components/ASO/GestaoASO"));
+const AppGestor = lazy(() => import("./apps/DinizRH/AppGestor"));
+
 const CHAVE_ADMITIDOS = "sistema-rh-admitidos";
 const CHAVE_BACKUPS_CICLO = "sistema-rh-backups-ciclo";
 const CHAVE_MIGRACAO_DATA_CADASTRO = "sistema-rh-migracao-cadastro-03-07-2026";
 const CHAVE_MIGRACAO_DATA_ADMITIDOS = "sistema-rh-migracao-admitidos-03-07-2026-10-07-2026";
 const EH_LOCAL_ADMIN = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 const EH_LOCAL_PRINCIPAL = EH_LOCAL_ADMIN && window.location.port === "5173";
+
+function assinaturaEstado(
+  vagas: Vaga[],
+  admitidos: RegistroAdmitido[],
+  ciclo: { inicio: string; fim: string },
+) {
+  return JSON.stringify({ vagas, admitidos, ciclo });
+}
 
 function obterDataISOHoje() {
   const hoje = new Date();
@@ -461,38 +472,57 @@ function AppAdministrativo() {
   });
   const [salvandoNuvem, setSalvandoNuvem] = useState(false);
   const [impressaoPendente, setImpressaoPendente] = useState(false);
+  const [carregandoEstadoNuvem, setCarregandoEstadoNuvem] = useState(true);
+  const [erroEstadoNuvem, setErroEstadoNuvem] = useState("");
+  const [estadoNuvemDisponivel, setEstadoNuvemDisponivel] = useState(false);
+  const estadoNuvemCarregadoRef = useRef(false);
+  const assinaturaNuvemRef = useRef("");
   const temAtualizacaoPendente = admissoesPendentes.length > 0;
 
   useEffect(() => {
-    if (EH_LOCAL_ADMIN) {
-      return;
-    }
-
     let ativo = true;
 
     async function receberDadosDaNuvem() {
-      const estado = await carregarEstadoAdmin();
+      try {
+        const estado = await carregarEstadoAdmin();
 
-      if (!ativo || !estado) {
-        return;
-      }
+        if (!ativo) return;
+        if (!estado) throw new Error("Estado principal não localizado.");
 
-      setVagas(estado.vagas);
-      setAdmitidos(estado.admitidos);
-      setCiclo({
-        inicio: estado.ciclo.inicio || CICLO_PADRAO.inicio,
-        fim: obterDataISOHoje(),
-      });
+        const cicloNuvem = {
+          inicio: estado.ciclo.inicio || CICLO_PADRAO.inicio,
+          fim: estado.ciclo.fim || obterDataISOHoje(),
+        };
 
-      const chaveSincronizacao = "sistema-rh-sincronizacao-nuvem-aplicada";
-      const sincronizacaoJaAplicada =
-        sessionStorage.getItem(chaveSincronizacao) === estado.atualizadoEm;
+        assinaturaNuvemRef.current = assinaturaEstado(
+          estado.vagas,
+          estado.admitidos,
+          cicloNuvem,
+        );
+        estadoNuvemCarregadoRef.current = true;
+        setEstadoNuvemDisponivel(true);
+        setVagas(estado.vagas);
+        setAdmitidos(estado.admitidos);
+        setCiclo(cicloNuvem);
+        setErroEstadoNuvem("");
+        setCarregandoEstadoNuvem(false);
 
-      if (!sincronizacaoJaAplicada) {
-        sessionStorage.setItem(chaveSincronizacao, estado.atualizadoEm);
-        if (aplicarArmazenamentoLocal(estado.armazenamentoLocal)) {
-          window.location.reload();
+        const chaveSincronizacao = "sistema-rh-sincronizacao-nuvem-aplicada";
+        const sincronizacaoJaAplicada =
+          sessionStorage.getItem(chaveSincronizacao) === estado.atualizadoEm;
+
+        if (!sincronizacaoJaAplicada) {
+          sessionStorage.setItem(chaveSincronizacao, estado.atualizadoEm);
+          if (aplicarArmazenamentoLocal(estado.armazenamentoLocal)) {
+            window.location.reload();
+          }
         }
+      } catch (erro) {
+        if (!ativo) return;
+        setErroEstadoNuvem(
+          erro instanceof Error ? erro.message : "Falha ao carregar a nuvem.",
+        );
+        setCarregandoEstadoNuvem(false);
       }
     }
 
@@ -503,12 +533,36 @@ function AppAdministrativo() {
     };
 
     window.addEventListener("focus", atualizarAoRetornar);
+    const intervalo = window.setInterval(atualizarAoRetornar, 15000);
 
     return () => {
       ativo = false;
+      window.clearInterval(intervalo);
       window.removeEventListener("focus", atualizarAoRetornar);
     };
   }, []);
+
+  useEffect(() => {
+    if (!estadoNuvemCarregadoRef.current) return;
+
+    const assinaturaAtual = assinaturaEstado(vagas, admitidos, ciclo);
+    if (assinaturaAtual === assinaturaNuvemRef.current) return;
+
+    const temporizador = window.setTimeout(() => {
+      void salvarEstadoAdmin({ vagas, admitidos, ciclo })
+        .then(() => {
+          assinaturaNuvemRef.current = assinaturaAtual;
+          setErroEstadoNuvem("");
+        })
+        .catch((erro: unknown) => {
+          setErroEstadoNuvem(
+            erro instanceof Error ? erro.message : "Falha ao salvar na nuvem.",
+          );
+        });
+    }, 800);
+
+    return () => window.clearTimeout(temporizador);
+  }, [vagas, admitidos, ciclo]);
 
   const dadosCompletosParaCards = (() => {
     const mapaCompleto = new Map<number, Vaga>();
@@ -589,6 +643,7 @@ function AppAdministrativo() {
             ? Math.max(...idsExistentes) + 1
             : 1;
 
+        const { importarPlanilhaExcel } = await import("./Services/excelImportService");
         const resultado =
           await importarPlanilhaExcel(
             arquivo,
@@ -843,16 +898,17 @@ function AppAdministrativo() {
     mensagemSucesso: string,
     cicloAtualizado = ciclo,
   ) {
-    if (EH_LOCAL_ADMIN) {
-      return;
-    }
-
     try {
       await salvarEstadoAdmin({
         vagas: vagasAtualizadas,
         admitidos: admitidosAtualizados,
         ciclo: cicloAtualizado,
       });
+      assinaturaNuvemRef.current = assinaturaEstado(
+        vagasAtualizadas,
+        admitidosAtualizados,
+        cicloAtualizado,
+      );
       alert(mensagemSucesso);
     } catch (erro) {
       alert(
@@ -1149,10 +1205,31 @@ function AppAdministrativo() {
     localStorage.setItem(CHAVE_ADMITIDOS, JSON.stringify(nova));
   }
 
+  if (carregandoEstadoNuvem) {
+    return <div className="estado-nuvem">Carregando dados oficiais...</div>;
+  }
+
+  if (!estadoNuvemDisponivel) {
+    return (
+      <div className="estado-nuvem estado-nuvem-erro">
+        <strong>Não foi possível carregar os dados oficiais.</strong>
+        <span>{erroEstadoNuvem}</span>
+        <button type="button" onClick={() => window.location.reload()}>
+          Tentar novamente
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={modoTatyana ? "app app-tatyana" : "app"}>
       {!modoTatyana && <Sidebar />}
       <main className="principal">
+        {erroEstadoNuvem && (
+          <div className="aviso-sincronizacao">
+            Sincronização interrompida: {erroEstadoNuvem}
+          </div>
+        )}
         {!modoTatyana && (
           <Header
             paginaAtual={paginaAtual}
@@ -1164,6 +1241,7 @@ function AppAdministrativo() {
           />
         )}
 
+        <Suspense fallback={<div className="estado-nuvem">Carregando tela...</div>}>
         {paginaAtual === "cadastro" && (
           <>
             <Cards
@@ -1215,6 +1293,7 @@ function AppAdministrativo() {
         {paginaAtual === "gestores" && <TelaGestores />}
         {paginaAtual === "portalgestor" && <AppGestor />}
         {paginaAtual === "aso" && <GestaoASO admitidos={admitidos} />}
+        </Suspense>
       </main>
     </div>
   );
@@ -1232,7 +1311,7 @@ function App() {
   }, [gestor, cod]);
 
   if (gestor) {
-    return <AuthGate perfil="GESTOR" codigoGestor={cod}><AppGestor /></AuthGate>;
+    return <AuthGate perfil="GESTOR" codigoGestor={cod}><Suspense fallback={<div className="estado-nuvem">Carregando aplicativo...</div>}><AppGestor /></Suspense></AuthGate>;
   }
   return <AuthGate perfil="ADMIN"><AppAdministrativo /></AuthGate>;
 }
