@@ -153,7 +153,12 @@ function carregarUnidadesCadastro(): UnidadeCadastro[] {
           gestor.ativo !== false &&
           gestor.tipoContato === "GESTOR"
         ) {
-          mapa.set(codigo, { codigo, nome, colaboradores: 0 });
+          const unidadeOficial = mapa.get(codigo);
+          mapa.set(codigo, {
+            codigo,
+            nome: unidadeOficial?.nome || nome,
+            colaboradores: 0,
+          });
         }
       });
     }
