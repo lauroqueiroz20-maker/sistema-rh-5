@@ -308,14 +308,18 @@ function AppAdministrativo() {
   });
   const [salvandoNuvem, setSalvandoNuvem] = useState(false);
   const [impressaoPendente, setImpressaoPendente] = useState(false);
-  const [carregandoEstadoNuvem, setCarregandoEstadoNuvem] = useState(true);
+  const [carregandoEstadoNuvem, setCarregandoEstadoNuvem] = useState(!EH_LOCAL_ADMIN);
   const [erroEstadoNuvem, setErroEstadoNuvem] = useState("");
-  const [estadoNuvemDisponivel, setEstadoNuvemDisponivel] = useState(false);
+  const [estadoNuvemDisponivel, setEstadoNuvemDisponivel] = useState(EH_LOCAL_ADMIN);
   const estadoNuvemCarregadoRef = useRef(false);
   const assinaturaNuvemRef = useRef("");
   const temAtualizacaoPendente = admissoesPendentes.length > 0;
 
   useEffect(() => {
+    if (EH_LOCAL_ADMIN) {
+      return;
+    }
+
     let ativo = true;
 
     async function receberDadosDaNuvem() {
@@ -641,6 +645,11 @@ function AppAdministrativo() {
 
 
   async function publicarDadosNaNuvem() {
+    if (EH_LOCAL_ADMIN) {
+      alert("O sistema local está isolado e não publica dados na nuvem.");
+      return;
+    }
+
     const confirmar = window.confirm("Publicar os dados deste computador na nuvem agora?");
 
     if (!confirmar) {
@@ -688,6 +697,15 @@ function AppAdministrativo() {
   }
 
   async function salvarAlteracoes() {
+    if (EH_LOCAL_ADMIN) {
+      salvarVagas(vagas);
+      salvarCiclo(ciclo);
+      localStorage.setItem(CHAVE_ADMITIDOS, JSON.stringify(admitidos));
+      alert("Alterações salvas somente neste computador. O relatório será aberto para salvar em PDF.");
+      gerarPDF();
+      return;
+    }
+
     try {
       await salvarEstadoAdmin({
         vagas,
@@ -717,6 +735,14 @@ function AppAdministrativo() {
     mensagemSucesso: string,
     cicloAtualizado = ciclo,
   ) {
+    if (EH_LOCAL_ADMIN) {
+      salvarVagas(vagasAtualizadas);
+      salvarCiclo(cicloAtualizado);
+      localStorage.setItem(CHAVE_ADMITIDOS, JSON.stringify(admitidosAtualizados));
+      alert("Alteração salva somente neste computador.");
+      return;
+    }
+
     try {
       await salvarEstadoAdmin({
         vagas: vagasAtualizadas,
@@ -934,7 +960,11 @@ function AppAdministrativo() {
     setVagas(atualizadas); setAdmitidos(novaLista); salvarVagas(atualizadas);
     localStorage.setItem(CHAVE_ADMITIDOS, JSON.stringify(novaLista));
     setAdmissoesPendentes([]);
-    alert("Admissão registrada!");
+    void persistirEstadoNaNuvem(
+      atualizadas,
+      novaLista,
+      "Admissão registrada e sincronizada.",
+    );
   }
 
   function alterarRegistroAdmitido(i: number, d: Partial<RegistroAdmitido>) {
@@ -1054,7 +1084,7 @@ function AppAdministrativo() {
             paginaAtual={paginaAtual}
             setPaginaAtual={setPaginaAtual}
             onPublicarNuvem={publicarDadosNaNuvem}
-            mostrarNuvem={EH_LOCAL_ADMIN}
+            mostrarNuvem={false}
 
             salvandoNuvem={salvandoNuvem}
           />
