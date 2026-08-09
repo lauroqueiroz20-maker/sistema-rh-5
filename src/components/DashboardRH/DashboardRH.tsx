@@ -1331,7 +1331,7 @@ function DashboardRH({
               <div
                 className="turnover-premium-medidor"
                 style={{
-                  background: `conic-gradient(#f97316 0% ${Math.min(taxaTurnoverPremium * 5, 100)}%, #fed7aa ${Math.min(taxaTurnoverPremium * 5, 100)}% 100%)`,
+                  background: `conic-gradient(#dc2626 0% ${Math.min(taxaTurnoverPremium * 5, 100)}%, #fecaca ${Math.min(taxaTurnoverPremium * 5, 100)}% 100%)`,
                 }}
               >
                 <span>{taxaTurnoverPremium}%</span>
