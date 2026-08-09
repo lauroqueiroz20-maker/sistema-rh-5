@@ -700,7 +700,8 @@ function AppAdministrativo() {
         ciclo,
       );
       await salvarBackupCompletoAdmin();
-      alert("Alterações salvas e backup interno atualizado.");
+      alert("Alterações salvas. O relatório será aberto para salvar em PDF.");
+      gerarPDF();
     } catch (erro) {
       alert(
         erro instanceof Error
