@@ -18,16 +18,9 @@ import { carregarCiclo, carregarVagas, salvarCiclo, salvarVagas } from "./Servic
 import {
   aplicarArmazenamentoLocal,
   carregarEstadoAdmin,
+  salvarBackupCompletoAdmin,
   salvarEstadoAdmin,
 } from "./Services/adminCloudService";
-import {
-  carregarHistoricoRecrutamento,
-  carregarMetricasRecrutamento,
-  salvarHistoricoRecrutamento,
-  salvarMetricasRecrutamento,
-  type MetricasRecrutamento,
-  type RegistroSemanalRecrutamento,
-} from "./Services/recrutamentoMetricasService";
 import eventBus from "./Services/eventBus";
 
 const Admitidos = lazy(() => import("./components/Admitidos/Admitidos"));
@@ -40,7 +33,6 @@ const GestaoASO = lazy(() => import("./components/ASO/GestaoASO"));
 const AppGestor = lazy(() => import("./apps/DinizRH/AppGestor"));
 
 const CHAVE_ADMITIDOS = "sistema-rh-admitidos";
-const CHAVE_BACKUPS_CICLO = "sistema-rh-backups-ciclo";
 const CHAVE_MIGRACAO_DATA_CADASTRO = "sistema-rh-migracao-cadastro-03-07-2026";
 const CHAVE_MIGRACAO_DATA_ADMITIDOS = "sistema-rh-migracao-admitidos-03-07-2026-10-07-2026";
 const EH_LOCAL_ADMIN = ["localhost", "127.0.0.1"].includes(window.location.hostname);
@@ -254,162 +246,6 @@ function prepararDadosIniciais() {
   localStorage.setItem(chaveMigracao, "SIM");
 
   return { ...dados, vagasAbertas: vagasAtualizadas };
-}
-
-type BackupCiclo = {
-  id: string;
-  dataGeracao: string;
-  ciclo: {
-    inicio: string;
-    fim: string;
-  };
-  vagas: Vaga[];
-  admitidos: RegistroAdmitido[];
-  metricasRecrutamento: MetricasRecrutamento;
-  historicoRecrutamento: RegistroSemanalRecrutamento[];
-};
-
-function baixarBackupCiclo(backup: BackupCiclo) {
-  const conteudo = JSON.stringify(backup, null, 2);
-  const blob = new Blob([conteudo], {
-    type: "application/json;charset=utf-8",
-  });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${backup.id}.json`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
-
-function registrarBackupCiclo(backup: BackupCiclo) {
-  try {
-    const salvo = localStorage.getItem(CHAVE_BACKUPS_CICLO);
-    const lista: BackupCiclo[] = salvo ? JSON.parse(salvo) as BackupCiclo[] : [];
-    localStorage.setItem(
-      CHAVE_BACKUPS_CICLO,
-      JSON.stringify([backup, ...lista].slice(0, 12)),
-    );
-  } catch {
-    localStorage.setItem(CHAVE_BACKUPS_CICLO, JSON.stringify([backup]));
-  }
-
-  baixarBackupCiclo(backup);
-}
-
-function normalizarTextoChave(valor: string) {
-  return String(valor || "")
-    .trim()
-    .toUpperCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function vagaEhEstavel(vaga: Pick<Vaga, "tipo" | "motivo">) {
-  const tipo = normalizarTextoChave(vaga.tipo);
-  const motivo = normalizarTextoChave(vaga.motivo);
-
-  return tipo === "ESTAVEL" || motivo === "ESTAVEL";
-}
-
-function converterAdmitidoEmDemanda(registro: RegistroAdmitido): Vaga {
-  return {
-    ...registro,
-    quantidade: quantidadeAdmitida(registro),
-    admissoes: 0,
-    ativo: true,
-  };
-}
-
-function calcularDemandasAbertas(
-  vagasAtuais: Vaga[],
-  admitidosAtuais: RegistroAdmitido[],
-): Vaga[] {
-  const demandas = new Map<string, Vaga>();
-  const estaveis = new Map<string, Vaga>();
-  const idsAdmitidos = new Set(admitidosAtuais.map((registro) => registro.id));
-
-  const registrarDemanda = (vaga: Vaga) => {
-    if (vagaEhEstavel(vaga)) {
-      estaveis.set(normalizarTextoChave(vaga.unidade), {
-        ...vaga,
-        quantidade: 0,
-        admissoes: 0,
-        ativo: true,
-      });
-      return;
-    }
-
-    const quantidade = Math.max(0, Number(vaga.quantidade || 0));
-    const admissoes = Math.min(
-      quantidade,
-      Math.max(0, Number(vaga.admissoes || 0)),
-    );
-    const pendentes = Math.max(0, quantidade - admissoes);
-
-    if (pendentes <= 0) {
-      return;
-    }
-
-    const demanda = {
-      ...vaga,
-      quantidade: pendentes,
-      admissoes: 0,
-      ativo: true,
-    };
-
-    demandas.set(chaveVagaOperacional(demanda), demanda);
-  };
-
-  vagasAtuais
-    .filter((vaga) => !idsAdmitidos.has(vaga.id) || vagaEhEstavel(vaga))
-    .forEach(registrarDemanda);
-  admitidosAtuais.forEach((registro) => {
-    registrarDemanda(converterAdmitidoEmDemanda(registro));
-  });
-
-  return [
-    ...Array.from(demandas.values()),
-    ...Array.from(estaveis.values()),
-  ];
-}
-
-function zerarValoresMetricasRecrutamento() {
-  const metricasAtuais = carregarMetricasRecrutamento();
-  const zerarGrupo = <T extends { valor: number }>(grupo: T[]) =>
-    grupo.map((item) => ({ ...item, valor: 0 }));
-
-  salvarMetricasRecrutamento({
-    funil: zerarGrupo(metricasAtuais.funil),
-    fontes: zerarGrupo(metricasAtuais.fontes),
-    recusaGestao: zerarGrupo(metricasAtuais.recusaGestao),
-    desistencias: zerarGrupo(metricasAtuais.desistencias),
-    divisaoDesistencia: zerarGrupo(metricasAtuais.divisaoDesistencia),
-  });
-  salvarHistoricoRecrutamento([]);
-}
-function chaveVagaOperacional(vaga: Pick<Vaga, "codigo" | "unidade" | "tipo" | "cargo" | "setor" | "turno" | "motivo" | "emergencia" | "data">) {
-  return [
-    vaga.codigo,
-    vaga.unidade,
-    vaga.tipo,
-    vaga.cargo,
-    vaga.setor,
-    vaga.turno,
-    vaga.motivo,
-    vaga.emergencia,
-    vaga.data,
-  ]
-    .map((valor) =>
-      String(valor || "")
-        .trim()
-        .toUpperCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, ""),
-    )
-    .join("|");
 }
 
 function AppAdministrativo() {
@@ -851,45 +687,27 @@ function AppAdministrativo() {
     setImpressaoPendente(true);
   }
 
-  function zerarCiclo() {
-    const confirmar = window.confirm(
-      "Zerar ciclo agora? O sistema vai baixar um backup, remover os admitidos e manter somente as demandas em aberto.",
-    );
-
-    if (!confirmar) {
-      return;
+  async function salvarAlteracoes() {
+    try {
+      await salvarEstadoAdmin({
+        vagas,
+        admitidos,
+        ciclo,
+      });
+      assinaturaNuvemRef.current = assinaturaEstado(
+        vagas,
+        admitidos,
+        ciclo,
+      );
+      await salvarBackupCompletoAdmin();
+      alert("Alterações salvas e backup interno atualizado.");
+    } catch (erro) {
+      alert(
+        erro instanceof Error
+          ? `Erro ao salvar backup: ${erro.message}`
+          : "Erro ao salvar alterações e backup.",
+      );
     }
-
-    const agora = new Date();
-    const hoje = obterDataISOHoje();
-    const idBackup = `backup-ciclo-rh-${hoje}-${String(agora.getHours()).padStart(2, "0")}${String(agora.getMinutes()).padStart(2, "0")}${String(agora.getSeconds()).padStart(2, "0")}`;
-    const backup: BackupCiclo = {
-      id: idBackup,
-      dataGeracao: agora.toISOString(),
-      ciclo,
-      vagas,
-      admitidos,
-      metricasRecrutamento: carregarMetricasRecrutamento(),
-      historicoRecrutamento: carregarHistoricoRecrutamento(),
-    };
-    const demandasAbertas = calcularDemandasAbertas(vagas, admitidos);
-    const novoCiclo = {
-      inicio: hoje,
-      fim: hoje,
-    };
-
-    registrarBackupCiclo(backup);
-    setVagas(demandasAbertas);
-    setAdmitidos([]);
-    setAdmissoesPendentes([]);
-    setCodigoFiltro("0");
-    setModoTela("novo");
-    setCiclo(novoCiclo);
-    salvarVagas(demandasAbertas);
-    salvarCiclo(novoCiclo);
-    localStorage.setItem(CHAVE_ADMITIDOS, JSON.stringify([]));
-    zerarValoresMetricasRecrutamento();
-    alert("Ciclo zerado. Backup salvo na pasta de downloads.");
   }
 
   async function persistirEstadoNaNuvem(
@@ -1254,7 +1072,7 @@ function AppAdministrativo() {
                 vagas={vagas} onAdicionarVagas={adicionarVagas} onSelecionarCodigo={setCodigoFiltro}
                 onAlterarModo={alterarModo} onConfirmarAtualizacao={confirmarAtualizacaoCadastro}
                 temAtualizacaoPendente={temAtualizacaoPendente} onGerarPDF={gerarPDF}
-                onZerarCiclo={zerarCiclo}
+                onSalvarAlteracoes={salvarAlteracoes}
               />
               <TelaCadastro
                 vagas={vagasFiltradas} modo={modoTela} admissoesPendentes={admissoesPendentes}

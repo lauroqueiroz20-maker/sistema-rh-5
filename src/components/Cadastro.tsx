@@ -42,7 +42,7 @@ interface CadastroProps {
   onConfirmarAtualizacao: () => void;
   temAtualizacaoPendente: boolean;
   onGerarPDF: () => void;
-  onZerarCiclo: () => void;
+  onSalvarAlteracoes: () => void;
 }
 
 type SolicitacaoGestor = {
@@ -385,7 +385,7 @@ function Cadastro({
   onConfirmarAtualizacao,
   temAtualizacaoPendente,
   onGerarPDF,
-  onZerarCiclo,
+  onSalvarAlteracoes,
 }: CadastroProps) {
   const [unidadesCadastro, setUnidadesCadastro] = useState(
     carregarUnidadesCadastro
@@ -1365,9 +1365,9 @@ function Cadastro({
         <button
           type="button"
           className="btn-cadastro btn-fim-ciclo"
-          onClick={onZerarCiclo}
+          onClick={onSalvarAlteracoes}
         >
-          Zerar ciclo
+          Salvar alterações
         </button>
 
         <button
