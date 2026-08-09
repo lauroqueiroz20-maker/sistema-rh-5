@@ -352,6 +352,7 @@ function DashboardRH({
     resumoDashboardAberto,
     setResumoDashboardAberto,
   ] = useState<TipoResumoDashboard | null>(null);
+  const [cardTurnoverAberto, setCardTurnoverAberto] = useState<string | null>(null);
 
   const resumoPorUnidade = useMemo(() => {
     const agrupar = (
@@ -612,8 +613,9 @@ function DashboardRH({
       jovemAprendiz: cards.totalAprendiz,
       adm: cards.totalADM,
       inventario: cards.totalInventario,
-      colaboradores:
+      colaboradores: Math.round(
         painel.colaboradores || COLABORADORES,
+      ),
       unidadesMonitoradas: unidadesDashboard.length,
       estrutura: estruturaConsolidada.estrutura,
       alertas: estruturaConsolidada.alertas,
@@ -768,10 +770,115 @@ function DashboardRH({
     1,
     ...funilRecrutamento.map((item) => Number(item.valor || 0)),
   );
-  const fontesRecrutamento = metricasRecrutamento.fontes.map((item, indice) => ({
-    ...item,
-    cor: coresFontes[indice] || "#f97316",
-  }));
+  const percentualMediaDemitidos = Math.min(
+    100,
+    Math.max(
+      0,
+      Number(
+        metricasRecrutamento.fontes.find(
+          (item) => normalizarTexto(item.nome).includes("MEDIA DEMITIDOS"),
+        )?.valor ?? 95,
+      ),
+    ),
+  );
+  const mediaDemitidos = Math.round(
+    unidadeSelecionada.vagas * (percentualMediaDemitidos / 100),
+  );
+  const baseColaboradores = Math.max(unidadeSelecionada.colaboradores, 1);
+  const taxaTurnoverPremium = Number(
+    (
+      ((unidadeSelecionada.admitidos + mediaDemitidos) / 2 / baseColaboradores) *
+      100
+    ).toFixed(1),
+  );
+  const nivelTurnover = taxaTurnoverPremium >= 10
+    ? "Atenção"
+    : taxaTurnoverPremium >= 5
+      ? "Monitorar"
+      : "Controlado";
+  const taxaCoberturaTurnover = unidadeSelecionada.vagas > 0
+    ? Math.round((unidadeSelecionada.admitidos / unidadeSelecionada.vagas) * 100)
+    : 0;
+  const taxaPendenciaTurnover = unidadeSelecionada.vagas > 0
+    ? Math.round((unidadeSelecionada.pendentes / unidadeSelecionada.vagas) * 100)
+    : 0;
+  const colaboradoresPorVaga = unidadeSelecionada.pendentes > 0
+    ? Math.max(1, Math.round(unidadeSelecionada.colaboradores / unidadeSelecionada.pendentes))
+    : unidadeSelecionada.colaboradores;
+  const cardsTurnover = [
+    {
+      id: "quadro",
+      classe: "quadro",
+      nome: "Quadro monitorado",
+      valor: unidadeSelecionada.colaboradores,
+      resumo: "colaboradores",
+      explicacao: "Quantidade de colaboradores considerada no cálculo da unidade selecionada.",
+    },
+    {
+      id: "demanda",
+      classe: "demanda",
+      nome: "Demanda Acumulada",
+      valor: unidadeSelecionada.vagas,
+      resumo: "total solicitado",
+      explicacao: "Total de vagas solicitadas durante o ciclo para a unidade selecionada.",
+    },
+    {
+      id: "entradas",
+      classe: "entradas",
+      nome: "Contratações Efetivadas",
+      valor: unidadeSelecionada.admitidos,
+      resumo: "total contratado",
+      explicacao: "Total de candidatos admitidos e efetivamente contratados na unidade selecionada.",
+    },
+    {
+      id: "pendentes",
+      classe: "pendentes",
+      nome: "Vagas Pendentes",
+      valor: unidadeSelecionada.pendentes,
+      resumo: "aguardando conclusão",
+      explicacao: "Vagas que continuam abertas porque o processo de contratação ainda não foi concluído.",
+    },
+    {
+      id: "pressao-contratacao",
+      classe: "admissoes-quadro",
+      nome: "Pressão de Contratação",
+      valor: unidadeSelecionada.pendentes > 0 ? `1 : ${colaboradoresPorVaga}` : "Sem vagas",
+      resumo: "vaga por colaboradores",
+      explicacao: unidadeSelecionada.pendentes > 0
+        ? `Existe uma vaga pendente para cada ${colaboradoresPorVaga} colaboradores da unidade.`
+        : "A unidade não possui vagas pendentes neste ciclo.",
+    },
+    {
+      id: "media-demitidos",
+      classe: "media-demitidos",
+      nome: "Média Demitidos",
+      valor: mediaDemitidos,
+      resumo: "estimativa de reposições",
+      explicacao: `Valor estimado: ${percentualMediaDemitidos}% das solicitações são consideradas reposições por demissões.`,
+    },
+    {
+      id: "cobertura",
+      classe: "cobertura",
+      nome: "Índice de Cobertura",
+      valor: `${taxaCoberturaTurnover}%`,
+      resumo: "demanda preenchida",
+      explicacao: "Mostra quanto da demanda já foi atendida: contratações efetivadas divididas pela demanda acumulada.",
+    },
+    {
+      id: "indice-pendencia",
+      classe: "pressao-pendencias",
+      nome: "Índice de Pendência",
+      valor: `${taxaPendenciaTurnover}%`,
+      resumo: "demanda ainda aberta",
+      explicacao: "Mostra quanto da demanda continua aberta: vagas pendentes divididas pela demanda acumulada.",
+    },
+  ];
+  const fontesRecrutamento = metricasRecrutamento.fontes
+    .filter((item) => !normalizarTexto(item.nome).includes("MEDIA DEMITIDOS"))
+    .map((item, indice) => ({
+      ...item,
+      cor: coresFontes[indice] || "#f97316",
+    }));
   const totalRecusasGestao = metricasRecrutamento.recusaGestao.reduce(
     (total, item) => total + Number(item.valor || 0),
     0
@@ -1204,13 +1311,65 @@ function DashboardRH({
         cards={cards}
         vagas={vagasCadastro}
         unidades={unidadesDashboard}
+        funil={funilRecrutamento}
+        conversaoFunil={conversaoFunilRecrutamento}
       />
 
       <section className="grid-dashboard">
-        <div className="painel painel-largo">
-          <h2>Central de Inteligência RH</h2>
+        <div className="painel painel-largo painel-turnover-premium">
+          <div className="turnover-premium-cabecalho">
+            <div>
+              <h2>Turnover Estimado - {unidadeSelecionada.nome}</h2>
+            </div>
+            <strong className={`turnover-premium-status status-${nivelTurnover.toLowerCase()}`}>
+              {nivelTurnover}
+            </strong>
+          </div>
 
-          <div className="painel-recrutamento-premium">
+          <div className="turnover-premium-grid">
+            <article className="turnover-premium-indice">
+              <div
+                className="turnover-premium-medidor"
+                style={{
+                  background: `conic-gradient(#f97316 0% ${Math.min(taxaTurnoverPremium * 5, 100)}%, #fed7aa ${Math.min(taxaTurnoverPremium * 5, 100)}% 100%)`,
+                }}
+              >
+                <span>{taxaTurnoverPremium}%</span>
+                <small>estimado</small>
+              </div>
+              <div>
+                <b>Rotatividade da unidade</b>
+                <p>Leitura simples baseada nas admissões, reposições e quadro atual.</p>
+              </div>
+            </article>
+
+            {cardsTurnover.map((card) => (
+              <article
+                className={`turnover-premium-kpi ${card.classe} ${cardTurnoverAberto === card.id ? "explicacao-aberta" : ""}`}
+                key={card.id}
+                role="button"
+                tabIndex={0}
+                aria-expanded={cardTurnoverAberto === card.id}
+                onClick={() => setCardTurnoverAberto((atual) => atual === card.id ? null : card.id)}
+                onKeyDown={(evento) => {
+                  if (evento.key === "Enter" || evento.key === " ") {
+                    evento.preventDefault();
+                    setCardTurnoverAberto((atual) => atual === card.id ? null : card.id);
+                  }
+                }}
+              >
+                <span>{card.nome}</span>
+                <strong>{card.valor}</strong>
+                <small>{card.resumo}</small>
+                <div className="turnover-card-explicacao">
+                  {card.valor} - {card.explicacao}
+                </div>
+              </article>
+            ))}
+
+          </div>
+
+          <div className="painel-recrutamento-premium painel-recrutamento-legado">
             <article className="recrutamento-card funil-ponta-a-ponta">
               <header>
                 <h3>Funil de Recrutamento</h3>

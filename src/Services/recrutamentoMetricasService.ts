@@ -53,6 +53,7 @@ export const metricasRecrutamentoPadrao: MetricasRecrutamento = {
     { nome: "Indicacao", valor: 46 },
     { nome: "Banco de curriculos", valor: 34 },
     { nome: "Agencia", valor: 10 },
+    { nome: "Média Demitidos", valor: 95 },
   ],
   recusaGestao: motivosPerdaPadrao.map((item) => ({ ...item })),
   desistencias: motivosPerdaPadrao.map((item) => ({ ...item })),

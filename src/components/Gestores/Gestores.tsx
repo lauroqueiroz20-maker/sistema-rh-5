@@ -510,12 +510,16 @@ function TelaGestores({ modo = "completo" }: TelaGestoresProps) {
     indice: number,
     valor: string
   ) {
-    const valorNumerico = Math.max(
+    const valorNumericoBase = Math.max(
       0,
       Number(valor || 0)
     );
 
     setMetricasRecrutamento((metricasAtuais) => {
+      const itemAtual = metricasAtuais[chave][indice];
+      const valorNumerico = itemAtual?.nome === "Média Demitidos"
+        ? Math.min(100, valorNumericoBase)
+        : valorNumericoBase;
       const metricasAtualizadas: MetricasRecrutamento = {
         ...metricasAtuais,
         [chave]: metricasAtuais[chave].map(
@@ -1534,6 +1538,7 @@ function TelaGestores({ modo = "completo" }: TelaGestoresProps) {
                           <input
                             type="number"
                             min="0"
+                            max={item.nome === "Média Demitidos" ? 100 : undefined}
                             value={item.valor}
                             onChange={(evento) =>
                               atualizarMetricaRecrutamento(

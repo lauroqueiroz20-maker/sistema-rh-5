@@ -155,7 +155,7 @@ export default function MapaInfo({ unidade }: Props) {
 
         <div>
           <span>Base interna</span>
-          <strong>{totalColaboradores}</strong>
+          <strong>{Math.round(totalColaboradores)}</strong>
         </div>
 
         <div>

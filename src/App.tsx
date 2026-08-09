@@ -308,18 +308,34 @@ function AppAdministrativo() {
   });
   const [salvandoNuvem, setSalvandoNuvem] = useState(false);
   const [impressaoPendente, setImpressaoPendente] = useState(false);
-  const [carregandoEstadoNuvem, setCarregandoEstadoNuvem] = useState(!EH_LOCAL_ADMIN);
+  const [carregandoEstadoNuvem, setCarregandoEstadoNuvem] = useState(true);
   const [erroEstadoNuvem, setErroEstadoNuvem] = useState("");
-  const [estadoNuvemDisponivel, setEstadoNuvemDisponivel] = useState(EH_LOCAL_ADMIN);
+  const [estadoNuvemDisponivel, setEstadoNuvemDisponivel] = useState(false);
   const estadoNuvemCarregadoRef = useRef(false);
   const assinaturaNuvemRef = useRef("");
+  const assinaturaLocalRef = useRef(
+    assinaturaEstado(vagas, admitidos, ciclo),
+  );
+  const alteracoesLocaisPendentesRef = useRef(false);
   const temAtualizacaoPendente = admissoesPendentes.length > 0;
 
   useEffect(() => {
-    if (EH_LOCAL_ADMIN) {
-      return;
-    }
+    assinaturaLocalRef.current = assinaturaEstado(
+      vagas,
+      admitidos,
+      ciclo,
+    );
 
+    if (
+      EH_LOCAL_ADMIN &&
+      estadoNuvemCarregadoRef.current &&
+      assinaturaLocalRef.current !== assinaturaNuvemRef.current
+    ) {
+      alteracoesLocaisPendentesRef.current = true;
+    }
+  }, [vagas, admitidos, ciclo]);
+
+  useEffect(() => {
     let ativo = true;
 
     async function receberDadosDaNuvem() {
@@ -334,11 +350,22 @@ function AppAdministrativo() {
           fim: estado.ciclo.fim || obterDataISOHoje(),
         };
 
-        assinaturaNuvemRef.current = assinaturaEstado(
+        if (
+          EH_LOCAL_ADMIN &&
+          estadoNuvemCarregadoRef.current &&
+          alteracoesLocaisPendentesRef.current
+        ) {
+          return;
+        }
+
+        const assinaturaRecebida = assinaturaEstado(
           estado.vagas,
           estado.admitidos,
           cicloNuvem,
         );
+        assinaturaNuvemRef.current = assinaturaRecebida;
+        assinaturaLocalRef.current = assinaturaRecebida;
+        alteracoesLocaisPendentesRef.current = false;
         estadoNuvemCarregadoRef.current = true;
         setEstadoNuvemDisponivel(true);
         setVagas(estado.vagas);
@@ -383,6 +410,7 @@ function AppAdministrativo() {
   }, []);
 
   useEffect(() => {
+    if (EH_LOCAL_ADMIN) return;
     if (!estadoNuvemCarregadoRef.current) return;
 
     const assinaturaAtual = assinaturaEstado(vagas, admitidos, ciclo);
@@ -645,11 +673,6 @@ function AppAdministrativo() {
 
 
   async function publicarDadosNaNuvem() {
-    if (EH_LOCAL_ADMIN) {
-      alert("O sistema local está isolado e não publica dados na nuvem.");
-      return;
-    }
-
     const confirmar = window.confirm("Publicar os dados deste computador na nuvem agora?");
 
     if (!confirmar) {
@@ -663,6 +686,13 @@ function AppAdministrativo() {
         admitidos,
         ciclo,
       });
+      assinaturaNuvemRef.current = assinaturaEstado(
+        vagas,
+        admitidos,
+        ciclo,
+      );
+      assinaturaLocalRef.current = assinaturaNuvemRef.current;
+      alteracoesLocaisPendentesRef.current = false;
       alert("Nuvem atualizada com os dados deste computador.");
     } catch (erro) {
       alert(
@@ -1084,7 +1114,7 @@ function AppAdministrativo() {
             paginaAtual={paginaAtual}
             setPaginaAtual={setPaginaAtual}
             onPublicarNuvem={publicarDadosNaNuvem}
-            mostrarNuvem={false}
+            mostrarNuvem={EH_LOCAL_ADMIN}
 
             salvandoNuvem={salvandoNuvem}
           />
