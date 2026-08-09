@@ -15,7 +15,12 @@ export type Gestor = {
   cargo: string;
   tipoContato: TipoContato;
   telefone: string;
+  telefoneAlternativo?: string;
   email: string;
+  colaboradores?: number;
+  colaboradoresOperacionais?: number;
+  colaboradoresGestores?: number;
+  colaboradoresDiretoria?: number;
   ativo: boolean;
   recebeDisparoDiario: boolean;
   criadoEm: string;
@@ -224,7 +229,7 @@ const gestoresIniciais: Gestor[] = [
   {
     id: "gestor-014",
     codigo: "014",
-    unidade: "TESTE",
+    unidade: "LAZULI",
     nome: "GESTOR TESTE",
     cargo: "PERFIL DE TESTE",
     tipoContato: "GESTOR",

@@ -69,7 +69,7 @@ function ListaGestores({ gestores }: ListaGestoresProps) {
 
     const link =
       `${window.location.origin}` +
-      `/?formulario=gestor&codigo=${gestor.codigo}`;
+      `/?gestor=${gestor.codigo}&app=diniz-rh`;
 
     try {
       await navigator.clipboard.writeText(link);

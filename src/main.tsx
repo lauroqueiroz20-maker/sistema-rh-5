@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+﻿import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import "leaflet/dist/leaflet.css";
@@ -7,9 +7,36 @@ import "./index.css";
 import App from "./App.tsx";
 import ErrorBoundary from "./ErrorBoundary";
 
-async function limparAplicativoAntigo() {
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+  }>;
+};
+
+type WindowComInstalador = Window & {
+  __dinizInstallPrompt?: InstallPromptEvent;
+};
+
+window.addEventListener("beforeinstallprompt", (evento) => {
+  evento.preventDefault();
+  (window as WindowComInstalador).__dinizInstallPrompt =
+    evento as InstallPromptEvent;
+});
+
+async function prepararAplicativo() {
   if (!("serviceWorker" in navigator)) {
     return;
+  }
+
+  if ("caches" in window) {
+    const chaves = await caches.keys();
+
+    await Promise.all(
+      chaves.map((chave) =>
+        caches.delete(chave)
+      )
+    );
   }
 
   const registros =
@@ -20,21 +47,9 @@ async function limparAplicativoAntigo() {
       registro.unregister()
     )
   );
-
-  if (!("caches" in window)) {
-    return;
-  }
-
-  const chaves = await caches.keys();
-
-  await Promise.all(
-    chaves.map((chave) =>
-      caches.delete(chave)
-    )
-  );
 }
 
-limparAplicativoAntigo().finally(() => {
+prepararAplicativo().finally(() => {
   createRoot(
     document.getElementById("root")!
   ).render(
@@ -45,3 +60,4 @@ limparAplicativoAntigo().finally(() => {
     </StrictMode>
   );
 });
+

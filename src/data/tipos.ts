@@ -1,5 +1,4 @@
-const tipos = [
-  "OPERAC.",
+const tipos = [  "OPERAC.",
   "J. APRENDIZ",
   "INVENTÁRIO",
   "PCD",

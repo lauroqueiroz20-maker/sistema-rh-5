@@ -65,6 +65,13 @@ type TurnoverResumo = {
   cobertura: number;
 };
 
+type IndicadorTurnover = {
+  nome: string;
+  valor: number;
+  cor: string;
+  titulo?: string;
+};
+
 type GraficosDashboardProps = {
   cards: DashboardCards;
   vagas: Vaga[];
@@ -101,8 +108,22 @@ function nomeCurto(valor: string, limite = 18) {
     : valor;
 }
 
+function corTipoGrafico(nome: string, indice: number) {
+  const normalizado = normalizarTexto(nome);
+
+  if (normalizado.includes("EXPERIENCIA")) {
+    return "#f97316";
+  }
+
+  return CORES_TIPO[indice % CORES_TIPO.length];
+}
+
 function labelTipo(valor: string) {
   const normalizado = normalizarTexto(valor);
+
+  if (normalizado.includes("EXPERIENCIA")) {
+    return "EM EXPERIÊNCIA";
+  }
 
   if (normalizado.includes("APRENDIZ")) {
     return "APRENDIZ";
@@ -129,12 +150,13 @@ function somarPorCampo(
     Vaga,
     "tipo" | "setor" | "cargo" | "motivo"
   >,
-  limite?: number
+  limite?: number,
+  base: "pendentes" | "demanda" = "pendentes"
 ) {
   const mapa = new Map<string, number>();
 
   vagas.forEach((vaga) => {
-    if (!vaga.ativo) {
+    if (vaga.ativo === false) {
       return;
     }
 
@@ -144,18 +166,21 @@ function somarPorCampo(
 
     const nomeAgrupado =
       campo === "tipo" ? labelTipo(chave) : chave;
-    const pendentes = Math.max(
-      numero(vaga.quantidade) - numero(vaga.admissoes),
-      0
-    );
+    const valor =
+      base === "demanda"
+        ? Math.max(numero(vaga.quantidade), 0)
+        : Math.max(
+            numero(vaga.quantidade) - numero(vaga.admissoes),
+            0
+          );
 
-    if (pendentes <= 0) {
+    if (valor <= 0) {
       return;
     }
 
     mapa.set(
       nomeAgrupado,
-      numero(mapa.get(nomeAgrupado)) + pendentes
+      numero(mapa.get(nomeAgrupado)) + valor
     );
   });
 
@@ -181,7 +206,7 @@ function somarPendenciasPorCargo(vagas: Vaga[]): ItemCargo[] {
   >();
 
   vagas.forEach((vaga) => {
-    if (!vaga.ativo) {
+    if (vaga.ativo === false) {
       return;
     }
 
@@ -296,8 +321,7 @@ function RankingCircular({ dados }: { dados: ItemRotacao[] }) {
               <em
                 style={{
                   width: `${percentual}%`,
-                  background:
-                    CORES_TIPO[index % CORES_TIPO.length],
+                  background: corTipoGrafico(item.nome, index),
                 }}
               />
             </i>
@@ -314,7 +338,7 @@ function PainelTurnover({
 }: {
   dados: TurnoverResumo;
 }) {
-  const indicadores = [
+  const indicadores: IndicadorTurnover[] = [
     {
       nome: "Vagas",
       valor: dados.vagas,
@@ -328,12 +352,13 @@ function PainelTurnover({
     {
       nome: "Pendentes",
       valor: dados.pendentes,
-      cor: "#7c3aed",
+      cor: "#f97316",
     },
     {
       nome: "Média demitidos",
       valor: dados.demitidosMedios,
       cor: "#dc2626",
+      titulo: `Valor estimado: ${dados.cobertura}% das solicitações são consideradas reposições por demissões.`,
     },
   ];
 
@@ -345,53 +370,109 @@ function PainelTurnover({
     )
   );
 
-  const percentualVagas =
-    (dados.vagas / totalIndicadores) * 100;
+  const fatias = indicadores.reduce<
+    Array<
+      IndicadorTurnover & {
+        percentual: number;
+        inicio: number;
+        fim: number;
+      }
+    >
+  >((lista, item) => {
+    const inicio =
+      lista.length > 0
+        ? lista[lista.length - 1].fim
+        : 0;
+    const percentual =
+      (item.valor / totalIndicadores) * 100;
 
-  const percentualAdmitidos =
-    (dados.admitidos / totalIndicadores) * 100;
+    return [
+      ...lista,
+      {
+        ...item,
+        percentual,
+        inicio,
+        fim: inicio + percentual,
+      },
+    ];
+  }, []);
 
-  const percentualPendentes =
-    (dados.pendentes / totalIndicadores) * 100;
+  const fundoGrafico = `conic-gradient(${fatias
+    .map(
+      (item) =>
+        `${item.cor} ${item.inicio}% ${item.fim}%`
+    )
+    .join(", ")})`;
 
-  const limiteVagas =
-    percentualVagas;
+  const preenchimento =
+    dados.vagas > 0
+      ? Math.min(
+          100,
+          Math.round(
+            (dados.admitidos / dados.vagas) * 100
+          )
+        )
+      : 0;
 
-  const limiteAdmitidos =
-    limiteVagas + percentualAdmitidos;
-
-  const limitePendentes =
-    limiteAdmitidos + percentualPendentes;
-
-  const fundoGrafico = `conic-gradient(
-    #2563eb 0% ${limiteVagas}%,
-    #16a34a ${limiteVagas}% ${limiteAdmitidos}%,
-    #7c3aed ${limiteAdmitidos}% ${limitePendentes}%,
-    #dc2626 ${limitePendentes}% 100%
-  )`;
+  const pendencia =
+    dados.vagas > 0
+      ? Math.min(
+          100,
+          Math.round(
+            (dados.pendentes / dados.vagas) * 100
+          )
+        )
+      : 0;
 
   return (
     <div className="turnover-moderno">
       <div className="turnover-grafico-bloco">
         <div
           className="turnover-medidor"
-          style={{
-            background: fundoGrafico,
-          }}
+          style={{ background: fundoGrafico }}
         >
           <div className="turnover-centro">
             <span>{dados.taxa}%</span>
           </div>
         </div>
 
-        <small className="turnover-legenda">
-          Turnover Estimado
-        </small>
+        <div className="turnover-indices">
+          {fatias.map((item) => (
+            <div
+              key={item.nome}
+              title={`${item.nome}: ${Math.round(item.percentual)}%`}
+            >
+              <i style={{ background: item.cor }} />
+              <span>{item.nome}</span>
+              <strong>{Math.round(item.percentual)}%</strong>
+            </div>
+          ))}
+          <div>
+            <span>Preenchimento</span>
+            <strong>{preenchimento}%</strong>
+            <i>
+              <b style={{ width: `${preenchimento}%` }} />
+            </i>
+          </div>
+
+          <div>
+            <span>Pendência</span>
+            <strong>{pendencia}%</strong>
+            <i>
+              <b style={{ width: `${pendencia}%` }} />
+            </i>
+          </div>
+        </div>
       </div>
 
       <div className="turnover-metricas">
         {indicadores.map((item) => (
-          <div key={item.nome}>
+          <div
+            key={item.nome}
+            className={item.titulo ? "tem-tooltip" : ""}
+            data-tooltip={item.titulo}
+            title={item.titulo}
+          >
             <i style={{ background: item.cor }} />
             <span>{item.nome}</span>
             <strong>{item.valor}</strong>
@@ -422,14 +503,19 @@ function GraficosDashboard({
       {
         nome: "Pendentes",
         valor: numero(cards.totalPendentes),
-        fill: "#7c3aed",
+        fill: "#f97316",
       },
     ];
 
     const porTipo = somarPorCampo(vagas, "tipo");
     const porTipoEspecial = obterDadosTipo(cards);
     const porCargo = somarPendenciasPorCargo(vagas);
-    const porMotivo = somarPorCampo(vagas, "motivo", 5);
+    const porMotivo = somarPorCampo(
+      vagas,
+      "motivo",
+      5,
+      "demanda"
+    );
     const coberturaAdmissao = 95;
     const demitidosMedios = Math.round(
       (numero(cards.totalVagas) * coberturaAdmissao) / 100
@@ -497,18 +583,34 @@ function GraficosDashboard({
       },
     ];
 
+    const totalVagas = numero(cards.totalVagas);
+    const totalAdmitidos = numero(cards.totalAdmitidos);
+    const totalPendentes = numero(cards.totalPendentes);
+    const preenchimento =
+      totalVagas > 0
+        ? Math.round((totalAdmitidos / totalVagas) * 100)
+        : 0;
+
     const resumo = [
       {
-        nome: "Colaboradores",
+        nome: "Funcionários",
         valor: numero(cards.totalColaboradores),
+        detalhe: "total geral",
+      },
+      {
+        nome: "Cobertura",
+        valor: `${preenchimento}%`,
+        detalhe: "vagas preenchidas",
       },
       {
         nome: "Unidades estáveis",
         valor: numero(cards.totalUnidadesEstaveis),
+        detalhe: "sem pendências",
       },
       {
         nome: "Vagas ativas",
-        valor: numero(cards.totalPendentes),
+        valor: totalPendentes,
+        detalhe: "em andamento",
       },
     ];
 
@@ -637,9 +739,7 @@ function GraficosDashboard({
                     {dados.porTipo.map((item, index) => (
                       <Cell
                         key={item.nome}
-                        fill={
-                          CORES_TIPO[index % CORES_TIPO.length]
-                        }
+                        fill={corTipoGrafico(item.nome, index)}
                       />
                     ))}
                   </Pie>
@@ -652,10 +752,7 @@ function GraficosDashboard({
                   <span key={item.nome}>
                     <i
                       style={{
-                        background:
-                          CORES_TIPO[
-                            index % CORES_TIPO.length
-                          ],
+                        background: corTipoGrafico(item.nome, index),
                       }}
                     />
                     {item.nome}
@@ -712,10 +809,7 @@ function GraficosDashboard({
                               (item.valor / maiorValor) *
                                 100
                             )}%`,
-                            background:
-                              CORES_TIPO[
-                                index % CORES_TIPO.length
-                              ],
+                            background: corTipoGrafico(item.nome, index),
                           }}
                         />
                       </div>
@@ -764,7 +858,7 @@ function GraficosDashboard({
 
       <div className="grafico-card borda-azul">
         <header>
-          <h2>Turnover</h2>
+          <h2>Turnover Estimado</h2>
         </header>
 
         <div className="grafico-corpo grafico-turnover">
@@ -848,7 +942,7 @@ function GraficosDashboard({
 
       <div className="grafico-card borda-roxa">
         <header>
-          <h2>Principais Motivos</h2>
+          <h2>Principais Causas</h2>
         </header>
 
         <div className="grafico-corpo">
@@ -893,12 +987,12 @@ function GraficosDashboard({
                 <Line
                   type="monotone"
                   dataKey="valor"
-                  stroke="#7c3aed"
+                  stroke="#f97316"
                   strokeWidth={3}
                   dot={{
                     r: 5,
                     fill: "#ffffff",
-                    stroke: "#7c3aed",
+                    stroke: "#f97316",
                     strokeWidth: 3,
                   }}
                   activeDot={{
@@ -923,7 +1017,10 @@ function GraficosDashboard({
         <div className="grafico-corpo resumo-executivo-grafico">
           {dados.resumo.map((item) => (
             <div key={normalizarTexto(item.nome)}>
-              <span>{item.nome}</span>
+              <span>
+                {item.nome}
+                <small>{item.detalhe}</small>
+              </span>
               <strong>{item.valor}</strong>
             </div>
           ))}

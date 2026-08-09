@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -18,6 +19,7 @@ import {
 
 import {
   buscarGestor,
+  listarGestores,
   obterCodigoGestorPeloLink,
 } from "./services";
 
@@ -37,16 +39,29 @@ import type {
 const CODIGO_GESTOR_PADRAO =
   "001";
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+  }>;
+};
+
+type WindowComInstalador = Window & {
+  __dinizInstallPrompt?: BeforeInstallPromptEvent;
+};
+
 function AppGestor() {
   const codigoGestor =
     useMemo(() => {
       const codigoRecebido =
         obterCodigoGestorPeloLink();
 
-      return (
+      return String(
         codigoRecebido ||
-        CODIGO_GESTOR_PADRAO
-      );
+          CODIGO_GESTOR_PADRAO
+      )
+        .trim()
+        .padStart(3, "0");
     }, []);
 
   const gestor = useMemo(
@@ -56,6 +71,30 @@ function AppGestor() {
       ),
     [codigoGestor]
   );
+
+  const gestoresUnidades =
+    useMemo(
+      () =>
+        listarGestores().filter(
+          (item) =>
+            item.codigo !== "000" &&
+            item.codigo !== "014"
+        ),
+      []
+    );
+
+  const isTatyana =
+    String(codigoGestor).padStart(3, "0") === "000";
+
+  const [
+    unidadeTatyana,
+    setUnidadeTatyana,
+  ] = useState("");
+
+  const unidadeOperacional =
+    isTatyana
+      ? unidadeTatyana
+      : gestor?.unidade || "";
 
   const [
     telaAtual,
@@ -85,6 +124,47 @@ function AppGestor() {
     );
   });
 
+  const [
+    instalador,
+    setInstalador,
+  ] = useState<BeforeInstallPromptEvent | null>(
+    null
+  );
+
+  useEffect(() => {
+    const janela =
+      window as WindowComInstalador;
+
+    if (janela.__dinizInstallPrompt) {
+      setInstalador(
+        janela.__dinizInstallPrompt
+      );
+    }
+
+    function capturarInstalacao(
+      evento: Event
+    ) {
+      evento.preventDefault();
+      janela.__dinizInstallPrompt =
+        evento as BeforeInstallPromptEvent;
+      setInstalador(
+        evento as BeforeInstallPromptEvent
+      );
+    }
+
+    window.addEventListener(
+      "beforeinstallprompt",
+      capturarInstalacao
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        capturarInstalacao
+      );
+    };
+  }, []);
+
   const saudacao =
     obterSaudacao();
 
@@ -97,15 +177,29 @@ function AppGestor() {
       return;
     }
 
+    if (!unidadeOperacional) {
+      alert(
+        "Selecione a unidade antes de continuar."
+      );
+      return;
+    }
+
     setHistorico(
       carregarSolicitacoesPorGestor(
         gestor.codigo,
-        gestor.unidade
+        unidadeOperacional
       )
     );
   }
 
   function abrirNovaSolicitacao() {
+    if (!unidadeOperacional) {
+      alert(
+        "Selecione a unidade antes de fazer a solicitação."
+      );
+      return;
+    }
+
     setTelaAtual(
       "SOLICITACAO"
     );
@@ -138,6 +232,13 @@ function AppGestor() {
       return;
     }
 
+    if (!unidadeOperacional) {
+      alert(
+        "Selecione a unidade antes de enviar."
+      );
+      return;
+    }
+
     const novoProtocolo =
       gerarProtocolo();
 
@@ -151,7 +252,7 @@ function AppGestor() {
       gestor:
         gestor.nome,
       unidade:
-        gestor.unidade,
+        unidadeOperacional,
       itens,
       totalVagas,
       dataResposta:
@@ -171,7 +272,7 @@ function AppGestor() {
       setHistorico(
         carregarSolicitacoesPorGestor(
           gestor.codigo,
-          gestor.unidade
+          unidadeOperacional
         )
       );
 
@@ -199,6 +300,13 @@ function AppGestor() {
       return;
     }
 
+    if (!unidadeOperacional) {
+      alert(
+        "Selecione a unidade antes de responder."
+      );
+      return;
+    }
+
     try {
       await registrarSemSolicitacao({
         id: gerarId(),
@@ -207,7 +315,7 @@ function AppGestor() {
         gestor:
           gestor.nome,
         unidade:
-          gestor.unidade,
+          unidadeOperacional,
         dataResposta:
           new Date().toISOString(),
         status:
@@ -227,6 +335,53 @@ function AppGestor() {
         "Não foi possível registrar a resposta. Verifique a conexão e tente novamente."
       );
     }
+  }
+
+  async function instalarAplicativo() {
+    const eventoInstalacao =
+      instalador ||
+      (window as WindowComInstalador).__dinizInstallPrompt ||
+      null;
+
+    const emAplicativo =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as Navigator & { standalone?: boolean }).standalone ===
+        true;
+
+    if (emAplicativo) {
+      alert("Este acesso ja esta aberto como aplicativo.");
+      return;
+    }
+
+    if (!eventoInstalacao) {
+      const ehAndroid =
+        /Android/i.test(window.navigator.userAgent);
+      const ehChrome =
+        /Chrome/i.test(window.navigator.userAgent) &&
+        !/SamsungBrowser|Edg|OPR/i.test(window.navigator.userAgent);
+
+      if (ehAndroid && !ehChrome) {
+        const destino =
+          `${window.location.host}${window.location.pathname}${window.location.search}`;
+        const fallback =
+          encodeURIComponent(window.location.href);
+
+        window.location.href =
+          `intent://${destino}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
+        return;
+      }
+
+      alert(
+        "No Chrome, toque nos tres pontos e escolha Instalar app ou Adicionar a tela inicial."
+      );
+      return;
+    }
+
+    await eventoInstalacao.prompt();
+    await eventoInstalacao.userChoice;
+    (window as WindowComInstalador).__dinizInstallPrompt =
+      undefined;
+    setInstalador(null);
   }
 
   if (!gestor) {
@@ -309,29 +464,91 @@ function AppGestor() {
         <div className="diniz-rh-container">
           {telaAtual ===
             "HOME" && (
-            <HomeGestor
-              saudacao={
-                saudacao
-              }
-              dataHoje={
-                dataHoje
-              }
-              gestor={{
-                nome:
-                  gestor.nome,
-                unidade:
-                  gestor.unidade,
-              }}
-              onNovaSolicitacao={
-                abrirNovaSolicitacao
-              }
-              onSemSolicitacao={
-                responderSemSolicitacao
-              }
-              onHistorico={
-                abrirHistorico
-              }
-            />
+            <>
+              {isTatyana && (
+                <section className="diniz-rh-card diniz-rh-card-unidade">
+                  <h2>Selecionar unidade</h2>
+
+                  <p>
+                    Escolha a unidade para registrar a solicitação.
+                  </p>
+
+                  <select
+                    value={unidadeTatyana}
+                    onChange={(evento) =>
+                      setUnidadeTatyana(
+                        evento.target.value
+                      )
+                    }
+                  >
+                    <option value="">
+                      Selecione uma unidade
+                    </option>
+
+                    {gestoresUnidades.map(
+                      (item) => (
+                        <option
+                          key={item.codigo}
+                          value={item.unidade}
+                        >
+                          {item.codigo} - {item.unidade}
+                        </option>
+                      )
+                    )}
+                  </select>
+
+                  <div className="diniz-rh-unidades-grade">
+                    {gestoresUnidades.map((item) => (
+                      <button
+                        key={item.codigo}
+                        type="button"
+                        className={
+                          unidadeTatyana === item.unidade
+                            ? "diniz-rh-unidade-opcao ativa"
+                            : "diniz-rh-unidade-opcao"
+                        }
+                        onClick={() =>
+                          setUnidadeTatyana(
+                            item.unidade
+                          )
+                        }
+                      >
+                        <span>{item.codigo}</span>
+                        <strong>{item.unidade}</strong>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              <HomeGestor
+                saudacao={
+                  saudacao
+                }
+                dataHoje={
+                  dataHoje
+                }
+                gestor={{
+                  nome:
+                    gestor.nome,
+                  unidade:
+                    unidadeOperacional ||
+                    "SELECIONE A UNIDADE",
+                }}
+                onNovaSolicitacao={
+                  abrirNovaSolicitacao
+                }
+                onSemSolicitacao={
+                  responderSemSolicitacao
+                }
+                onHistorico={
+                  abrirHistorico
+                }
+                onInstalar={
+                  instalarAplicativo
+                }
+              />
+            </>
           )}
 
           {telaAtual ===

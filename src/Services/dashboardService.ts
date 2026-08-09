@@ -1,7 +1,5 @@
-import type { Vaga } from "../data/vagas";
-import vagasIniciais from "../data/vagas";
+﻿import type { Vaga } from "../data/vagas";
 import unidadesDetalhes from "../data/unidadesDetalhes";
-import { carregarVagas } from "./storageService";
 
 type DetalheUnidade = {
   colaboradores?: unknown;
@@ -82,61 +80,60 @@ function filtrarPorUnidade(
 }
 
 function calcularSolicitacoes(
-  vagas: Vaga[]
+  vagas: Vaga[],
+  admitidos: Vaga[] = []
 ) {
-  return vagas.reduce(
+  const demandaAtiva = vagas.reduce(
+    (total, vaga) => {
+      if (vaga.ativo === false) {
+        return total;
+      }
+
+      return (
+        total +
+        Math.max(
+          0,
+          numero(vaga.quantidade)
+        )
+      );
+    },
+    0
+  );
+
+  const demandaAdmitida = admitidos.reduce(
     (total, vaga) =>
       total +
       Math.max(
-        0,
-        numero(vaga.quantidade)
+        numero(vaga.quantidade),
+        numero(vaga.admissoes),
+        0
       ),
     0
   );
+
+  return demandaAtiva + demandaAdmitida;
 }
 
 function calcularAdmissoes(
   vagas: Vaga[]
 ) {
   return vagas.reduce(
-    (total, vaga) =>
-      total +
-      Math.max(
-        0,
-        Math.min(
-          numero(vaga.admissoes),
-          Math.max(
-            0,
-            numero(vaga.quantidade)
-          )
-        )
-      ),
-    0
-  );
-}
-
-function calcularPendencias(
-  vagas: Vaga[]
-) {
-  return vagas.reduce(
     (total, vaga) => {
-      const quantidade =
-        Math.max(
-          0,
-          numero(vaga.quantidade)
-        );
-
-      const admissoes =
-        Math.max(
-          0,
-          numero(vaga.admissoes)
-        );
+      if (vaga.ativo === false) {
+        return total;
+      }
 
       return (
         total +
         Math.max(
           0,
-          quantidade - admissoes
+          Math.min(
+            numero(vaga.admissoes),
+            Math.max(
+              0,
+              numero(vaga.quantidade)
+            )
+          )
         )
       );
     },
@@ -144,40 +141,75 @@ function calcularPendencias(
   );
 }
 
+function calcularPendencias(
+  vagas: Vaga[],
+  admitidos: Vaga[] = []
+) {
+  const demanda = calcularSolicitacoes(
+    vagas,
+    admitidos
+  );
+
+  const admissoes = calcularAdmissoesOficiais(
+    admitidos
+  );
+
+  return Math.max(
+    demanda - admissoes,
+    0
+  );
+}
+
+function calcularAdmissoesOficiais(
+  admitidos: Vaga[]
+) {
+  return admitidos.reduce(
+    (total, vaga) =>
+      total +
+      Math.max(
+        numero(vaga.admissoes),
+        numero(vaga.quantidade),
+        0
+      ),
+    0
+  );
+}
+
+function tipoCombina(
+  tipoVaga: string,
+  tipoProcurado: string
+) {
+  const vaga = normalizarTexto(tipoVaga);
+  const procurado = normalizarTexto(tipoProcurado);
+
+  if (procurado === "J APRENDIZ") {
+    return vaga.includes("APRENDIZ");
+  }
+
+  if (procurado.includes("INVENTARIO")) {
+    return vaga.includes("INVENTARIO");
+  }
+
+  return vaga === procurado;
+}
+
 function calcularPorTipo(
   vagas: Vaga[],
   tipoProcurado: string
 ) {
-  const tipoNormalizado =
-    normalizarTexto(
-      tipoProcurado
-    );
-
   return vagas.reduce(
     (total, vaga) => {
-      const tipoVaga =
-        normalizarTexto(
-          vaga.tipo
-        );
-
-      if (
-        tipoVaga !==
-        tipoNormalizado
-      ) {
+      if (!tipoCombina(String(vaga.tipo || ""), tipoProcurado)) {
         return total;
       }
 
-      const quantidade =
-        Math.max(
-          numero(vaga.admissoes),
-          numero(vaga.quantidade),
-          0
-        );
-
-      return (
-        total +
-        quantidade
+      const quantidade = Math.max(
+        numero(vaga.admissoes),
+        numero(vaga.quantidade),
+        0
       );
+
+      return total + quantidade;
     },
     0
   );
@@ -228,58 +260,41 @@ function somarColaboradores(
 function calcularUnidadesEstaveis(
   vagas: Vaga[]
 ) {
-  const unidades =
-    Array.from(
-      new Set(
-        vagas
-          .map((vaga) =>
-            normalizarUnidade(
-              vaga.unidade
-            )
-          )
-          .filter(Boolean)
+  return new Set(
+    vagas
+      .filter(
+        (vaga) =>
+          vaga.ativo !== false &&
+          normalizarTexto(vaga.tipo) === "ESTAVEL"
       )
-    );
-
-  return unidades.reduce(
-    (total, unidade) => {
-      const vagasDaUnidade =
-        filtrarPorUnidade(
-          vagas,
-          unidade
-        );
-
-      const pendentes =
-        calcularPendencias(
-          vagasDaUnidade
-        );
-
-      return pendentes === 0
-        ? total + 1
-        : total;
-    },
-    0
-  );
+      .map((vaga) => normalizarUnidade(vaga.unidade))
+      .filter(Boolean)
+  ).size;
 }
 
 export function getDashboardCards(
-  vagasBase?: Vaga[],
+  vagasBase: Vaga[] = [],
   indicadoresBase?: Vaga[]
 ) {
-  const vagas =
-    vagasBase ||
-    carregarVagas(
-      vagasIniciais
-    );
+  const vagas = vagasBase;
+  const admitidos = indicadoresBase || [];
 
   const totalAdmitidos =
-    calcularAdmissoes(vagas);
+    indicadoresBase
+      ? calcularAdmissoesOficiais(admitidos)
+      : calcularAdmissoes(vagas);
 
   const totalPendentes =
-    calcularPendencias(vagas);
+    calcularPendencias(
+      vagas,
+      admitidos
+    );
 
   const totalVagas =
-    calcularSolicitacoes(vagas);
+    calcularSolicitacoes(
+      vagas,
+      admitidos
+    );
 
   const totalUnidadesEstaveis =
     calcularUnidadesEstaveis(
@@ -350,17 +365,23 @@ export function getPainelExecutivo(
 
   const solicitacoes =
     calcularSolicitacoes(
-      vagasFiltradas
+      vagasFiltradas,
+      indicadoresFiltrados
     );
 
   const admissoes =
-    calcularAdmissoes(
-      vagasFiltradas
-    );
+    indicadoresBase
+      ? calcularAdmissoesOficiais(
+          indicadoresFiltrados
+        )
+      : calcularAdmissoes(
+          vagasFiltradas
+        );
 
   const pendencias =
     calcularPendencias(
-      vagasFiltradas
+      vagasFiltradas,
+      indicadoresFiltrados
     );
 
   const colaboradores =
@@ -406,3 +427,4 @@ export function getPainelExecutivo(
     inventario,
   };
 }
+

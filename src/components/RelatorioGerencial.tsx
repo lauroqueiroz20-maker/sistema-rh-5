@@ -245,55 +245,93 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
       <div className="rp-topo">
         <div className="rp-resumo">
           <div className="rp-metrica">
-          <span className="rp-numero">
-            {demandaAcumulada}
-          </span>
+            <span className="rp-numero">
+              {demandaAcumulada}
+            </span>
 
-          <span className="rp-label">
-            DEMANDA ACUMULADA:
-          </span>
+            <span
+              className="rp-label"
+              style={{
+                display: "block",
+                textAlign: "center",
+                fontSize: "15px",
+                fontWeight: 800,
+                lineHeight: 1.15,
+                padding: "8px 6px",
+              }}
+            >
+              DEMANDA
+              <br />
+              ACUMULADA
+            </span>
 
-          <span className="rp-texto">
-            As vagas não se referem exclusivamente às solicitações
-            do mês, representa a demanda total sob gestão do RH,
-            incluindo: novas requisições e saldos pendentes de
-            períodos anteriores.
-          </span>
-        </div>
-
-          <div className="rp-metrica">
-          <span className="rp-numero">
-            {contratacoes}
-          </span>
-
-          <span className="rp-label">
-            CONTRATAÇÕES EFETIVADAS:
-          </span>
-
-          <span className="rp-texto">
-            Representa o total de admissões realizadas durante o
-            ciclo analisado, contemplando todas as vagas
-            efetivamente preenchidas pelo RH, independentemente da
-            data de abertura da requisição.
-          </span>
-        </div>
+            <span className="rp-texto">
+              As vagas não se referem exclusivamente às solicitações
+              do mês, representa a demanda total sob gestão do RH,
+              incluindo: novas requisições e saldos pendentes de
+              períodos anteriores.
+            </span>
+          </div>
 
           <div className="rp-metrica">
-          <span className="rp-numero">
-            {pendentes}
-          </span>
+            <span className="rp-numero">
+              {contratacoes}
+            </span>
 
-          <span className="rp-label">
-            VAGAS:
-          </span>
+            <span
+              className="rp-label"
+              style={{
+                display: "block",
+                textAlign: "center",
+                fontSize: "15px",
+                fontWeight: 900,
+                lineHeight: 1.15,
+                padding: "8px 6px",
+                background: "#1f8f4e",
+                color: "#ffffff",
+              }}
+            >
+              CONTRATAÇÕES
+              <br />
+              EFETIVAS
+            </span>
 
-          <span className="rp-texto">
-            Representa vagas que permanecem em processo de
-            recrutamento e seleção ao final do ciclo, incluindo
-            novas requisições ainda não preenchidas e vagas
-            remanescentes de períodos anteriores.
-          </span>
-        </div>
+            <span className="rp-texto">
+              Representa o total de admissões realizadas durante o
+              ciclo analisado, contemplando todas as vagas
+              efetivamente preenchidas pelo RH, independentemente da
+              data de abertura da requisição.
+            </span>
+          </div>
+
+          <div className="rp-metrica">
+            <span className="rp-numero">
+              {pendentes}
+            </span>
+
+            <span
+              className="rp-label"
+              style={{
+                display: "block",
+                textAlign: "center",
+                fontSize: "15px",
+                fontWeight: 800,
+                lineHeight: 1.15,
+                padding: "8px 6px",
+              }}
+            >
+              VAGAS
+              <br />
+              PENDENTES
+            </span>
+
+            <span className="rp-texto">
+              Representa vagas que permanecem em processo de
+              recrutamento e seleção ao final do ciclo, incluindo
+              novas requisições ainda não preenchidas e vagas
+              remanescentes de períodos anteriores.
+            </span>
+          </div>
         </div>
 
         <div className="rp-painel">
@@ -346,23 +384,116 @@ function RelatorioGerencial({ vagas = [], ciclo }: Props) {
       <div className="rp-destaques">
         <h3>DESTAQUES</h3>
 
-        <p>
-          As maiores demandas concentram-se nas unidades de{" "}
-          <strong>{juntarNomes(destaques.unidades)}</strong>.
-        </p>
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            tableLayout: "fixed",
+          }}
+        >
+          <thead>
+            <tr>
+              <th
+                style={{
+                  width: "44%",
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  background: "#0d4f91",
+                  color: "#ffffff",
+                  fontWeight: 800,
+                  border: "1px solid #d6dce5",
+                }}
+              >
+                INDICADOR
+              </th>
 
-        <p>
-          As funções com maior necessidade de reposição são{" "}
-          <strong>{juntarNomes(destaques.cargos)}</strong>.
-        </p>
+              <th
+                style={{
+                  width: "56%",
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  background: "#0d4f91",
+                  color: "#ffffff",
+                  fontWeight: 800,
+                  border: "1px solid #d6dce5",
+                }}
+              >
+                RESULTADO
+              </th>
+            </tr>
+          </thead>
 
-        <p>
-          As unidades{" "}
-          <strong>
-            {juntarNomes(destaques.unidadesEstaveis)}
-          </strong>{" "}
-          encontram-se estáveis, sem pendências de contratação.
-        </p>
+          <tbody>
+            <tr>
+              <td
+                style={{
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  border: "1px solid #d6dce5",
+                }}
+              >
+                As maiores demandas concentram-se nas unidades de
+              </td>
+
+              <td
+                style={{
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  border: "1px solid #d6dce5",
+                }}
+              >
+                <strong>{juntarNomes(destaques.unidades)}</strong>
+              </td>
+            </tr>
+
+            <tr>
+              <td
+                style={{
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  border: "1px solid #d6dce5",
+                }}
+              >
+                As funções com maior necessidade de reposição são
+              </td>
+
+              <td
+                style={{
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  border: "1px solid #d6dce5",
+                }}
+              >
+                <strong>{juntarNomes(destaques.cargos)}</strong>
+              </td>
+            </tr>
+
+            <tr>
+              <td
+                style={{
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  border: "1px solid #d6dce5",
+                }}
+              >
+                As unidades encontram-se estáveis, sem pendências de
+                contratação
+              </td>
+
+              <td
+                style={{
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  border: "1px solid #d6dce5",
+                }}
+              >
+                <strong>
+                  {juntarNomes(destaques.unidadesEstaveis)}
+                </strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <table className="rp-tabela">

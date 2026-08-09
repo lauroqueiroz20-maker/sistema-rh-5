@@ -25,3 +25,6 @@ src_corrigido.zip
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+public/consulta-backup-105.html

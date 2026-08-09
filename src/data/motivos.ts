@@ -1,4 +1,5 @@
 const motivos = [
+  "EM EXPERIÊNCIA",
   "A. QUADRO",
   "AFAST.",
   "CONT. FIN.",

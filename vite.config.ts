@@ -278,4 +278,14 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   },
+
+  // ✅ REGRA ADICIONADA PARA RESOLVER O ERRO DO BUILD
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === "GETTER_SETTER") return;
+        warn(warning);
+      }
+    }
+  }
 });

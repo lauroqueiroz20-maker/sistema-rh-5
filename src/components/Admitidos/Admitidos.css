@@ -1,22 +1,37 @@
-.pagina-admitidos {
+﻿.pagina-admitidos {
   margin: 18px 24px 28px;
-  background: #ffffff;
-  border: 1px solid #dbe3ee;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  overflow: hidden;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 140px);
+  border: 1px solid #cfe0f5;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.10);
+  overflow: visible;
   text-align: center;
 }
 
 .cabecalho-admitidos {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 18px 22px;
-  background: #004aad;
-  border-bottom: 1px solid #003b8a;
+  padding: 22px 24px;
+  background:
+    radial-gradient(circle at 14% 20%, rgba(255, 255, 255, 0.18), transparent 30%),
+    linear-gradient(135deg, #003f8f 0%, #0057b8 58%, #0f74d1 100%);
+  border-bottom: 1px solid rgba(0, 59, 138, 0.35);
   color: #ffffff;
+}
+
+.cabecalho-admitidos::after {
+  content: "";
+  position: absolute;
+  right: 118px;
+  bottom: -44px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 28px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
 }
 
 .cabecalho-admitidos > div:first-child {
@@ -27,9 +42,10 @@
 .cabecalho-admitidos h2 {
   margin: 0;
   color: #ffffff;
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 950;
   text-transform: uppercase;
+  letter-spacing: 0.2px;
 }
 
 .cabecalho-admitidos p {
@@ -39,19 +55,30 @@
 }
 
 .total-admitidos {
+  border: 0;
   display: grid;
-  min-width: 82px;
-  padding: 8px 14px;
-  border-radius: 6px;
-  background: #16a34a;
+  gap: 4px;
+  min-width: 96px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 12px;
+  background: rgba(22, 163, 74, 0.92);
   color: #ffffff;
   text-align: center;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow:
+    0 12px 24px rgba(20, 83, 45, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.total-admitidos:hover {
+  transform: translateY(-2px);
 }
 
 .total-admitidos span {
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 900;
   line-height: 1;
   text-transform: uppercase;
 }
@@ -59,16 +86,203 @@
 .total-admitidos strong {
   color: #ffffff;
   font-size: 26px;
-  font-weight: 900;
+  font-weight: 950;
   line-height: 1.1;
+}
+
+.total-admitidos-flutuante {
+  position: sticky;
+  top: 82px;
+  z-index: 20;
+  width: 150px;
+  margin: 12px 24px -54px auto;
+  background: linear-gradient(135deg, #16a34a, #08723a);
+}
+
+.modal-admitidos-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.modal-admitidos {
+  width: min(460px, 92vw);
+  max-height: min(560px, 86vh);
+  overflow: hidden;
+  border: 1px solid #cfe0f5;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 26px 80px rgba(15, 23, 42, 0.30);
+}
+
+.modal-admitidos-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 86% 30%, rgba(255,255,255,.18), transparent 34%),
+    linear-gradient(135deg, #003f8f 0%, #0057b8 58%, #0f74d1 100%);
+}
+
+.modal-admitidos-cabecalho span {
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.modal-admitidos-cabecalho h3 {
+  margin: 4px 0 0;
+  font-size: 20px;
+}
+
+.modal-admitidos-cabecalho button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  color: #003f8f;
+  background: #ffffff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-admitidos-lista {
+  display: grid;
+  gap: 8px;
+  max-height: 370px;
+  overflow: auto;
+  padding: 16px;
+}
+
+.modal-admitidos-lista div,
+.modal-admitidos-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-admitidos-lista div {
+  padding: 12px 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background: #f8fbff;
+}
+
+.modal-admitidos-lista span,
+.modal-admitidos-total span {
+  color: #003f8f;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.modal-admitidos-lista strong {
+  color: #16a34a;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.modal-admitidos-lista p {
+  margin: 0;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.modal-admitidos-total {
+  padding: 14px 18px;
+  border-top: 1px solid #dbeafe;
+  background: #eef6ff;
+}
+
+.modal-admitidos-total strong {
+  color: #003f8f;
+  font-size: 26px;
+  font-weight: 950;
+}
+
+.painel-premium-admitidos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px 22px;
+  background: #eef6ff;
+  border-bottom: 1px solid #dbe7f5;
+}
+
+.painel-premium-admitidos article {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 7px;
+  min-height: 96px;
+  padding: 16px;
+  border: 1px solid #dbe7f5;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.07);
+}
+
+.painel-premium-admitidos article::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: #0057b8;
+}
+
+.painel-premium-admitidos article:nth-child(1)::before {
+  background: #16a34a;
+}
+
+.painel-premium-admitidos article:nth-child(2)::before {
+  background: #2563eb;
+}
+
+.painel-premium-admitidos article:nth-child(3)::before {
+  background: #f97316;
+}
+
+.painel-premium-admitidos article:nth-child(4)::before {
+  background: #7c3aed;
+}
+
+.painel-premium-admitidos span {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.painel-premium-admitidos strong {
+  color: #003b7a;
+  font-size: 28px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.painel-premium-admitidos small {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
 }
 
 .filtro-unidade-admitidos {
   width: 100%;
   min-width: 170px;
-  height: 30px;
+  height: 34px;
   border: 1px solid #cbd5e1;
-  border-radius: 4px;
+  border-radius: 8px;
   background: #ffffff;
   color: #003b8a;
   font-size: 11px;
@@ -79,11 +293,15 @@
 
 .tabela-admitidos {
   overflow-x: auto;
+  padding: 0 18px 18px;
 }
 
 .tabela-admitidos table {
   width: 100%;
+  min-width: 1180px;
   border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 .tabela-admitidos th,
@@ -95,7 +313,7 @@
 }
 
 .tabela-admitidos th {
-  background: #004aad;
+  background: #003f8f;
   color: #ffffff;
   font-size: 12px;
   font-weight: 800;
@@ -105,6 +323,11 @@
 .tabela-admitidos td {
   color: #1e293b;
   font-size: 13px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.tabela-admitidos tbody tr:hover td {
+  background: #eaf4ff !important;
 }
 
 .tabela-admitidos td.tipo-operac {
@@ -152,6 +375,7 @@
   color: #166534;
   font-size: 11px;
   font-weight: 800;
+  box-shadow: inset 0 0 0 1px rgba(22, 101, 52, 0.08);
 }
 
 .sem-admitidos {
@@ -159,4 +383,87 @@
   text-align: center !important;
   color: #64748b !important;
   font-weight: 700;
+}
+
+.acoes-admitido {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.btn-reativar,
+.btn-excluir {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 7px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.btn-reativar {
+  background: #e0f2fe;
+  color: #075985;
+  border-color: #bae6fd;
+}
+
+.btn-excluir:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+.btn-reativar:hover {
+  background: #bae6fd;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 980px) {
+  .painel-premium-admitidos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .pagina-admitidos {
+    margin: 12px;
+  }
+
+  .cabecalho-admitidos {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .painel-premium-admitidos {
+    grid-template-columns: 1fr;
+  }
+}
+
+th:last-child, td:last-child {
+  width: 150px;
+  text-align: center;
+}
+
+.select-admitidos {
+  width: 100%;
+  min-width: 112px;
+  border: 1px solid #bfdbfe;
+  border-radius: 7px;
+  background: #f8fbff;
+  color: #062a5f;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 7px;
+  outline: none;
+}
+
+.select-admitidos:focus {
+  border-color: #005eb8;
+  box-shadow: 0 0 0 2px rgba(0, 94, 184, 0.12);
 }

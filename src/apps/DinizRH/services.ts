@@ -143,7 +143,11 @@ function carregarGestoresSalvos():
       );
     }
 
-    return gestoresSalvos;
+    return gestoresSalvos.length > 0
+      ? gestoresSalvos
+      : converterLista(
+          gestoresIniciais
+        );
   } catch {
     return converterLista(
       gestoresIniciais

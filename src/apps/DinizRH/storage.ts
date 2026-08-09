@@ -425,6 +425,16 @@ function removerRegistroLocal(
         registro.id !== id
     )
   );
+
+  salvarSolicitacoes(
+    carregarSolicitacoes().filter(
+      (solicitacao) =>
+        solicitacao.id !== id &&
+        !solicitacao.itens.some(
+          (item) => item.id === id
+        )
+    )
+  );
 }
 
 async function arquivarNoSupabase(

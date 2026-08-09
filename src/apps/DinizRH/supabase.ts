@@ -2,17 +2,35 @@ import {
   createClient,
 } from "@supabase/supabase-js";
 
-const supabaseUrl =
-  import.meta.env.VITE_SUPABASE_URL ||
-  "https://mvbhenupgghvludwcboy.supabase.co";
+function obterUrlSupabase() {
+  const url = String(
+    import.meta.env.VITE_SUPABASE_URL || ""
+  ).trim();
 
-const supabaseKey =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  "sb_publishable_6BaGDTWr2ynp0Xmk3ei6AQ_T7GgLi5H";
+  if (!/^https?:\/\//i.test(url)) {
+    throw new Error("VITE_SUPABASE_URL não configurada.");
+  }
+
+  return url;
+}
+
+function obterChaveSupabase() {
+  const chave = String(
+    import.meta.env
+      .VITE_SUPABASE_PUBLISHABLE_KEY ||
+      ""
+  ).trim();
+
+  if (!chave.startsWith("sb_publishable_") && !chave.startsWith("eyJ")) {
+    throw new Error("VITE_SUPABASE_PUBLISHABLE_KEY não configurada.");
+  }
+
+  return chave;
+}
 
 export const supabase = createClient(
-  supabaseUrl,
-  supabaseKey,
+  obterUrlSupabase(),
+  obterChaveSupabase(),
   {
     auth: {
       autoRefreshToken: true,

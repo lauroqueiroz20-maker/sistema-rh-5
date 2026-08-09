@@ -40,6 +40,9 @@ function normalizarCodigo(
 const CHAVE_SENHA_GESTORES =
   "sistema-rh-senha-gestores";
 
+const PREFIXO_HASH_SENHA =
+  "sha256:";
+
 function chaveSenhaGestorLegada(
   codigo: string
 ) {
@@ -50,6 +53,89 @@ function chaveAcessoGestor(
   codigo: string
 ) {
   return `sistema-rh-acesso-gestor-${codigo}`;
+}
+
+async function gerarHashSenha(
+  senha: string,
+  codigo: string
+) {
+  const dados = new TextEncoder().encode(
+    `diniz-rh:${codigo}:${senha}`
+  );
+
+  const hash = await crypto.subtle.digest(
+    "SHA-256",
+    dados
+  );
+
+  return `${PREFIXO_HASH_SENHA}${Array.from(
+    new Uint8Array(hash)
+  )
+    .map((byte) =>
+      byte.toString(16).padStart(2, "0")
+    )
+    .join("")}`;
+}
+
+function obterSenhaGestorSalva(
+  codigo: string
+) {
+  return (
+    localStorage.getItem(
+      CHAVE_SENHA_GESTORES
+    ) ||
+    localStorage.getItem(
+      chaveSenhaGestorLegada(codigo)
+    )
+  );
+}
+
+async function salvarSenhaGestor(
+  codigo: string,
+  senha: string
+) {
+  const hash = await gerarHashSenha(
+    senha,
+    codigo
+  );
+
+  localStorage.setItem(
+    CHAVE_SENHA_GESTORES,
+    hash
+  );
+  localStorage.setItem(
+    chaveSenhaGestorLegada(codigo),
+    hash
+  );
+}
+
+async function senhaGestorConfere(
+  codigo: string,
+  senha: string,
+  senhaSalva: string
+) {
+  if (
+    senhaSalva.startsWith(
+      PREFIXO_HASH_SENHA
+    )
+  ) {
+    return (
+      senhaSalva ===
+      (await gerarHashSenha(senha, codigo))
+    );
+  }
+
+  const senhaLegadaConfere =
+    senhaSalva === senha;
+
+  if (senhaLegadaConfere) {
+    await salvarSenhaGestor(
+      codigo,
+      senha
+    );
+  }
+
+  return senhaLegadaConfere;
 }
 
 function AuthGate({
@@ -132,6 +218,15 @@ function AuthGate({
     }
 
     let ativo = true;
+    let cancelarAssinatura:
+      | (() => void)
+      | undefined;
+
+    const timeout = window.setTimeout(() => {
+      if (ativo) {
+        setCarregando(false);
+      }
+    }, 1800);
 
     supabase.auth
       .getSession()
@@ -149,8 +244,9 @@ function AuthGate({
         }
       });
 
-    const { data } =
-      supabase.auth.onAuthStateChange(
+    try {
+      const { data } =
+        supabase.auth.onAuthStateChange(
         (_evento, novaSession) => {
           setSession(
             novaSession
@@ -158,9 +254,17 @@ function AuthGate({
         }
       );
 
+      cancelarAssinatura = () => {
+        data.subscription.unsubscribe();
+      };
+    } catch {
+      setCarregando(false);
+    }
+
     return () => {
       ativo = false;
-      data.subscription.unsubscribe();
+      window.clearTimeout(timeout);
+      cancelarAssinatura?.();
     };
   }, [perfil, codigoNormalizado]);
 
@@ -181,22 +285,18 @@ function AuthGate({
 
     try {
       if (perfil === "GESTOR") {
-        const chaveSenha =
-          CHAVE_SENHA_GESTORES;
-
         const senhaSalva =
-          localStorage.getItem(
-            chaveSenha
-          ) ||
-          localStorage.getItem(
-            chaveSenhaGestorLegada(
-              codigoNormalizado
-            )
+          obterSenhaGestorSalva(
+            codigoNormalizado
           );
 
         if (
           senhaSalva &&
-          senhaSalva !== senha
+          !(await senhaGestorConfere(
+            codigoNormalizado,
+            senha,
+            senhaSalva
+          ))
         ) {
           setMensagem(
             "Senha incorreta."
@@ -205,14 +305,9 @@ function AuthGate({
         }
 
         if (!senhaSalva) {
-          localStorage.setItem(
-            chaveSenha,
+          await salvarSenhaGestor(
+            codigoNormalizado,
             senha
-          );
-        } else {
-          localStorage.setItem(
-            chaveSenha,
-            senhaSalva
           );
         }
 
@@ -275,6 +370,60 @@ function AuthGate({
     }
   }
 
+  async function trocarSenhaGestor() {
+    const senhaAtual =
+      obterSenhaGestorSalva(
+        codigoNormalizado
+      );
+
+    const novaSenha =
+      window.prompt(
+        "Digite a nova senha com no mínimo 6 caracteres:"
+      );
+
+    if (novaSenha === null) {
+      return;
+    }
+
+    if (novaSenha.length < 6) {
+      alert(
+        "Use uma senha com no mínimo 6 caracteres."
+      );
+      return;
+    }
+
+    if (
+      senhaAtual &&
+      (await senhaGestorConfere(
+        codigoNormalizado,
+        novaSenha,
+        senhaAtual
+      ))
+    ) {
+      alert(
+        "A nova senha precisa ser diferente da atual."
+      );
+      return;
+    }
+
+    await salvarSenhaGestor(
+      codigoNormalizado,
+      novaSenha
+    );
+
+    localStorage.setItem(
+      chaveAcessoGestor(
+        codigoNormalizado
+      ),
+      "SIM"
+    );
+
+    setAcessoGestorLocal(true);
+    setMensagem("");
+
+    alert("Senha alterada.");
+  }
+
   if (carregando) {
     return (
       <div className="auth-page">
@@ -288,7 +437,21 @@ function AuthGate({
 
   if (acessoValido) {
     return (
-      <>{children}</>
+      <>
+        {children}
+
+        {perfil === "GESTOR" && (
+          <button
+            type="button"
+            className="auth-trocar-senha"
+            onClick={() => {
+              void trocarSenhaGestor();
+            }}
+          >
+            Trocar senha
+          </button>
+        )}
+      </>
     );
   }
 
@@ -336,6 +499,18 @@ function AuthGate({
           <span className="auth-mensagem">
             {mensagem}
           </span>
+        )}
+
+        {perfil === "GESTOR" && (
+          <button
+            type="button"
+            className="auth-link-senha"
+            onClick={() => {
+              void trocarSenhaGestor();
+            }}
+          >
+            Trocar senha salva
+          </button>
         )}
       </form>
     </div>

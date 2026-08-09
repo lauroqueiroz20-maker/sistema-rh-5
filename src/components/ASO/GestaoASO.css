@@ -1,0 +1,71 @@
+.aso-container { width: 100%; padding: 24px; box-sizing: border-box; background: #f3f7fc; }
+.aso-hero { display: grid; grid-template-columns: 1fr auto; gap: 22px; align-items: center; margin-bottom: 18px; padding: 24px; border-radius: 16px; background: linear-gradient(135deg, #003f8f, #075db8 58%, #159b75); color: #fff; box-shadow: 0 18px 38px rgba(0,57,128,.2); }
+.aso-hero > div:first-child > span { display: inline-block; padding: 5px 9px; border-radius: 999px; background: rgba(255,255,255,.16); font-size: 10px; font-weight: 900; text-transform: uppercase; }
+.aso-hero h1 { margin: 8px 0 5px; font-size: 28px; font-weight: 950; }
+.aso-hero p { margin: 0; color: #dbeafe; font-size: 13px; font-weight: 650; }
+.aso-resumo { display: grid; grid-template-columns: repeat(4, 100px); gap: 8px; }
+.aso-resumo article { padding: 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 11px; background: rgba(255,255,255,.12); text-align: center; }
+.aso-resumo span { display: block; color: #dbeafe; font-size: 9px; font-weight: 850; text-transform: uppercase; }
+.aso-resumo strong { display: block; margin-top: 5px; font-size: 24px; font-weight: 950; }
+.aso-formulario-card, .aso-listagem-card { margin-bottom: 18px; padding: 18px; border: 1px solid #cfe0f5; border-radius: 15px; background: #fff; box-shadow: 0 12px 30px rgba(15,23,42,.08); }
+.aso-formulario-card { border-top: 4px solid #16a34a; }
+.aso-listagem-card { border-top: 4px solid #075db8; }
+.aso-titulo-card, .aso-listagem-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 15px; }
+.aso-titulo-card h2, .aso-listagem-cabecalho h2 { margin: 0 0 3px; color: #003b7a; font-size: 19px; font-weight: 950; }
+.aso-titulo-card p, .aso-listagem-cabecalho p { margin: 0; color: #64748b; font-size: 11px; font-weight: 650; }
+.aso-titulo-card > strong { padding: 6px 10px; border-radius: 999px; background: #eaf3ff; color: #075db8; font-size: 10px; }
+.aso-formulario-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 11px; }
+.aso-formulario-grid label { display: grid; gap: 5px; }
+.aso-formulario-grid span { color: #334155; font-size: 10px; font-weight: 850; }
+.aso-formulario-grid input, .aso-formulario-grid select, .aso-formulario-grid textarea, .aso-listagem-cabecalho input { width: 100%; min-height: 40px; box-sizing: border-box; border: 1px solid #cbd9ea; border-radius: 8px; background: #f8fbff; padding: 0 9px; color: #13233c; font: inherit; font-size: 11px; font-weight: 700; }
+.aso-formulario-grid input:focus, .aso-formulario-grid select:focus, .aso-formulario-grid textarea:focus { outline: 2px solid rgba(7,93,184,.16); border-color: #075db8; }
+.aso-curriculo { grid-column: span 2; }
+.aso-curriculo small { color: #64748b; font-size: 9px; }
+.aso-observacoes { grid-column: span 2; }
+.aso-formulario-grid textarea { min-height: 64px; padding: 9px; resize: vertical; }
+.aso-aviso { margin: 12px 0 0; padding: 8px 10px; border-radius: 8px; background: #fff7ed; color: #9a3412; font-size: 10px; font-weight: 800; }
+.aso-acoes-formulario { display: flex; justify-content: flex-end; gap: 8px; margin-top: 13px; }
+.aso-acoes-formulario button { min-height: 38px; padding: 0 16px; border: 0; border-radius: 8px; background: #16a34a; color: #fff; font-size: 10px; font-weight: 950; cursor: pointer; }
+.aso-acoes-formulario button:last-child:not(:first-child) { background: #64748b; }
+.aso-listagem-cabecalho input { max-width: 330px; }
+.aso-listagem-ferramentas { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex: 1; }
+.aso-listagem-ferramentas input { flex: 1; }
+.aso-listagem-ferramentas button { min-height: 40px; border: 0; border-radius: 8px; padding: 0 13px; background: #075db8; color: #fff; font-size: 9px; font-weight: 950; cursor: pointer; white-space: nowrap; }
+.aso-tabela-wrapper { overflow: auto; border: 1px solid #dbe7f5; border-radius: 10px; }
+.aso-tabela-wrapper table { width: 100%; min-width: 1580px; border-collapse: collapse; }
+.aso-tabela-wrapper th, .aso-tabela-wrapper td { padding: 8px 9px; border-bottom: 1px solid #e5edf7; color: #334155; font-size: 9px; text-align: left; vertical-align: middle; }
+.aso-tabela-wrapper th { position: sticky; top: 0; background: #075db8; color: #fff; font-weight: 900; text-transform: uppercase; }
+.aso-tabela-wrapper td strong { color: #003b7a; }
+.aso-tabela-wrapper td small { display: block; margin-top: 2px; color: #64748b; }
+.aso-tabela-wrapper td button { border: 1px solid #bfdbfe; border-radius: 6px; background: #eff6ff; color: #075db8; font-size: 8px; font-weight: 900; cursor: pointer; }
+.aso-tabela-wrapper td button:disabled { border-color: #e2e8f0; background: #f8fafc; color: #94a3b8; cursor: default; }
+.aso-select-linha { width: 100%; min-width: 92px; min-height: 29px; border: 1px solid #cbd9ea; border-radius: 6px; padding: 3px 5px; color: #17324d; background: #fff; font-size: 8px; font-weight: 850; cursor: pointer; }
+.aso-tabela-wrapper .aso-col-candidato { min-width: 185px; }
+.aso-tabela-wrapper .aso-col-email { min-width: 190px; }
+.aso-tabela-wrapper .aso-col-status { width: 56px; min-width: 56px; max-width: 56px; padding-left: 3px; padding-right: 3px; text-align: center; }
+.aso-col-status .aso-status { padding: 4px; font-size: 7px; }
+.aso-status { display: inline-block; padding: 4px 7px; border-radius: 999px; background: #f1f5f9; font-size: 8px; font-weight: 950; }
+.status-apto { background: #dcfce7; color: #15803d; }.status-inapto { background: #fee2e2; color: #b91c1c; }.status-agendado { background: #dbeafe; color: #075db8; }.status-realizado { background: #ede9fe; color: #6d28d9; }.status-pendente { background: #ffedd5; color: #c2410c; }
+.aso-acoes-linha { display: flex; gap: 5px; }.aso-acoes-linha button:last-child { border-color: #fecaca; background: #fff1f2; color: #dc2626; }
+.aso-incompleto { display: inline-block; border-radius: 999px; padding: 4px 7px; background: #fff7ed; color: #c2410c; font-size: 8px; font-weight: 950; white-space: nowrap; }
+.aso-vazio { padding: 28px !important; text-align: center !important; color: #64748b !important; font-size: 11px !important; }
+.aso-pdf-documento { width: 190mm; box-sizing: border-box; padding: 8mm; color: #17324d; background: #fff; font-family: Arial, sans-serif; }
+.aso-pdf-geral { width: 277mm; padding: 5mm; }
+.aso-pdf-documento header { margin-bottom: 8mm; border-bottom: 3px solid #075db8; padding-bottom: 5mm; }
+.aso-pdf-documento header h1 { margin: 0; color: #075db8; font-size: 24px; }
+.aso-pdf-documento header h2 { margin: 4px 0; font-size: 18px; }
+.aso-pdf-documento header p { margin: 0; font-weight: 700; }
+.aso-pdf-grade { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4mm; }
+.aso-pdf-grade div { min-height: 15mm; border: 1px solid #ccd9e8; border-radius: 3mm; padding: 3mm; }
+.aso-pdf-grade span, .aso-pdf-observacoes span { display: block; margin-bottom: 2mm; color: #59718b; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.aso-pdf-grade strong { font-size: 13px; }
+.aso-pdf-observacoes { margin-top: 5mm; border: 1px solid #ccd9e8; border-radius: 3mm; padding: 4mm; }
+.aso-pdf-observacoes p { min-height: 20mm; margin: 0; white-space: pre-wrap; }
+.aso-pdf-documento footer { margin-top: 7mm; border-top: 1px solid #ccd9e8; padding-top: 3mm; color: #64748b; font-size: 9px; text-align: center; }
+.aso-pdf-geral table { width: 100%; border-collapse: collapse; }
+.aso-pdf-geral th { padding: 2.3mm 1.3mm; background: #075db8; color: #fff; font-size: 7px; text-align: left; text-transform: uppercase; }
+.aso-pdf-geral td { padding: 2mm 1.3mm; border-bottom: 1px solid #dbe5f0; color: #263c55; font-size: 7px; vertical-align: top; }
+.aso-pdf-geral tr:nth-child(even) td { background: #f5f9fd; }
+.aso-pdf-geral tr { break-inside: avoid; page-break-inside: avoid; }
+@media (max-width: 1050px) { .aso-hero { grid-template-columns: 1fr; }.aso-resumo { grid-template-columns: repeat(4, minmax(0,1fr)); }.aso-formulario-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 650px) { .aso-container { padding: 12px; }.aso-resumo { grid-template-columns: repeat(2,minmax(0,1fr)); }.aso-formulario-grid { grid-template-columns: 1fr; }.aso-curriculo,.aso-observacoes { grid-column: auto; }.aso-listagem-cabecalho,.aso-listagem-ferramentas { align-items: stretch; flex-direction: column; }.aso-listagem-cabecalho input { max-width: none; } }

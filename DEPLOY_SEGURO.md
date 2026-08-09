@@ -13,7 +13,7 @@ Configure na hospedagem:
 
 ```env
 VITE_SUPABASE_URL=https://mvbhenupgghvludwcboy.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_6BaGDTWr2ynp0Xmk3ei6AQ_T7GgLi5H
+VITE_SUPABASE_PUBLISHABLE_KEY=cole_a_chave_publicavel_aqui
 ```
 
 ## Supabase

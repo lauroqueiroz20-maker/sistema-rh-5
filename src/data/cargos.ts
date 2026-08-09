@@ -5,8 +5,7 @@ export interface Cargo {
   ativo: boolean;
 }
 
-const cargos: Cargo[] = [
-  { id: 1, cargo: "AÇOUGUEIRO", setor: "PERECÍVEIS", ativo: true },
+const cargos: Cargo[] = [  { id: 1, cargo: "AÇOUGUEIRO", setor: "PERECÍVEIS", ativo: true },
   { id: 2, cargo: "ATEND. REST.", setor: "RESTAURANTE", ativo: true },
   { id: 3, cargo: "AUX SERV. GER.", setor: "ZELADORIA", ativo: true },
   { id: 4, cargo: "AUX. COZINHA", setor: "RESTAURANTE", ativo: true },
@@ -30,3 +29,5 @@ const cargos: Cargo[] = [
 ];
 
 export default cargos;
+
+

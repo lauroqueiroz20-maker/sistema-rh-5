@@ -5,7 +5,7 @@
   useState,
 } from "react";
 
-import unidades from "../data/unidades";
+import unidadesPadrao from "../data/unidades";
 import tipos from "../data/tipos";
 import motivos from "../data/motivos";
 import cargos from "../data/cargos";
@@ -13,6 +13,26 @@ import { type Vaga } from "../data/vagas";
 import "./Cadastro.css";
 
 import eventBus from "../Services/eventBus";
+import {
+  EVENTO_ESTRUTURA_CADASTRO,
+  listarUnidadesConfiguradas,
+} from "../Services/estruturaCadastroService";
+
+const EVENTO_GESTORES_ATUALIZADOS = "sistema-rh-gestores-atualizados";
+const CHAVE_GESTORES = "sistema-rh-gestores";
+
+type UnidadeCadastro = {
+  codigo: string;
+  nome: string;
+  colaboradores: number;
+};
+
+type GestorUnidade = {
+  codigo?: string;
+  unidade?: string;
+  ativo?: boolean;
+  tipoContato?: string;
+};
 
 interface CadastroProps {
   vagas: Vaga[];
@@ -22,7 +42,7 @@ interface CadastroProps {
   onConfirmarAtualizacao: () => void;
   temAtualizacaoPendente: boolean;
   onGerarPDF: () => void;
-  onImprimir: () => void;
+  onZerarCiclo: () => void;
 }
 
 type SolicitacaoGestor = {
@@ -56,6 +76,237 @@ function normalizarTexto(valor: unknown) {
     .toUpperCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function normalizarChave(valor: unknown) {
+  return normalizarTexto(valor)
+    .replace(/[^A-Z0-9]/g, "");
+}
+
+function localizarPorChaves<T>(
+  lista: T[],
+  obterValor: (item: T) => unknown,
+  chaves: string[]
+) {
+  const chavesNormalizadas = new Set(
+    chaves.map(normalizarChave)
+  );
+
+  return lista.find((item) =>
+    chavesNormalizadas.has(
+      normalizarChave(obterValor(item))
+    )
+  );
+}
+
+function resolverUnidadeSolicitacao(
+  unidade: string,
+  unidadesDisponiveis: UnidadeCadastro[],
+) {
+  const chave = normalizarChave(unidade);
+  const aliases: Record<string, string[]> = {
+    BETOLANDIA: ["BETOLANDIA"],
+    FREIDAMIAO: ["FREIDAMIAO"],
+    MISSAOVELHA: ["MISSAOVELHA"],
+    PIRAJA: ["PIRAJA"],
+    SALESIANO: ["SALESIANOS"],
+    SALESIANOS: ["SALESIANOS"],
+    VILATRESMARIAS: ["VILATRESMARIAS"],
+    CRATOOSSIAN: ["CRATOOSSIANARARIPE"],
+    CRATOOSSIANARARIPE: ["CRATOOSSIANARARIPE"],
+    CRATOSIQUEIRA: ["CRATOSIQUEIRACAMPOS"],
+    CRATOSIQUEIRACAMPOS: ["CRATOSIQUEIRACAMPOS"],
+  };
+
+  return localizarPorChaves(
+    unidadesDisponiveis,
+    (item) => item.nome,
+    aliases[chave] || [unidade]
+  );
+}
+
+function carregarUnidadesCadastro(): UnidadeCadastro[] {
+  const mapa = new Map<string, UnidadeCadastro>();
+
+  [...unidadesPadrao, ...listarUnidadesConfiguradas()].forEach((unidade) => {
+    mapa.set(unidade.codigo.padStart(3, "0"), unidade);
+  });
+
+  try {
+    const gestoresSalvos = localStorage.getItem(CHAVE_GESTORES);
+    const dados: unknown = gestoresSalvos ? JSON.parse(gestoresSalvos) : [];
+
+    if (Array.isArray(dados)) {
+      dados.forEach((valor) => {
+        if (typeof valor !== "object" || valor === null) return;
+
+        const gestor = valor as GestorUnidade;
+        const codigo = String(gestor.codigo || "").trim().padStart(3, "0");
+        const nomeOriginal = String(gestor.unidade || "").trim().toUpperCase();
+        const nome = codigo === "014" && nomeOriginal === "TESTE"
+          ? "LAZULI"
+          : nomeOriginal;
+
+        if (
+          codigo !== "000" &&
+          nome &&
+          gestor.ativo !== false &&
+          gestor.tipoContato === "GESTOR"
+        ) {
+          mapa.set(codigo, { codigo, nome, colaboradores: 0 });
+        }
+      });
+    }
+  } catch {
+    // Mantém unidades válidas já carregadas.
+  }
+
+  return Array.from(mapa.values()).sort((a, b) =>
+    a.codigo.localeCompare(b.codigo)
+  );
+}
+
+function resolverCargoSolicitacao(
+  cargo: string,
+  tipo: string
+) {
+  const cargoChave = normalizarChave(cargo);
+  const tipoChave = normalizarChave(tipo);
+  const aliases: Record<string, string[]> = {
+    ACOUGUEIRO: ["AÇOUGUEIRO"],
+    ACOUGUE: ["B. AÇOUGUE"],
+    BALCONISTADEACOUGUE: ["B. AÇOUGUE"],
+    AUXILIARDESERVICOSGERAIS: ["AUX SERV. GER."],
+    AUXSERVGER: ["AUX SERV. GER."],
+    AUXILIARDECOZINHA: ["AUX. COZINHA"],
+    BALCONISTADEPADARIA: ["B. PADARIA"],
+    BPADARIA: ["B. PADARIA"],
+    ESTOQUE: ["ESTOQUISTA"],
+    ESTOQUISTA: ["ESTOQUISTA"],
+    INVENTARIO: ["INVENTÁRIO"],
+    JOVEMAPRENDIZ: ["J. APRENDIZ"],
+    JAPRENDIZ: ["J. APRENDIZ"],
+    OPERADORCAIXA: ["OPERADOR CX."],
+    OPERADORDECAIXA: ["OPERADOR CX."],
+    OPERADORCX: ["OPERADOR CX."],
+    PREVENCAOPERDAS: ["PREV. PERDAS"],
+    FISCALDEPREVENCAODEPERDAS: ["PREV. PERDAS"],
+    REPOSITOR: ["REPOS. MERC."],
+    REPOSITORMERCADORIAS: ["REPOS. MERC."],
+    REPOSITORDEMERCADORIAS: ["REPOS. MERC."],
+    REPOSMERC: ["REPOS. MERC."],
+    SEPARADORDEMERCADORIAS: ["SEPAR. DE MERC."],
+  };
+
+  const chavesCargo =
+    aliases[cargoChave] || [cargo];
+  const cargoEncontrado =
+    localizarPorChaves(
+      cargos.filter((item) => item.ativo),
+      (item) => item.cargo,
+      chavesCargo
+    );
+
+  if (cargoEncontrado) {
+    return cargoEncontrado;
+  }
+
+  if (tipoChave.includes("APRENDIZ")) {
+    return localizarPorChaves(
+      cargos,
+      (item) => item.cargo,
+      ["J. APRENDIZ"]
+    );
+  }
+
+  if (tipoChave.includes("INVENTARIO")) {
+    return localizarPorChaves(
+      cargos,
+      (item) => item.cargo,
+      ["INVENTÁRIO"]
+    );
+  }
+
+  return undefined;
+}
+
+function normalizarTipoSolicitacao(
+  tipo: string,
+  cargo: string
+) {
+  const chave = normalizarChave(`${tipo} ${cargo}`);
+
+  if (chave.includes("APRENDIZ")) {
+    return "J. APRENDIZ";
+  }
+
+  if (chave.includes("INVENTARIO")) {
+    return "INVENTÁRIO";
+  }
+
+  if (chave.includes("PCD")) {
+    return "PCD";
+  }
+
+  if (chave.includes("ADM")) {
+    return "ADM";
+  }
+
+  return "OPERAC.";
+}
+
+function normalizarMotivoSolicitacao(
+  motivo: string
+) {
+  const chave = normalizarChave(motivo);
+
+  if (chave.includes("DEMISSAO")) {
+    return "DESLIG.";
+  }
+
+  if (chave.includes("EXPANSAO")) {
+    return "EXPANSÃO";
+  }
+
+  if (chave.includes("SUBST")) {
+    return "SUBST.";
+  }
+
+  if (chave.includes("REMANEJ")) {
+    return "REMANEJ.";
+  }
+
+  return (
+    String(motivo || "DESLIG.")
+      .trim()
+      .toUpperCase() || "DESLIG."
+  );
+}
+
+function normalizarTurnoSolicitacao(
+  turno: string
+) {
+  const chave = normalizarChave(turno);
+
+  if (
+    chave === "N" ||
+    chave.includes("NOTURNO") ||
+    chave.includes("NOITE")
+  ) {
+    return "N";
+  }
+
+  return "D";
+}
+
+function normalizarEmergenciaSolicitacao(
+  emergencia: string
+) {
+  return normalizarChave(emergencia).includes(
+    "SIM"
+  )
+    ? "SIM"
+    : "NÃO";
 }
 
 function carregarLista<T>(chave: string): T[] {
@@ -106,6 +357,27 @@ function obterCargoIndicador(tipo: string) {
   return "";
 }
 
+function obterDataInputHoje() {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoje.getDate()).padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
+}
+
+function converterDataInputParaBrasil(data: string) {
+  const partes = data.split("-");
+
+  if (partes.length !== 3) {
+    return new Date().toLocaleDateString("pt-BR");
+  }
+
+  const [ano, mes, dia] = partes;
+
+  return `${dia}/${mes}/${ano}`;
+}
+
 function Cadastro({
   vagas,
   onAdicionarVagas,
@@ -113,8 +385,11 @@ function Cadastro({
   onConfirmarAtualizacao,
   temAtualizacaoPendente,
   onGerarPDF,
-  onImprimir,
+  onZerarCiclo,
 }: CadastroProps) {
+  const [unidadesCadastro, setUnidadesCadastro] = useState(
+    carregarUnidadesCadastro
+  );
   const codigoRef =
     useRef<HTMLInputElement>(null);
 
@@ -157,6 +432,27 @@ function Cadastro({
     useState<"SIM" | "NÃO" | "ESTÁVEL">(
       "NÃO"
     );
+
+  const opcoesUnidades = [
+    "0 = Todas",
+    ...unidadesCadastro.map(
+      (item) => `${item.codigo} - ${item.nome}`
+    ),
+  ];
+
+  useEffect(() => {
+    const atualizarUnidades = () => {
+      setUnidadesCadastro(carregarUnidadesCadastro());
+    };
+
+    window.addEventListener(EVENTO_ESTRUTURA_CADASTRO, atualizarUnidades);
+    window.addEventListener(EVENTO_GESTORES_ATUALIZADOS, atualizarUnidades);
+
+    return () => {
+      window.removeEventListener(EVENTO_ESTRUTURA_CADASTRO, atualizarUnidades);
+      window.removeEventListener(EVENTO_GESTORES_ATUALIZADOS, atualizarUnidades);
+    };
+  }, []);
 
   function limparCampos(
     limparUnidade = true
@@ -235,7 +531,9 @@ function Cadastro({
 
     timerCodigo.current = setTimeout(() => {
       const codigoAtual =
-        codigoRef.current?.value || "";
+        (codigoRef.current?.value || "")
+          .split("-")[0]
+          .replace(/\D/g, "");
 
       if (codigoAtual === "") {
         return;
@@ -258,7 +556,7 @@ function Cadastro({
         codigoAtual.padStart(3, "0");
 
       const unidadeEncontrada =
-        unidades.find(
+        unidadesCadastro.find(
           (item) =>
             item.codigo === codigoFormatado
         );
@@ -357,8 +655,8 @@ function Cadastro({
         : 0;
 
     const dataSolicitacao =
-      new Date().toLocaleDateString(
-        "pt-BR"
+      converterDataInputParaBrasil(
+        obterDataInputHoje()
       );
 
     const novasVagas: Vaga[] =
@@ -473,26 +771,15 @@ function Cadastro({
         }
 
         const unidadeEncontrada =
-          unidades.find(
-            (item) =>
-              normalizarTexto(
-                item.nome
-              ) ===
-              normalizarTexto(
-                solicitacao.unidade
-              )
+          resolverUnidadeSolicitacao(
+            solicitacao.unidade,
+            unidadesCadastro,
           );
 
         const cargoEncontrado =
-          cargos.find(
-            (item) =>
-              item.ativo &&
-              normalizarTexto(
-                item.cargo
-              ) ===
-                normalizarTexto(
-                  solicitacao.cargo
-                )
+          resolverCargoSolicitacao(
+            solicitacao.cargo,
+            solicitacao.tipo
           );
 
         const quantidadeSolicitada =
@@ -501,12 +788,12 @@ function Cadastro({
           );
 
         const turnoSolicitado =
-          normalizarTexto(
+          normalizarTurnoSolicitacao(
             solicitacao.turno
           );
 
         const emergenciaSolicitada =
-          normalizarTexto(
+          normalizarEmergenciaSolicitacao(
             solicitacao.emergencia
           );
 
@@ -527,21 +814,8 @@ function Cadastro({
             quantidadeSolicitada
           ) &&
           quantidadeSolicitada > 0 &&
-          [
-            "D",
-            "N",
-            "DIURNO",
-            "NOTURNO",
-          ].includes(
-            turnoSolicitado
-          ) &&
-          [
-            "SIM",
-            "NAO",
-            "NÃO",
-          ].includes(
-            emergenciaSolicitada
-          );
+          Boolean(turnoSolicitado) &&
+          Boolean(emergenciaSolicitada);
 
         if (!solicitacaoValida) {
           solicitacoesComErro.push(
@@ -590,26 +864,15 @@ function Cadastro({
         solicitacoesValidas
       ) {
         const unidadeEncontrada =
-          unidades.find(
-            (item) =>
-              normalizarTexto(
-                item.nome
-              ) ===
-              normalizarTexto(
-                solicitacao.unidade
-              )
+          resolverUnidadeSolicitacao(
+            solicitacao.unidade,
+            unidadesCadastro,
           );
 
         const cargoEncontrado =
-          cargos.find(
-            (item) =>
-              item.ativo &&
-              normalizarTexto(
-                item.cargo
-              ) ===
-                normalizarTexto(
-                  solicitacao.cargo
-                )
+          resolverCargoSolicitacao(
+            solicitacao.cargo,
+            solicitacao.tipo
           );
 
         if (
@@ -625,22 +888,14 @@ function Cadastro({
           );
 
         const emergenciaFinal =
-          normalizarTexto(
+          normalizarEmergenciaSolicitacao(
             solicitacao.emergencia
-          ) === "SIM"
-            ? "SIM"
-            : "NÃO";
-
-        const turnoNormalizado =
-          normalizarTexto(
-            solicitacao.turno
           );
 
         const turnoFinal =
-          turnoNormalizado === "N" ||
-          turnoNormalizado === "NOTURNO"
-            ? "N"
-            : "D";
+          normalizarTurnoSolicitacao(
+            solicitacao.turno
+          );
 
         for (
           let indice = 0;
@@ -656,21 +911,19 @@ function Cadastro({
               unidadeEncontrada.nome.toUpperCase(),
             data: dataAtual,
             quantidade: 1,
-            tipo: String(
-              solicitacao.tipo
-            )
-              .trim()
-              .toUpperCase(),
+            tipo: normalizarTipoSolicitacao(
+              solicitacao.tipo,
+              solicitacao.cargo
+            ),
             cargo:
               cargoEncontrado.cargo,
             setor:
               cargoEncontrado.setor,
             turno: turnoFinal,
-            motivo: String(
-              solicitacao.motivo
-            )
-              .trim()
-              .toUpperCase(),
+            motivo:
+              normalizarMotivoSolicitacao(
+                solicitacao.motivo
+              ),
             emergencia:
               emergenciaFinal,
             admissoes: 0,
@@ -866,7 +1119,8 @@ function Cadastro({
 
           <input
             ref={codigoRef}
-            type="number"
+            type="text"
+            list="lista-codigos-unidades"
             placeholder="0 = Todas"
             value={codigo}
             onChange={(evento) =>
@@ -875,6 +1129,14 @@ function Cadastro({
               )
             }
           />
+          <datalist id="lista-codigos-unidades">
+            {opcoesUnidades.map((item) => (
+              <option
+                key={item}
+                value={item}
+              />
+            ))}
+          </datalist>
         </div>
 
         <div className="unidade-destaque">
@@ -986,13 +1248,15 @@ function Cadastro({
           <label>Setor</label>
 
           <input
+            type="text"
             value={
               emergencia === "ESTÁVEL"
                 ? "ESTÁVEL"
                 : setor
             }
-            placeholder="Automático"
+            placeholder="Setor automático"
             readOnly
+            aria-label="Setor preenchido automaticamente"
           />
         </div>
 
@@ -1042,6 +1306,11 @@ function Cadastro({
 
             {motivos.map((item) => (
               <option
+                className={
+                  normalizarTexto(item).includes("EXPERIENCIA")
+                    ? "opcao-motivo-experiencia"
+                    : undefined
+                }
                 key={item}
                 value={item}
               >
@@ -1096,9 +1365,9 @@ function Cadastro({
         <button
           type="button"
           className="btn-cadastro btn-fim-ciclo"
-          onClick={onImprimir}
+          onClick={onZerarCiclo}
         >
-          Fim ciclo
+          Zerar ciclo
         </button>
 
         <button
@@ -1115,3 +1384,11 @@ function Cadastro({
 }
 
 export default Cadastro;
+
+
+
+
+
+
+
+

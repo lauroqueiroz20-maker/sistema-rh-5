@@ -8,6 +8,7 @@ interface HomeGestorProps {
   onNovaSolicitacao: () => void;
   onSemSolicitacao: () => void;
   onHistorico: () => void;
+  onInstalar?: () => void;
 }
 
 function HomeGestor({
@@ -17,6 +18,7 @@ function HomeGestor({
   onNovaSolicitacao,
   onSemSolicitacao,
   onHistorico,
+  onInstalar,
 }: HomeGestorProps) {
   return (
     <>
@@ -77,6 +79,16 @@ function HomeGestor({
             NÃO TENHO SOLICITAÇÕES
             HOJE
           </button>
+
+          {onInstalar && (
+            <button
+              type="button"
+              className="diniz-rh-botao diniz-rh-botao-primario"
+              onClick={onInstalar}
+            >
+              SALVAR APLICATIVO
+            </button>
+          )}
         </div>
       </section>
 

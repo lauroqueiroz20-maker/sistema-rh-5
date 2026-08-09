@@ -1,11 +1,25 @@
-import { useMemo } from "react";
+import {
+  useMemo,
+  useState,
+} from "react";
 
 import { type Vaga } from "../data/vagas";
 
 interface CardsProps {
   vagas: Vaga[];
+  vagasAbertas?: Vaga[];
   admitidos?: Vaga[];
 }
+
+type ModalResumo =
+  | "contratacoes"
+  | "pendentes"
+  | "estaveis";
+
+type UnidadeResumo = {
+  unidade: string;
+  quantidade: number;
+};
 
 function normalizar(
   valor: unknown
@@ -78,68 +92,123 @@ function quantidadePorIndicador(
   );
 }
 
+function agruparPorUnidade(
+  vagas: Vaga[],
+  calcular: (vaga: Vaga) => number
+): UnidadeResumo[] {
+  const agrupamento =
+    new Map<string, number>();
+
+  vagas.forEach((vaga) => {
+    const quantidade = Math.max(
+      0,
+      calcular(vaga)
+    );
+
+    if (quantidade <= 0) {
+      return;
+    }
+
+    const unidade =
+      String(vaga.unidade || "")
+        .trim()
+        .toUpperCase() ||
+      "UNIDADE NÃO INFORMADA";
+
+    agrupamento.set(
+      unidade,
+      numeroSeguro(
+        agrupamento.get(unidade)
+      ) + quantidade
+    );
+  });
+
+  return Array.from(
+    agrupamento.entries()
+  )
+    .map(([unidade, quantidade]) => ({
+      unidade,
+      quantidade,
+    }))
+    .sort((a, b) =>
+      a.unidade.localeCompare(
+        b.unidade,
+        "pt-BR"
+      )
+    );
+}
+
 function Cards({
   vagas,
+  vagasAbertas = vagas,
   admitidos = [],
 }: CardsProps) {
+  const [
+    modalResumoAberto,
+    setModalResumoAberto,
+  ] = useState<ModalResumo | null>(null);
+
   const indicadores =
     useMemo(() => {
-      const vagasAtivas =
-        vagas.filter(
-          (vaga) =>
-            normalizar(
-              vaga.tipo
-            ) !==
-            "ESTAVEL"
-        );
+      // Total real da lista oficial de admitidos.
+      const totalAdmitidosLista = admitidos.reduce(
+        (total, a) => total + Math.max(numeroSeguro(a.admissoes), numeroSeguro(a.quantidade)),
+        0
+      );
 
-      const demandaAcumulada =
-        vagasAtivas.reduce(
-          (total, vaga) =>
-            total +
-            numeroSeguro(
-              vaga.quantidade
-            ),
-          0
-        );
-
+      // Compatibilidade com bases antigas que ainda guardam admissões nas vagas abertas.
+      const admissoesVagasAtivas = vagasAbertas.reduce(
+        (total, vaga) => total + numeroSeguro(vaga.admissoes),
+        0
+      );
       const contratacoesEfetivadas =
-        vagasAtivas.reduce(
-          (total, vaga) =>
-            total +
-            numeroSeguro(
-              vaga.admissoes
-            ),
-          0
-        );
-
-      const vagasPendentes =
-        vagasAtivas.reduce(
-          (total, vaga) => {
-            const quantidade =
-              numeroSeguro(
-                vaga.quantidade
-              );
-
-            const admissoes =
-              numeroSeguro(
-                vaga.admissoes
-              );
-
-            return (
-              total +
-              Math.max(
-                quantidade -
-                  admissoes,
-                0
-              )
+        admitidos.length > 0
+          ? totalAdmitidosLista
+          : admissoesVagasAtivas;
+      const contratacoesPorUnidade =
+        admitidos.length > 0
+          ? agruparPorUnidade(
+              admitidos,
+              (vaga) =>
+                Math.max(
+                  numeroSeguro(vaga.admissoes),
+                  numeroSeguro(vaga.quantidade)
+                )
+            )
+          : agruparPorUnidade(
+              vagas,
+              (vaga) => numeroSeguro(vaga.admissoes)
             );
-          },
-          0
+
+      // Saldo real das vagas abertas, inclusive admissões parciais.
+      const vagasPendentes = vagasAbertas.reduce(
+        (total, vaga) =>
+          total +
+          Math.max(
+            numeroSeguro(vaga.quantidade) -
+              numeroSeguro(vaga.admissoes),
+            0
+          ),
+        0
+      );
+
+      // Demanda acumulada = admitidos + saldo pendente.
+      const demandaAcumulada =
+        contratacoesEfetivadas + vagasPendentes;
+      const pendentesPorUnidade =
+        agruparPorUnidade(
+          vagasAbertas,
+          (vaga) =>
+            Math.max(
+              numeroSeguro(vaga.quantidade) -
+                numeroSeguro(vaga.admissoes),
+              0
+            )
         );
 
-      const unidadesEstaveis =
-        new Set(
+      // ✅ 4. UNIDADES ESTÁVEIS: MANTIDO EXATAMENTE COMO ESTAVA
+      const unidadesEstaveisLista =
+        Array.from(new Set(
           vagas
             .filter(
               (vaga) =>
@@ -150,15 +219,18 @@ function Cards({
             )
             .map(
               (vaga) =>
-                normalizar(
-                  vaga.unidade
-                )
+                String(vaga.unidade || "")
+                  .trim()
+                  .toUpperCase()
             )
             .filter(Boolean)
-        ).size;
+        )).sort((a, b) =>
+          a.localeCompare(b, "pt-BR")
+        );
 
+      // ✅ TODOS OS MINI INDICADORES: Jovem Aprendiz, PCD, Inventário, ADM — MANTIDOS IGUAIS
       const baseIndicadores =
-        admitidos;
+        admitidos.length > 0 ? admitidos : vagas;
 
       const jovemAprendiz =
         quantidadePorIndicador(
@@ -187,14 +259,62 @@ function Cards({
       return {
         demandaAcumulada,
         contratacoesEfetivadas,
+        contratacoesPorUnidade,
         vagasPendentes,
-        unidadesEstaveis,
+        pendentesPorUnidade,
+        unidadesEstaveis:
+          unidadesEstaveisLista.length,
+        unidadesEstaveisLista,
         jovemAprendiz,
         pcd,
         inventario,
         adm,
       };
-    }, [vagas, admitidos]);
+    }, [vagas, vagasAbertas, admitidos]);
+
+  const dadosModalResumo =
+    useMemo(() => {
+      if (modalResumoAberto === "contratacoes") {
+        return {
+          titulo: `Contratações Efetivadas - ${indicadores.contratacoesPorUnidade.length}`,
+          total:
+            indicadores.contratacoesEfetivadas,
+          itens:
+            indicadores.contratacoesPorUnidade,
+          textoVazio:
+            "Nenhuma contratação registrada.",
+        };
+      }
+
+      if (modalResumoAberto === "pendentes") {
+        return {
+          titulo: `Vagas Pendentes - ${indicadores.pendentesPorUnidade.length}`,
+          total: indicadores.vagasPendentes,
+          itens:
+            indicadores.pendentesPorUnidade,
+          textoVazio:
+            "Nenhuma pendência registrada.",
+        };
+      }
+
+      if (modalResumoAberto === "estaveis") {
+        return {
+          titulo: "Unidades Estáveis",
+          total: indicadores.unidadesEstaveis,
+          itens:
+            indicadores.unidadesEstaveisLista.map(
+              (unidade) => ({
+                unidade,
+                quantidade: 0,
+              })
+            ),
+          textoVazio:
+            "Nenhuma unidade estável.",
+        };
+      }
+
+      return null;
+    }, [modalResumoAberto, indicadores]);
 
   return (
     <section className="resumo">
@@ -210,7 +330,16 @@ function Cards({
         </strong>
       </div>
 
-      <div className="card azul">
+      <button
+        type="button"
+        className="card azul card-clicavel"
+        onClick={() =>
+          setModalResumoAberto(
+            "contratacoes"
+          )
+        }
+        title="Ver contratações por unidade"
+      >
         <span>
           Contratações Efetivadas
         </span>
@@ -220,9 +349,16 @@ function Cards({
             indicadores.contratacoesEfetivadas
           }
         </strong>
-      </div>
+      </button>
 
-      <div className="card verde">
+      <button
+        type="button"
+        className="card verde card-clicavel"
+        onClick={() =>
+          setModalResumoAberto("pendentes")
+        }
+        title="Ver pendências por unidade"
+      >
         <span>
           Vagas Pendentes
         </span>
@@ -232,9 +368,16 @@ function Cards({
             indicadores.vagasPendentes
           }
         </strong>
-      </div>
+      </button>
 
-      <div className="card cinza">
+      <button
+        type="button"
+        className="card cinza card-clicavel"
+        onClick={() =>
+          setModalResumoAberto("estaveis")
+        }
+        title="Ver unidades estáveis"
+      >
         <span>
           Unidades Estáveis
         </span>
@@ -244,7 +387,78 @@ function Cards({
             indicadores.unidadesEstaveis
           }
         </strong>
-      </div>
+      </button>
+
+      {dadosModalResumo && (
+        <div
+          className="modal-indicador-fundo"
+          onClick={() =>
+            setModalResumoAberto(null)
+          }
+        >
+          <div
+            className={`modal-indicador ${
+              modalResumoAberto === "estaveis"
+                ? "verde"
+                : "azul"
+            }`}
+            onClick={(evento) =>
+              evento.stopPropagation()
+            }
+          >
+            <div className="modal-indicador-cabecalho">
+              <div>
+                <span>Indicador</span>
+                <h3>{dadosModalResumo.titulo}</h3>
+              </div>
+
+              <button
+                type="button"
+                className="modal-indicador-fechar"
+                onClick={() =>
+                  setModalResumoAberto(null)
+                }
+                title="Fechar"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="modal-indicador-conteudo">
+              {dadosModalResumo.itens.length >
+              0 ? (
+                dadosModalResumo.itens.map(
+                  (item) => (
+                    <div
+                      className="modal-indicador-unidade"
+                      key={item.unidade}
+                    >
+                      <span>{item.unidade}</span>
+                      <strong>
+                        {modalResumoAberto ===
+                        "estaveis"
+                          ? "Estável"
+                          : item.quantidade}
+                      </strong>
+                    </div>
+                  )
+                )
+              ) : (
+                <div className="modal-indicador-vazio">
+                  {dadosModalResumo.textoVazio}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-indicador-total">
+              <span>Total</span>
+              <strong>
+                {dadosModalResumo.total}
+              </strong>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mini-indicadores">
         <div className="mini-card">

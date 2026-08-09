@@ -12,6 +12,8 @@ const unidades = [
   { codigo: "009", nome: "SALESIANOS", colaboradores: 0 },
   { codigo: "010", nome: "TIRADENTES", colaboradores: 0 },
   { codigo: "013", nome: "VILA TRÊS MARIAS", colaboradores: 0 },
+  { codigo: "014", nome: "LAZULI", colaboradores: 0 },
+  { codigo: "015", nome: "SOLUDEU", colaboradores: 0 },
 ];
 
 export default unidades;

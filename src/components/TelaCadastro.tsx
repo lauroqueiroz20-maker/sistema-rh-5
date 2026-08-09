@@ -1,10 +1,16 @@
 ﻿import {
   useMemo,
   useState,
+  type MouseEvent,
 } from "react";
 
 import motivos from "../data/motivos";
+import cargos from "../data/cargos";
+import tipos from "../data/tipos";
 import { type Vaga } from "../data/vagas";
+import "./TelaCadastro.css";
+
+type Emergencia = "SIM" | "NÃO";
 
 interface TelaCadastroProps {
   vagas: Vaga[];
@@ -15,14 +21,25 @@ interface TelaCadastroProps {
     cargo: string,
     setor: string
   ) => void;
-  onAtualizarMotivo: (id: number, motivo: string) => void;
+  onAtualizarTipo: (id: number, tipo: string) => void;
+  onAtualizarTurno: (id: number, turno: string) => void;
+  onAtualizarMotivo: (
+    id: number,
+    motivo: string
+  ) => void;
   onAtualizarEmergencia: (
     id: number,
-    emergencia: "SIM" | "NÃO"
+    emergencia: Emergencia
+  ) => void;
+  onAtualizarData: (
+    id: number,
+    data: string
   ) => void;
   onAlternarAdmissao: (id: number) => void;
   onExcluirVaga: (id: number) => void;
+  idsVagasDestacadas?: number[];
 }
+
 
 function normalizarTexto(valor: unknown) {
   return String(valor || "")
@@ -33,113 +50,305 @@ function normalizarTexto(valor: unknown) {
 }
 
 function classeTipo(tipo: string) {
-  const tipoNormalizado = normalizarTexto(tipo);
+  const tipoNormalizado =
+    normalizarTexto(tipo);
 
-  if (tipoNormalizado === "PCD") return "tipo-pcd";
-  if (tipoNormalizado.includes("APRENDIZ")) return "tipo-ja";
-  if (tipoNormalizado.includes("INVENTARIO")) return "tipo-inv";
-  if (tipoNormalizado === "ADM") return "tipo-adm";
-  if (tipoNormalizado.includes("ESTAVEL")) return "tipo-estavel";
+  if (tipoNormalizado === "PCD") {
+    return "tipo-pcd";
+  }
+
+  if (
+    tipoNormalizado.includes("APRENDIZ")
+  ) {
+    return "tipo-ja";
+  }
+
+  if (
+    tipoNormalizado.includes("INVENTARIO")
+  ) {
+    return "tipo-inv";
+  }
+
+  if (tipoNormalizado === "ADM") {
+    return "tipo-adm";
+  }
+
+  if (
+    tipoNormalizado.includes("ESTAVEL")
+  ) {
+    return "tipo-estavel";
+  }
 
   return "tipo-operac";
 }
 
 function classeLinha(tipo: string) {
-  return classeTipo(tipo) === "tipo-estavel"
+  return classeTipo(tipo) ===
+    "tipo-estavel"
     ? "tipo-estavel"
     : "";
+}
+
+function indiceDataBrasil(valor?: string) {
+  if (!valor) return 0;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+    return Number(valor.replace(/-/g, ""));
+  }
+
+  const partes = valor.split("/");
+  if (partes.length !== 3) return 0;
+
+  const [dia, mes, ano] = partes;
+  return Number(`${ano}${mes.padStart(2, "0")}${dia.padStart(2, "0")}`);
+}
+
+function motivoEmExperiencia(valor?: string) {
+  return normalizarTexto(valor).includes("EXPERIENCIA");
+}
+function ordenarVagas(vagas: Vaga[]) {
+  return [...vagas].sort((a, b) => {
+    const dataA = indiceDataBrasil(a.data);
+    const dataB = indiceDataBrasil(b.data);
+
+    if (dataA !== dataB) {
+      return dataA - dataB;
+    }
+
+    const porUnidade = String(
+      a.unidade || ""
+    ).localeCompare(
+      String(b.unidade || ""),
+      "pt-BR"
+    );
+
+    if (porUnidade !== 0) {
+      return porUnidade;
+    }
+
+    return Number(a.id || 0) - Number(b.id || 0);
+  });
+}
+
+function calcularQuantidade(
+  valor: number
+) {
+  return Math.max(
+    0,
+    Number(valor || 0)
+  );
+}
+
+function normalizarEmergencia(
+  valor: string
+): Emergencia {
+  return valor === "SIM"
+    ? "SIM"
+    : "NÃO";
+}
+
+function converterParaDataBrasil(data: string) {
+  if (!data) {
+    return "";
+  }
+
+  const partes = data.split("-");
+
+  if (partes.length !== 3) {
+    return data;
+  }
+
+  const [ano, mes, dia] = partes;
+
+  return `${dia}/${mes}/${ano}`;
+}
+
+function converterBrasilParaDataInput(data: string) {
+  if (!data) {
+    return "";
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+    return data;
+  }
+
+  const partes = data.split("/");
+
+  if (partes.length !== 3) {
+    return "";
+  }
+
+  const [dia, mes, ano] = partes;
+
+  if (!dia || !mes || !ano) {
+    return "";
+  }
+
+  return `${ano.padStart(4, "0")}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+}
+
+function abrirCalendarioData(
+  evento: MouseEvent<HTMLButtonElement>
+) {
+  const campo = evento.currentTarget
+    .previousElementSibling;
+
+  if (campo instanceof HTMLInputElement) {
+    campo.showPicker();
+  }
 }
 
 function TelaCadastro({
   vagas,
   modo,
   admissoesPendentes,
+  onAtualizarCargo,
+  onAtualizarTipo,
+  onAtualizarTurno,
   onAtualizarMotivo,
   onAtualizarEmergencia,
+  onAtualizarData,
   onAlternarAdmissao,
   onExcluirVaga,
+  idsVagasDestacadas = [],
 }: TelaCadastroProps) {
   const [
-    cargoSelecionadoFiltro,
-    setCargoSelecionadoFiltro,
+    cargoFiltro,
+    setCargoFiltro,
   ] = useState("");
 
-  const vagasFiltradas = useMemo(
-    () =>
-      cargoSelecionadoFiltro
-        ? vagas.filter(
-            (vaga) =>
-              vaga.cargo === cargoSelecionadoFiltro
-          )
-        : vagas,
-    [cargoSelecionadoFiltro, vagas]
-  );
+  const [
+    setorFiltro,
+    setSetorFiltro,
+  ] = useState("");
 
-  const cargosFiltro = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          vagas
-            .map((vaga) =>
-              String(vaga.cargo || "").trim()
-            )
-            .filter(Boolean)
-        )
-      ).sort((a, b) =>
-        a.localeCompare(b, "pt-BR")
-      ),
+  const cargosDisponiveis = useMemo(() => {
+    const mapaCargos = new Map<string, number>();
+
+    vagas.forEach((vaga) => {
+      const nomeCargo = String(vaga.cargo || "").trim();
+
+      if (!nomeCargo) {
+        return;
+      }
+
+      const totalAtual = mapaCargos.get(nomeCargo) || 0;
+
+      mapaCargos.set(
+        nomeCargo,
+        totalAtual + calcularQuantidade(vaga.quantidade)
+      );
+    });
+
+    return Array.from(mapaCargos.entries()).sort((a, b) =>
+      a[0].localeCompare(b[0], "pt-BR")
+    );
+  }, [vagas]);
+
+  const setoresDisponiveis = useMemo(() => {
+    return Array.from(
+      new Set(
+        [...cargos.map((item) => item.setor), ...vagas.map((vaga) => vaga.setor)]
+          .map((setor) => String(setor || "").trim())
+          .filter(Boolean)
+      )
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [vagas]);
+
+  const tiposDisponiveis = useMemo(
+    () => Array.from(new Set([...tipos, ...vagas.map((vaga) => vaga.tipo)]))
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b, "pt-BR")),
     [vagas]
   );
 
-  const vagasOrdenadas = useMemo(() => {
-    return [...vagasFiltradas].sort((a, b) => {
-      const porUnidade = String(a.unidade || "").localeCompare(
-        String(b.unidade || ""),
-        "pt-BR"
-      );
+  const cargosEditaveis = useMemo(
+    () => Array.from(new Set([...cargos.map((item) => item.cargo), ...vagas.map((vaga) => vaga.cargo)]))
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b, "pt-BR")),
+    [vagas]
+  );
 
-      if (porUnidade !== 0) {
-        return porUnidade;
-      }
+  const setoresPorCargo = useMemo(() => {
+    const mapa = new Map<string, string>();
 
-      return String(a.cargo || "").localeCompare(
-        String(b.cargo || ""),
-        "pt-BR"
-      );
+    cargos.forEach((item) => {
+      mapa.set(normalizarTexto(item.cargo), item.setor);
     });
-  }, [vagasFiltradas]);
 
-  const unidadesNaTabela = useMemo(() => {
-    return Array.from(
-      new Set(vagasOrdenadas.map((vaga) => vaga.unidade))
-    );
-  }, [vagasOrdenadas]);
+    vagas.forEach((vaga) => {
+      const chave = normalizarTexto(vaga.cargo);
+      if (chave && vaga.setor) {
+        mapa.set(chave, vaga.setor);
+      }
+    });
 
-  function classeGrupoUnidade(unidade: string) {
-    const indice = unidadesNaTabela.indexOf(unidade);
-    return indice % 2 === 1
+    return mapa;
+  }, [vagas]);
+
+  const turnosDisponiveis = useMemo(
+    () => Array.from(new Set(["D", "N", "S", "E", ...vagas.map((vaga) => vaga.turno)]))
+      .filter(Boolean),
+    [vagas]
+  );
+
+  const vagasFiltradas = useMemo(() => {
+    return vagas.filter((vaga) => {
+      const cargoConfere = cargoFiltro
+        ? normalizarTexto(vaga.cargo) === normalizarTexto(cargoFiltro)
+        : true;
+      const setorConfere = setorFiltro
+        ? normalizarTexto(vaga.setor) === normalizarTexto(setorFiltro)
+        : true;
+
+      return cargoConfere && setorConfere;
+    });
+  }, [vagas, cargoFiltro, setorFiltro]);
+
+  const vagasOrdenadas = useMemo(
+    () => ordenarVagas(vagasFiltradas),
+    [vagasFiltradas]
+  );
+
+  const unidadesNaTabela = useMemo(
+    () =>
+      Array.from(
+        new Set(vagasOrdenadas.map((vaga) => vaga.unidade))
+      ),
+    [vagasOrdenadas]
+  );
+
+  const totalVagasExibidas = useMemo(
+    () =>
+      vagasFiltradas.reduce(
+        (total, vaga) => total + calcularQuantidade(vaga.quantidade),
+        0
+      ),
+    [vagasFiltradas]
+  );
+
+  function classeGrupoUnidade(
+    unidade: string
+  ) {
+    return unidadesNaTabela.indexOf(
+      unidade
+    ) %
+      2 ===
+      0
       ? "grupo-unidade-azul"
       : "";
   }
 
-  function primeiraLinhaUnidade(index: number) {
-    if (index === 0) return true;
-
+  function primeiraLinhaUnidade(
+    index: number
+  ) {
     return (
-      vagasOrdenadas[index - 1].unidade !==
-      vagasOrdenadas[index].unidade
+      index === 0 ||
+      vagasOrdenadas[index - 1]
+        .unidade !==
+        vagasOrdenadas[index].unidade
     );
   }
-
-  const totalVagasExibidas = vagasFiltradas.reduce(
-    (total, vaga) =>
-      total +
-      Math.max(
-        0,
-        Number(vaga.quantidade || 0)
-      ),
-    0
-  );
 
   return (
     <section
@@ -149,40 +358,62 @@ function TelaCadastro({
         overflowY: "visible",
       }}
     >
-      <div style={{ overflowX: "auto" }}>
+      <div
+        style={{
+          overflowX: "auto",
+        }}
+      >
         <table>
           <thead>
             <tr>
               <th>Unidade</th>
+
               <th>Tipo</th>
+
               <th>
                 <select
-                  className="filtro-cargo-cadastro"
-                  value={cargoSelecionadoFiltro}
+                  className="filtro-tabela-cadastro"
+                  value={cargoFiltro}
                   onChange={(evento) =>
-                    setCargoSelecionadoFiltro(
-                      evento.target.value
-                    )
+                    setCargoFiltro(evento.target.value)
                   }
                 >
                   <option value="">
-                    Todos os cargos
+                    Cargo
                   </option>
 
-                  {cargosFiltro.map((cargo) => (
-                    <option
-                      key={cargo}
-                      value={cargo}
-                    >
-                      {cargo}
+                  {cargosDisponiveis.map(([nomeCargo]) => (
+                    <option key={nomeCargo} value={nomeCargo}>
+                      {nomeCargo}
                     </option>
                   ))}
                 </select>
               </th>
-              <th>Setor</th>
+
+              <th>
+                <select
+                  className="filtro-tabela-cadastro"
+                  value={setorFiltro}
+                  onChange={(evento) =>
+                    setSetorFiltro(evento.target.value)
+                  }
+                >
+                  <option value="">
+                    Setor
+                  </option>
+
+                  {setoresDisponiveis.map((setor) => (
+                    <option key={setor} value={setor}>
+                      {setor}
+                    </option>
+                  ))}
+                </select>
+              </th>
+
               <th className="total-vagas">
                 {totalVagasExibidas}
               </th>
+
               <th>Turno</th>
               <th>Motivo</th>
               <th>Emerg.</th>
@@ -194,7 +425,8 @@ function TelaCadastro({
           </thead>
 
           <tbody>
-            {vagasOrdenadas.length === 0 ? (
+            {vagasOrdenadas.length ===
+            0 ? (
               <tr>
                 <td
                   colSpan={12}
@@ -204,184 +436,352 @@ function TelaCadastro({
                     fontWeight: 700,
                   }}
                 >
-                  Nenhuma vaga encontrada para o cargo selecionado.
+                  Nenhuma vaga encontrada
+                  para o cargo selecionado.
                 </td>
               </tr>
             ) : (
-              vagasOrdenadas.map((vaga, index) => {
-                const quantidade = Math.max(
-                  0,
-                  Number(vaga.quantidade || 0)
-                );
+              vagasOrdenadas.map(
+                (vaga, index) => {
+                  const quantidade =
+                    calcularQuantidade(
+                      vaga.quantidade
+                    );
 
-                const admissoes = Math.max(
-                  0,
-                  Number(vaga.admissoes || 0)
-                );
+                  const admissoes =
+                    calcularQuantidade(
+                      vaga.admissoes
+                    );
 
-                const concluida =
-                  quantidade > 0 &&
-                  admissoes >= quantidade;
+                  const concluida =
+                    quantidade > 0 &&
+                    admissoes >=
+                      quantidade;
 
-                const selecionadaParaAdmissao =
-                  admissoesPendentes.includes(vaga.id);
+                  const selecionadaParaAdmissao =
+                    admissoesPendentes.includes(
+                      vaga.id
+                    );
 
-                const destaqueEstavel =
-                  classeLinha(vaga.tipo);
+                  const destaqueEstavel =
+                    classeLinha(
+                      vaga.tipo
+                    );
 
-                const classeLinhaTabela = [
-                  classeGrupoUnidade(vaga.unidade),
-                  primeiraLinhaUnidade(index)
-                    ? "inicio-unidade"
-                    : "",
-                ]
-                  .join(" ")
-                  .trim();
+                  const vagaDestacada =
+                    idsVagasDestacadas.includes(
+                      vaga.id
+                    );
 
-                return (
-                  <tr
-                    key={vaga.id}
-                    className={classeLinhaTabela}
-                  >
-                    <td className={destaqueEstavel}>
-                      {vaga.unidade}
-                    </td>
+                  const classeLinhaTabela =
+                    [
+                      classeGrupoUnidade(
+                        vaga.unidade
+                      ),
+                      vagaDestacada
+                        ? "vaga-recem-transferida"
+                        : "",
+                      primeiraLinhaUnidade(
+                        index
+                      )
+                        ? "inicio-unidade"
+                        : "",
+                    ]
+                      .join(" ")
+                      .trim();
 
-                    <td className={destaqueEstavel}>
-                      {vaga.tipo || "OPERAC."}
-                    </td>
+                  return (
+                    <tr
+                      key={vaga.id}
+                      className={
+                        classeLinhaTabela
+                      }
+                    >
+                      <td
+                        className={
+                          destaqueEstavel
+                        }
+                      >
+                        {vaga.unidade}
+                      </td>
 
-                    <td className={destaqueEstavel}>
-                      {vaga.cargo}
-                    </td>
-
-                    <td className={destaqueEstavel}>
-                      {vaga.setor}
-                    </td>
-
-                    <td className={destaqueEstavel}>
-                      {quantidade}
-                    </td>
-
-                    <td className={destaqueEstavel}>
-                      {vaga.turno}
-                    </td>
-
-                    <td className={destaqueEstavel}>
-                      {modo === "novo" && !concluida ? (
+                      <td
+                        className={
+                          destaqueEstavel
+                        }
+                      >
                         <select
                           className="select-motivo-tabela"
-                          value={vaga.motivo}
+                          value={vaga.tipo || "OPERAC."}
                           onChange={(evento) =>
-                            onAtualizarMotivo(
-                              vaga.id,
-                              evento.target.value
-                            )
+                            onAtualizarTipo(vaga.id, evento.target.value)
                           }
                         >
-                          {motivos.map((item) => (
-                            <option
-                              key={item}
-                              value={item}
-                            >
-                              {item}
-                            </option>
+                          {tiposDisponiveis.map((tipo) => (
+                            <option key={tipo} value={tipo}>{tipo}</option>
                           ))}
                         </select>
-                      ) : (
-                        vaga.motivo
-                      )}
-                    </td>
+                      </td>
 
-                    <td className={destaqueEstavel}>
-                      {modo === "novo" && !concluida ? (
+                      <td
+                        className={
+                          [
+                            destaqueEstavel,
+                            vagaDestacada
+                              ? "cargo-recem-transferido"
+                              : "",
+                          ]
+                            .join(" ")
+                            .trim()
+                        }
+                      >
                         <select
                           className="select-motivo-tabela"
-                          value={
-                            vaga.emergencia || "NÃO"
-                          }
-                          onChange={(evento) =>
-                            onAtualizarEmergencia(
+                          value={vaga.cargo}
+                          onChange={(evento) => {
+                            const cargoSelecionado = evento.target.value;
+                            const setorRelacionado = setoresPorCargo.get(
+                              normalizarTexto(cargoSelecionado)
+                            );
+
+                            onAtualizarCargo(
                               vaga.id,
-                              evento.target.value as
-                                | "SIM"
-                                | "NÃO"
-                            )
+                              cargoSelecionado,
+                              setorRelacionado || vaga.setor
+                            );
+                          }}
+                        >
+                          {cargosEditaveis.map((cargo) => (
+                            <option key={cargo} value={cargo}>{cargo}</option>
+                          ))}
+                        </select>
+                      </td>
+
+                      <td
+                        className={
+                          destaqueEstavel
+                        }
+                      >
+                        <span className="setor-automatico-tabela">
+                          {vaga.setor}
+                        </span>
+                      </td>
+
+                      <td
+                        className={
+                          destaqueEstavel
+                        }
+                      >
+                        {quantidade}
+                      </td>
+
+                      <td
+                        className={
+                          destaqueEstavel
+                        }
+                      >
+                        <select
+                          className="select-motivo-tabela"
+                          value={vaga.turno}
+                          onChange={(evento) =>
+                            onAtualizarTurno(vaga.id, evento.target.value)
                           }
                         >
-                          <option value="NÃO">
-                            NÃO
-                          </option>
-
-                          <option value="SIM">
-                            SIM
-                          </option>
+                          {turnosDisponiveis.map((turno) => (
+                            <option key={turno} value={turno}>{turno}</option>
+                          ))}
                         </select>
-                      ) : (
-                        vaga.emergencia || "NÃO"
-                      )}
-                    </td>
+                      </td>
 
-                    <td className={destaqueEstavel}>
-                      {!concluida && quantidade > 0 ? (
+                      <td
+                        className={
+                          destaqueEstavel
+                        }
+                      >
+                        {modo === "novo" &&
+                        !concluida ? (
+                          <select
+                            className="select-motivo-tabela"
+                            value={
+                              vaga.motivo
+                            }
+                            onChange={(
+                              evento
+                            ) =>
+                              onAtualizarMotivo(
+                                vaga.id,
+                                evento.target
+                                  .value
+                              )
+                            }
+                          >
+                            {motivos.map(
+                              (item) => (
+                                <option
+                                  key={
+                                    item
+                                  }
+                                  value={
+                                    item
+                                  }
+                                >
+                                  {item}
+                                </option>
+                              )
+                            )}
+                          </select>
+                        ) : (
+                          vaga.motivo
+                        )}
+                      </td>
+
+                      <td
+                        className={
+                          [
+                            destaqueEstavel,
+                            motivoEmExperiencia(vaga.motivo)
+                              ? "motivo-experiencia-tabela"
+                              : "",
+                          ]
+                            .join(" ")
+                            .trim()
+                        }
+                      >
+                        {modo === "novo" &&
+                        !concluida ? (
+                          <select
+                            className="select-motivo-tabela"
+                            value={normalizarEmergencia(
+                              vaga.emergencia
+                            )}
+                            onChange={(
+                              evento
+                            ) =>
+                              onAtualizarEmergencia(
+                                vaga.id,
+                                normalizarEmergencia(
+                                  evento
+                                    .target
+                                    .value
+                                )
+                              )
+                            }
+                          >
+                            <option value="NÃO">
+                              NÃO
+                            </option>
+
+                            <option value="SIM">
+                              SIM
+                            </option>
+                          </select>
+                        ) : (
+                          normalizarEmergencia(
+                            vaga.emergencia
+                          )
+                        )}
+                      </td>
+
+                      <td
+                        className={
+                          destaqueEstavel
+                        }
+                      >
+                        {!concluida &&
+                        quantidade > 0 ? (
+                          <button
+                            type="button"
+                            className={
+                              selecionadaParaAdmissao
+                                ? "botao-adm marcado"
+                                : "botao-adm"
+                            }
+                            onClick={() =>
+                              onAlternarAdmissao(
+                                vaga.id
+                              )
+                            }
+                            title={
+                              selecionadaParaAdmissao
+                                ? "Clique para desmarcar"
+                                : "Marcar admissão"
+                            }
+                          >
+                            {selecionadaParaAdmissao
+                              ? String.fromCharCode(10003)
+                              : String.fromCharCode(9633)}
+                          </button>
+                        ) : (
+                          admissoes
+                        )}
+                      </td>
+
+                      <td
+                        className={
+                          destaqueEstavel
+                        }
+                      >
+                        <div className="campo-data-cadastro">
+                          <input
+                            type="date"
+                            className="input-data-cadastro"
+                            title="Alterar data"
+                            value={converterBrasilParaDataInput(
+                              vaga.data
+                            )}
+                            onChange={(evento) =>
+                              onAtualizarData(
+                                vaga.id,
+                                converterParaDataBrasil(
+                                  evento.target.value
+                                )
+                              )
+                            }
+                          />
+                          <button
+                            type="button"
+                            className="botao-data-cadastro"
+                            aria-label={`Alterar data de ${vaga.unidade}`}
+                            title="Abrir calendário"
+                            onClick={abrirCalendarioData}
+                          >
+                            📅
+                          </button>
+                        </div>
+                      </td>
+
+                      <td>
+                        <span
+                          className={
+                            concluida
+                              ? `status ativo ${destaqueEstavel}`
+                              : `status pendente ${destaqueEstavel}`
+                          }
+                        >
+                          {concluida
+                            ? "Concluída"
+                            : "Aberta"}
+                        </span>
+                      </td>
+
+                      <td>
                         <button
                           type="button"
-                          className={
-                            selecionadaParaAdmissao
-                              ? "botao-adm marcado"
-                              : "botao-adm"
-                          }
+                          className="botao-excluir"
                           onClick={() =>
-                            onAlternarAdmissao(vaga.id)
+                            onExcluirVaga(
+                              vaga.id
+                            )
                           }
-                          title={
-                            selecionadaParaAdmissao
-                              ? "Clique para desmarcar"
-                              : "Marcar admissão"
-                          }
+                          title="Excluir cadastro"
                         >
-                          {selecionadaParaAdmissao
-                            ? "✓"
-                            : "□"}
+                          Excluir
                         </button>
-                      ) : (
-                        admissoes
-                      )}
-                    </td>
-
-                    <td className={destaqueEstavel}>
-                      {vaga.data}
-                    </td>
-
-                    <td>
-                      <span
-                        className={
-                          concluida
-                            ? `status ativo ${destaqueEstavel}`
-                            : `status pendente ${destaqueEstavel}`
-                        }
-                      >
-                        {concluida
-                          ? "Concluída"
-                          : "Aberta"}
-                      </span>
-                    </td>
-
-                    <td>
-                      <button
-                        type="button"
-                        className="botao-excluir"
-                        onClick={() =>
-                          onExcluirVaga(vaga.id)
-                        }
-                        title="Excluir cadastro"
-                      >
-                        Excluir
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
+                      </td>
+                    </tr>
+                  );
+                }
+              )
             )}
           </tbody>
         </table>
@@ -391,3 +791,11 @@ function TelaCadastro({
 }
 
 export default TelaCadastro;
+
+
+
+
+
+
+
+

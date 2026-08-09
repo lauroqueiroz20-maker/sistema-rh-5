@@ -112,6 +112,30 @@ select {
   opacity: 0.72;
 }
 
+.auth-link-senha {
+  margin-top: 12px !important;
+  background: #eef4fb !important;
+  color: #005eb8 !important;
+  border: 1px solid #cfe0f5 !important;
+}
+
+.auth-trocar-senha {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 50;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid #cfe0f5;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #005eb8;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.16);
+  cursor: pointer;
+}
+
 .auth-mensagem {
   display: block;
   margin-top: 14px;
@@ -538,4 +562,73 @@ select {
     width: 100%;
     justify-content: flex-end;
   }
+}
+
+.diniz-rh-card-unidade select {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 12px;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 13px;
+  background: #ffffff;
+  color: #13233c;
+  font-weight: 800;
+  outline: none;
+}
+
+.diniz-rh-card-unidade select:focus {
+  border-color: #0a66c2;
+  box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.12);
+}
+
+.diniz-rh-unidades-grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  max-height: 330px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.diniz-rh-unidade-opcao {
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #13233c;
+  text-align: left;
+  cursor: pointer;
+}
+
+.diniz-rh-unidade-opcao span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: #eef4fb;
+  color: #005eb8;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.diniz-rh-unidade-opcao strong {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.diniz-rh-unidade-opcao.ativa {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
 }

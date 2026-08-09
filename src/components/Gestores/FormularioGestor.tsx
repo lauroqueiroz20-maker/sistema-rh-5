@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import unidades from "../../data/unidades";
+import unidadesPadrao from "../../data/unidades";
+import { listarUnidadesConfiguradas } from "../../Services/estruturaCadastroService";
 import {
   type Gestor,
   type TipoContato,
@@ -11,6 +12,10 @@ type FormularioGestorProps = {
 };
 
 function FormularioGestor({ onCadastrar }: FormularioGestorProps) {
+  const unidadesConfiguradas = listarUnidadesConfiguradas();
+  const unidades = unidadesConfiguradas.length > 0
+    ? unidadesConfiguradas
+    : unidadesPadrao;
   const [codigo, setCodigo] = useState("");
   const [unidade, setUnidade] = useState("");
   const [nome, setNome] = useState("");
@@ -18,7 +23,12 @@ function FormularioGestor({ onCadastrar }: FormularioGestorProps) {
   const [tipoContato, setTipoContato] =
     useState<TipoContato>("GESTOR");
   const [telefone, setTelefone] = useState("");
+  const [telefoneAlternativo, setTelefoneAlternativo] = useState("");
   const [email, setEmail] = useState("");
+  const [colaboradoresOperacionais, setColaboradoresOperacionais] =
+    useState(0);
+  const [colaboradoresGestores, setColaboradoresGestores] = useState(0);
+  const [colaboradoresDiretoria, setColaboradoresDiretoria] = useState(0);
   const [status, setStatus] =
     useState<"ATIVO" | "INATIVO">("ATIVO");
   const [recebeDisparoDiario, setRecebeDisparoDiario] =
@@ -93,7 +103,26 @@ function FormularioGestor({ onCadastrar }: FormularioGestorProps) {
       cargo: cargo.trim(),
       tipoContato,
       telefone: telefone.replace(/\D/g, ""),
+      telefoneAlternativo: telefoneAlternativo.replace(/\D/g, ""),
       email: email.trim().toLowerCase(),
+      colaboradoresOperacionais:
+        tipoContato === "GESTOR"
+          ? Math.max(0, colaboradoresOperacionais)
+          : 0,
+      colaboradoresGestores:
+        tipoContato === "GESTOR"
+          ? Math.max(0, colaboradoresGestores)
+          : 0,
+      colaboradoresDiretoria:
+        tipoContato === "GESTOR"
+          ? Math.max(0, colaboradoresDiretoria)
+          : 0,
+      colaboradores:
+        tipoContato === "GESTOR"
+          ? Math.max(0, colaboradoresOperacionais) +
+            Math.max(0, colaboradoresGestores) +
+            Math.max(0, colaboradoresDiretoria)
+          : 0,
       ativo: status === "ATIVO",
       recebeDisparoDiario,
       criadoEm: agora,
@@ -108,7 +137,11 @@ function FormularioGestor({ onCadastrar }: FormularioGestorProps) {
     setCargo("");
     setTipoContato("GESTOR");
     setTelefone("");
+    setTelefoneAlternativo("");
     setEmail("");
+    setColaboradoresOperacionais(0);
+    setColaboradoresGestores(0);
+    setColaboradoresDiretoria(0);
     setStatus("ATIVO");
     setRecebeDisparoDiario(true);
   }
@@ -227,6 +260,19 @@ function FormularioGestor({ onCadastrar }: FormularioGestorProps) {
               setEmail(event.target.value)
             }
             placeholder="nome@empresa.com.br"
+          />
+        </div>
+
+        <div className="campo-gestor">
+          <label>Telefone alternativo</label>
+
+          <input
+            type="text"
+            value={telefoneAlternativo}
+            onChange={(event) =>
+              setTelefoneAlternativo(event.target.value)
+            }
+            placeholder="(88) 9 9999-9999"
           />
         </div>
 

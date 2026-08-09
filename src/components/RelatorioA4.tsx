@@ -224,7 +224,7 @@ function RelatorioA4({ vagas, ciclo }: Props) {
         <div className="a4-metricas">
           <div>
             <strong>{totais.vagas}</strong>
-            <span>DEMANDA ACUMULADA</span>
+            <span>DEMANDA<br />ACUMULADA</span>
             <small>
               As vagas não se referem exclusivamente às solicitações
               do mês, representa a demanda total sob gestão do RH,
@@ -235,7 +235,7 @@ function RelatorioA4({ vagas, ciclo }: Props) {
 
           <div>
             <strong>{totais.admissoes}</strong>
-            <span>CONTRATAÇÕES EFETIVADAS</span>
+            <span>CONTRATAÇÕES<br />EFETIVAS</span>
             <small>
               Representa o total de admissões realizadas durante o
               ciclo analisado, contemplando todas as vagas
@@ -246,7 +246,7 @@ function RelatorioA4({ vagas, ciclo }: Props) {
 
           <div>
             <strong>{totais.pendentes}</strong>
-            <span>VAGAS</span>
+            <span>VAGAS<br />PENDENTES</span>
             <small>
               Representa vagas que permanecem em processo de
               recrutamento e seleção ao final do ciclo, incluindo
@@ -294,19 +294,45 @@ function RelatorioA4({ vagas, ciclo }: Props) {
 
       <section className="a4-destaques">
         <h2>DESTAQUES</h2>
-        <p>
-          As maiores demandas concentram-se nas unidades de{" "}
-          <strong>{juntar(destaques.unidades)}</strong>.
-        </p>
-        <p>
-          As funções com maior necessidade de reposição são{" "}
-          <strong>{juntar(destaques.cargos)}</strong>.
-        </p>
-        <p>
-          As unidades{" "}
-          <strong>{juntar(destaques.estaveis)}</strong>{" "}
-          encontram-se estáveis, sem pendências de contratação.
-        </p>
+
+        <table className="a4-tabela-destaques">
+          <thead>
+            <tr>
+              <th>ESSA PARTE SEM FIXA</th>
+              <th>ESSA PARTE ALTERAR DE ACORDO COM O FLUXO</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>
+                As maiores demandas concentram-se nas unidades de
+              </td>
+              <td>
+                <strong>{juntar(destaques.unidades)}</strong>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                As funções com maior necessidade de reposição são
+              </td>
+              <td>
+                <strong>{juntar(destaques.cargos)}</strong>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                As unidades encontram-se estáveis, sem pendências de
+                contratação
+              </td>
+              <td>
+                <strong>{juntar(destaques.estaveis)}</strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <table className="a4-tabela">
