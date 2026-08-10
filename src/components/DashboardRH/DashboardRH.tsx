@@ -1267,15 +1267,34 @@ function DashboardRH({
               <strong>REGIÃO CRAJUBAR</strong>
             </h2>
 
-            <h2>
-              Painel Executivo
-              <strong>
-                {unidadeSelecionada.tipoPainel ===
-                "consolidado"
-                  ? "CONSOLIDADO GERAL"
-                  : unidadeSelecionada.nome.toUpperCase()}
-              </strong>
-            </h2>
+            <div className="painel-executivo-cabecalho">
+              <h2>
+                Painel Executivo
+                <strong>
+                  {unidadeSelecionada.tipoPainel ===
+                  "consolidado"
+                    ? "CONSOLIDADO GERAL"
+                    : unidadeSelecionada.nome.toUpperCase()}
+                </strong>
+              </h2>
+
+              <label className="seletor-unidade-premium">
+                <span>Selecionar unidade</span>
+                <select
+                  value={unidadeSelecionadaNome}
+                  onChange={(evento) =>
+                    setUnidadeSelecionadaNome(evento.target.value)
+                  }
+                >
+                  <option value={CONSOLIDADO_NOME}>CONSOLIDADO GERAL</option>
+                  {unidadesDashboard.map((unidade) => (
+                    <option key={unidade.nome} value={unidade.nome}>
+                      {unidade.nome.toUpperCase()}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </div>
 
           <div className="mapa-layout">
@@ -1414,6 +1433,9 @@ function DashboardRH({
                 <strong>{card.valor}</strong>
                 <small>{card.resumo}</small>
                 <div className="turnover-card-explicacao">
+                  <b className="turnover-card-explicacao-titulo">
+                    {card.nome}
+                  </b>
                   {card.id === "pressao-contratacao" ? (
                     <>
                       Isso significa que existe <strong className="turnover-explicacao-valor">1</strong> vaga pendente para cada <strong className="turnover-explicacao-valor">{colaboradoresPorVaga}</strong> colaboradores da unidade.
