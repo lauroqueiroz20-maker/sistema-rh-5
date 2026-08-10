@@ -1830,7 +1830,7 @@
 
 .turnover-premium-cabecalho h2 {
   margin: 4px 0 3px;
-  font-size: 28px;
+  font-size: 17px;
 }
 
 .turnover-premium-cabecalho p {
@@ -1983,22 +1983,62 @@
   position: absolute;
   z-index: 20;
   left: 50%;
-  width: 150%;
-  bottom: 10px;
-  padding: 10px 12px;
+  width: 175%;
+  height: 150%;
+  top: 25%;
+  bottom: auto;
+  padding: 12px;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border-top: 4px solid #0057b8;
+  border-radius: 14px;
   background: #ffffff;
   box-shadow: 0 8px 20px rgb(15 23 42 / 18%);
   color: #334155;
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 700;
   line-height: 1.35;
   opacity: 0;
   visibility: hidden;
-  transform: translate(-50%, 5px);
+  transform: translate(-50%, calc(-60% + 5px));
   transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
   pointer-events: none;
+}
+
+.turnover-premium-kpi.linha-inferior .turnover-card-explicacao {
+  top: 75%;
+}
+
+.turnover-premium-kpi.pendentes .turnover-card-explicacao,
+.turnover-premium-kpi.pressao-pendencias .turnover-card-explicacao {
+  left: 20%;
+}
+
+.turnover-premium-kpi.quadro .turnover-card-explicacao,
+.turnover-premium-kpi.admissoes-quadro .turnover-card-explicacao {
+  border-top-color: #7c3aed;
+}
+
+.turnover-premium-kpi.demanda .turnover-card-explicacao,
+.turnover-premium-kpi.media-demitidos .turnover-card-explicacao {
+  border-top-color: #ef4444;
+}
+
+.turnover-premium-kpi.entradas .turnover-card-explicacao,
+.turnover-premium-kpi.cobertura .turnover-card-explicacao {
+  border-top-color: #2563eb;
+}
+
+.turnover-premium-kpi.pendentes .turnover-card-explicacao,
+.turnover-premium-kpi.pressao-pendencias .turnover-card-explicacao {
+  border-top-color: #16a34a;
+}
+
+.turnover-card-explicacao .turnover-explicacao-valor {
+  display: inline;
+  margin: 0;
+  color: #f97316;
+  font-size: inherit;
+  font-weight: 950;
 }
 
 .turnover-premium-kpi:hover .turnover-card-explicacao,
@@ -2006,8 +2046,9 @@
 .turnover-premium-kpi.explicacao-aberta .turnover-card-explicacao {
   opacity: 1;
   visibility: visible;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, -60%);
 }
+
 
 .turnover-premium-leitura {
   grid-column: 2 / -1;

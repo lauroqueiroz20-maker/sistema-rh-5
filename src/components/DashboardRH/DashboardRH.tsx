@@ -353,6 +353,7 @@ function DashboardRH({
     setResumoDashboardAberto,
   ] = useState<TipoResumoDashboard | null>(null);
   const [cardTurnoverAberto, setCardTurnoverAberto] = useState<string | null>(null);
+  const [grupoTurnoverAberto, setGrupoTurnoverAberto] = useState<string | null>(null);
 
   const resumoPorUnidade = useMemo(() => {
     const agrupar = (
@@ -808,6 +809,8 @@ function DashboardRH({
   const cardsTurnover = [
     {
       id: "quadro",
+      grupo: "quadro",
+      linha: "superior",
       classe: "quadro",
       nome: "Quadro monitorado",
       valor: unidadeSelecionada.colaboradores,
@@ -816,6 +819,8 @@ function DashboardRH({
     },
     {
       id: "demanda",
+      grupo: "demanda",
+      linha: "superior",
       classe: "demanda",
       nome: "Demanda Acumulada",
       valor: unidadeSelecionada.vagas,
@@ -824,6 +829,8 @@ function DashboardRH({
     },
     {
       id: "entradas",
+      grupo: "contratacoes",
+      linha: "superior",
       classe: "entradas",
       nome: "Contratações Efetivadas",
       valor: unidadeSelecionada.admitidos,
@@ -832,6 +839,8 @@ function DashboardRH({
     },
     {
       id: "pendentes",
+      grupo: "pendencias",
+      linha: "superior",
       classe: "pendentes",
       nome: "Vagas Pendentes",
       valor: unidadeSelecionada.pendentes,
@@ -840,6 +849,8 @@ function DashboardRH({
     },
     {
       id: "pressao-contratacao",
+      grupo: "quadro",
+      linha: "inferior",
       classe: "admissoes-quadro",
       nome: "Pressão de Contratação",
       valor: unidadeSelecionada.pendentes > 0 ? `1 : ${colaboradoresPorVaga}` : "Sem vagas",
@@ -850,27 +861,33 @@ function DashboardRH({
     },
     {
       id: "media-demitidos",
+      grupo: "demanda",
+      linha: "inferior",
       classe: "media-demitidos",
       nome: "Média Demitidos",
       valor: mediaDemitidos,
       resumo: "estimativa de reposições",
-      explicacao: `Valor estimado: ${percentualMediaDemitidos}% das solicitações são consideradas reposições por demissões.`,
+      explicacao: `vagas correspondem à média estimada de demissões, considerando ${percentualMediaDemitidos}% das solicitações.`,
     },
     {
       id: "cobertura",
+      grupo: "contratacoes",
+      linha: "inferior",
       classe: "cobertura",
       nome: "Índice de Cobertura",
       valor: `${taxaCoberturaTurnover}%`,
       resumo: "demanda preenchida",
-      explicacao: "Mostra quanto da demanda já foi atendida: contratações efetivadas divididas pela demanda acumulada.",
+      explicacao: "da demanda acumulada já foi atendida por contratações efetivadas.",
     },
     {
       id: "indice-pendencia",
+      grupo: "pendencias",
+      linha: "inferior",
       classe: "pressao-pendencias",
       nome: "Índice de Pendência",
       valor: `${taxaPendenciaTurnover}%`,
       resumo: "demanda ainda aberta",
-      explicacao: "Mostra quanto da demanda continua aberta: vagas pendentes divididas pela demanda acumulada.",
+      explicacao: "da demanda acumulada ainda permanece com vagas pendentes.",
     },
   ];
   const fontesRecrutamento = metricasRecrutamento.fontes
@@ -1345,11 +1362,13 @@ function DashboardRH({
 
             {cardsTurnover.map((card) => (
               <article
-                className={`turnover-premium-kpi ${card.classe} ${cardTurnoverAberto === card.id ? "explicacao-aberta" : ""}`}
+                className={`turnover-premium-kpi ${card.classe} linha-${card.linha} ${cardTurnoverAberto === card.id || grupoTurnoverAberto === card.grupo ? "explicacao-aberta" : ""}`}
                 key={card.id}
                 role="button"
                 tabIndex={0}
-                aria-expanded={cardTurnoverAberto === card.id}
+                aria-expanded={cardTurnoverAberto === card.id || grupoTurnoverAberto === card.grupo}
+                onMouseEnter={() => setGrupoTurnoverAberto(card.grupo)}
+                onMouseLeave={() => setGrupoTurnoverAberto(null)}
                 onClick={() => setCardTurnoverAberto((atual) => atual === card.id ? null : card.id)}
                 onKeyDown={(evento) => {
                   if (evento.key === "Enter" || evento.key === " ") {
@@ -1362,7 +1381,22 @@ function DashboardRH({
                 <strong>{card.valor}</strong>
                 <small>{card.resumo}</small>
                 <div className="turnover-card-explicacao">
-                  {card.valor} - {card.explicacao}
+                  {card.id === "pressao-contratacao" ? (
+                    <>
+                      Isso significa que existe <strong className="turnover-explicacao-valor">1</strong> vaga pendente para cada <strong className="turnover-explicacao-valor">{colaboradoresPorVaga}</strong> colaboradores da unidade.
+                    </>
+                  ) : (
+                    <>
+                      {card.linha === "inferior" ? "Isso significa que " : ""}
+                      {String(card.valor).match(/\d/) ? (
+                        <strong className="turnover-explicacao-valor">{card.valor}</strong>
+                      ) : (
+                        card.valor
+                      )}
+                      {card.linha === "inferior" ? " " : " - "}
+                      {card.explicacao}
+                    </>
+                  )}
                 </div>
               </article>
             ))}
