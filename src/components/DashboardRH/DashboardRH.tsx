@@ -614,6 +614,7 @@ function DashboardRH({
       unidadeSelecionadaBase.jovemAprendiz,
     adm: unidadeSelecionadaBase.adm,
     inventario: unidadeSelecionadaBase.inventario,
+    colaboradores: Math.round(unidadeSelecionadaBase.colaboradores),
   };
 
   const exibindoConsolidado = unidadeSelecionadaNome === CONSOLIDADO_NOME;
@@ -761,7 +762,12 @@ function DashboardRH({
     ? metricasRecrutamento
     : {
         funil: metricasRecrutamento.funil.map((item) => ({ ...item, valor: 0 })),
-        fontes: metricasRecrutamento.fontes.map((item) => ({ ...item, valor: 0 })),
+        fontes: metricasRecrutamento.fontes.map((item) => ({
+          ...item,
+          valor: normalizarTexto(item.nome).includes("MEDIA DEMITIDOS")
+            ? item.valor
+            : 0,
+        })),
         recusaGestao: metricasRecrutamento.recusaGestao.map((item) => ({ ...item, valor: 0 })),
         desistencias: metricasRecrutamento.desistencias.map((item) => ({ ...item, valor: 0 })),
       };
