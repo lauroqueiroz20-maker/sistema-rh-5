@@ -57,7 +57,7 @@ export default function MapaInfo({ unidade }: Props) {
   const estrutura = unidade.estrutura || {};
   const alertas = unidade.alertas || {};
   const isConsolidado = unidade.tipoPainel === "consolidado";
-  const totalColaboradores = numero(unidade.colaboradores);
+  const totalColaboradores = Math.round(numero(unidade.colaboradores));
   const totalVagas = numero(unidade.vagas);
   const totalAdmitidos = numero(unidade.admitidos);
   const totalPendentes = numero(unidade.pendentes);
@@ -68,16 +68,9 @@ export default function MapaInfo({ unidade }: Props) {
   const totalAdm = numero(estrutura.adm ?? unidade.adm);
   const totalInventario = numero(estrutura.inventario ?? unidade.inventario);
   const unidadesMonitoradas = Math.max(1, numero(unidade.unidadesMonitoradas));
-  const mediaColaboradoresPorUnidade = totalColaboradores / unidadesMonitoradas;
-  const mediaColaboradoresFormatada = mediaColaboradoresPorUnidade.toLocaleString(
-    "pt-BR",
-    {
-      minimumFractionDigits: Number.isInteger(mediaColaboradoresPorUnidade)
-        ? 0
-        : 1,
-      maximumFractionDigits: 1,
-    },
-  );
+  const mediaColaboradoresFormatada = Math.round(
+    totalColaboradores / unidadesMonitoradas,
+  ).toLocaleString("pt-BR");
   const cobertura =
     totalVagas > 0 ? Math.round((totalAdmitidos / totalVagas) * 100) : 0;
   const demandaPor100 =

@@ -430,42 +430,6 @@ function DashboardRH({
     };
   }, [admitidos, vagasCadastro]);
 
-  const dadosResumoDashboard =
-    useMemo(() => {
-      if (
-        resumoDashboardAberto ===
-        "contratacoes"
-      ) {
-        return {
-          titulo: `Contratações Efetivadas - ${resumoPorUnidade.contratacoes.length}`,
-          total: cards.totalAdmitidos,
-          itens:
-            resumoPorUnidade.contratacoes,
-          vazio:
-            "Nenhuma contratação registrada.",
-        };
-      }
-
-      if (
-        resumoDashboardAberto ===
-        "pendentes"
-      ) {
-        return {
-          titulo: `Vagas Pendentes - ${resumoPorUnidade.pendentes.length}`,
-          total: cards.totalPendentes,
-          itens: resumoPorUnidade.pendentes,
-          vazio:
-            "Nenhuma pendência registrada.",
-        };
-      }
-
-      return null;
-    }, [
-      resumoDashboardAberto,
-      cards,
-      resumoPorUnidade,
-    ]);
-
   const unidadesEstaveisDashboard = useMemo(() => {
     return Array.from(
       new Set(
@@ -519,11 +483,6 @@ function DashboardRH({
       );
   }, [tipoIndicadorAberto, admitidos]);
 
-  const totalIndicadorAberto = unidadesPorIndicador.reduce(
-    (total, item) => total + item.quantidade,
-    0
-  );
-
   const unidadesMapaDinamicas = useMemo<UnidadeMapaBase[]>(() => {
     const chavesExistentes = new Set(
       unidadesMapaBase.map((unidade) => normalizarChaveUnidade(unidade.nome))
@@ -572,7 +531,7 @@ function DashboardRH({
         jovemAprendiz: indicadores.aprendiz,
         adm: indicadores.adm,
         inventario: indicadores.inventario,
-        colaboradores: indicadores.colaboradores,
+        colaboradores: Math.round(indicadores.colaboradores),
         unidadesMonitoradas: 1,
       };
     });
@@ -657,29 +616,87 @@ function DashboardRH({
     inventario: unidadeSelecionadaBase.inventario,
   };
 
-  const ranking = [...unidadesDashboard]
+  const exibindoConsolidado = unidadeSelecionadaNome === CONSOLIDADO_NOME;
+  const chaveUnidadeSelecionada = normalizarChaveUnidade(unidadeSelecionadaBase.nome);
+  const pertenceAoPainelSelecionado = (registro: Vaga) =>
+    exibindoConsolidado ||
+    normalizarChaveUnidade(String(registro.unidade || "")) === chaveUnidadeSelecionada;
+  const vagasPainel = exibindoConsolidado
+    ? vagasCadastro
+    : vagasCadastro.filter(pertenceAoPainelSelecionado);
+  const admitidosPainel = exibindoConsolidado
+    ? admitidos
+    : admitidos.filter((registro) => pertenceAoPainelSelecionado(registro as Vaga));
+  const unidadesPainel = exibindoConsolidado
+    ? unidadesDashboard
+    : [unidadeSelecionadaBase];
+  const cardsPainel = {
+    ...getDashboardCards(vagasPainel, admitidosPainel),
+    totalColaboradores: unidadeSelecionada.colaboradores,
+  };
+  const resumoPorUnidadePainel = exibindoConsolidado
+    ? resumoPorUnidade
+    : {
+        contratacoes: resumoPorUnidade.contratacoes.filter(
+          (item) => normalizarChaveUnidade(item.unidade) === chaveUnidadeSelecionada,
+        ),
+        pendentes: resumoPorUnidade.pendentes.filter(
+          (item) => normalizarChaveUnidade(item.unidade) === chaveUnidadeSelecionada,
+        ),
+      };
+  const dadosResumoDashboardPainel = resumoDashboardAberto === "contratacoes"
+    ? {
+        titulo: `Contratações Efetivadas - ${unidadeSelecionada.nome}`,
+        total: cardsPainel.totalAdmitidos,
+        itens: resumoPorUnidadePainel.contratacoes,
+        vazio: "Nenhuma contratação registrada.",
+      }
+    : resumoDashboardAberto === "pendentes"
+      ? {
+          titulo: `Vagas Pendentes - ${unidadeSelecionada.nome}`,
+          total: cardsPainel.totalPendentes,
+          itens: resumoPorUnidadePainel.pendentes,
+          vazio: "Nenhuma pendência registrada.",
+        }
+      : null;
+  const unidadesEstaveisPainel = exibindoConsolidado
+    ? unidadesEstaveisDashboard
+    : unidadesEstaveisDashboard.filter(
+        (unidade) => normalizarChaveUnidade(unidade) === chaveUnidadeSelecionada,
+      );
+  const unidadesPorIndicadorPainel = exibindoConsolidado
+    ? unidadesPorIndicador
+    : unidadesPorIndicador.filter(
+        (item) => normalizarChaveUnidade(item.unidade) === chaveUnidadeSelecionada,
+      );
+  const totalIndicadorAbertoPainel = unidadesPorIndicadorPainel.reduce(
+    (total, item) => total + item.quantidade,
+    0,
+  );
+
+  const ranking = [...unidadesPainel]
     .sort((a, b) => b.vagas - a.vagas)
     .slice(0, 4);
 
   const funilInteligencia = [
     {
       nome: "Demanda",
-      valor: cards.totalVagas,
+      valor: cardsPainel.totalVagas,
       cor: "#2563eb",
     },
     {
       nome: "Admitidos",
-      valor: cards.totalAdmitidos,
+      valor: cardsPainel.totalAdmitidos,
       cor: "#16a34a",
     },
     {
       nome: "Pendentes",
-      valor: cards.totalPendentes,
+      valor: cardsPainel.totalPendentes,
       cor: "#f97316",
     },
     {
       nome: "Estáveis",
-      valor: cards.totalUnidadesEstaveis,
+      valor: cardsPainel.totalUnidadesEstaveis,
       cor: "#0f3d75",
     },
   ];
@@ -687,31 +704,31 @@ function DashboardRH({
   const indicadoresEspeciais = [
     {
       nome: "Aprendiz",
-      valor: cards.totalAprendiz,
+      valor: cardsPainel.totalAprendiz,
       cor: "#16a34a",
     },
     {
       nome: "PCD",
-      valor: cards.totalPCD,
+      valor: cardsPainel.totalPCD,
       cor: "#2563eb",
     },
     {
       nome: "ADM",
-      valor: cards.totalADM,
+      valor: cardsPainel.totalADM,
       cor: "#7c3aed",
     },
     {
       nome: "Inventário",
-      valor: cards.totalInventario,
+      valor: cardsPainel.totalInventario,
       cor: "#dc2626",
     },
   ];
 
   const coberturaInteligencia =
-    cards.totalVagas > 0
+    cardsPainel.totalVagas > 0
       ? Math.round(
-          (cards.totalAdmitidos /
-            cards.totalVagas) *
+          (cardsPainel.totalAdmitidos /
+            cardsPainel.totalVagas) *
             100
         )
       : 0;
@@ -740,18 +757,27 @@ function DashboardRH({
     };
   }, []);
 
-  const totalFunilRecrutamento = metricasRecrutamento.funil.reduce(
+  const metricasRecrutamentoPainel = exibindoConsolidado
+    ? metricasRecrutamento
+    : {
+        funil: metricasRecrutamento.funil.map((item) => ({ ...item, valor: 0 })),
+        fontes: metricasRecrutamento.fontes.map((item) => ({ ...item, valor: 0 })),
+        recusaGestao: metricasRecrutamento.recusaGestao.map((item) => ({ ...item, valor: 0 })),
+        desistencias: metricasRecrutamento.desistencias.map((item) => ({ ...item, valor: 0 })),
+      };
+
+  const totalFunilRecrutamento = metricasRecrutamentoPainel.funil.reduce(
     (total, item) => total + Math.max(0, Number(item.valor || 0)),
     0,
   );
   const primeiraEtapaFunil = Math.max(
     0,
-    Number(metricasRecrutamento.funil[0]?.valor || 0),
+    Number(metricasRecrutamentoPainel.funil[0]?.valor || 0),
   );
   const ultimaEtapaFunil = Math.max(
     0,
     Number(
-      metricasRecrutamento.funil[metricasRecrutamento.funil.length - 1]
+      metricasRecrutamentoPainel.funil[metricasRecrutamentoPainel.funil.length - 1]
         ?.valor || 0,
     ),
   );
@@ -763,7 +789,7 @@ function DashboardRH({
   const coresFontes = ["#f97316", "#fb923c", "#ea580c", "#c2410c"];
   const coresRecusa = ["#003f8f", "#0057b8", "#0ea5e9", "#38bdf8", "#bae6fd"];
   const coresDesistencia = ["#0f766e", "#14b8a6", "#22d3ee", "#67e8f9", "#ccfbf1"];
-  const funilRecrutamento = metricasRecrutamento.funil.map((item, indice) => ({
+  const funilRecrutamento = metricasRecrutamentoPainel.funil.map((item, indice) => ({
     ...item,
     cor: coresFunil[indice] || "#0057b8",
   }));
@@ -776,7 +802,7 @@ function DashboardRH({
     Math.max(
       0,
       Number(
-        metricasRecrutamento.fontes.find(
+        metricasRecrutamentoPainel.fontes.find(
           (item) => normalizarTexto(item.nome).includes("MEDIA DEMITIDOS"),
         )?.valor ?? 95,
       ),
@@ -890,42 +916,42 @@ function DashboardRH({
       explicacao: "da demanda acumulada ainda permanece com vagas pendentes.",
     },
   ];
-  const fontesRecrutamento = metricasRecrutamento.fontes
+  const fontesRecrutamento = metricasRecrutamentoPainel.fontes
     .filter((item) => !normalizarTexto(item.nome).includes("MEDIA DEMITIDOS"))
     .map((item, indice) => ({
       ...item,
       cor: coresFontes[indice] || "#f97316",
     }));
-  const totalRecusasGestao = metricasRecrutamento.recusaGestao.reduce(
+  const totalRecusasGestao = metricasRecrutamentoPainel.recusaGestao.reduce(
     (total, item) => total + Number(item.valor || 0),
     0
   );
-  const totalDesistenciasCandidato = metricasRecrutamento.desistencias.reduce(
+  const totalDesistenciasCandidato = metricasRecrutamentoPainel.desistencias.reduce(
     (total, item) => total + Number(item.valor || 0),
     0
   );
   const percentualMotivo = (valor: number, total: number) =>
     total > 0 ? Math.round((valor / total) * 1000) / 10 : 0;
-  const motivosRecusaGestao = metricasRecrutamento.recusaGestao.map((item, indice) => ({
+  const motivosRecusaGestao = metricasRecrutamentoPainel.recusaGestao.map((item, indice) => ({
     ...item,
     valor: percentualMotivo(item.valor, totalRecusasGestao),
     cor: coresRecusa[indice] || "#0057b8",
   }));
-  const motivosDesistencia = metricasRecrutamento.desistencias.map((item, indice) => ({
+  const motivosDesistencia = metricasRecrutamentoPainel.desistencias.map((item, indice) => ({
     ...item,
     valor: percentualMotivo(item.valor, totalDesistenciasCandidato),
     cor: coresDesistencia[indice] || "#0f766e",
   }));
   const divisaoDesistencia = calcularDivisaoPerdas(
-    metricasRecrutamento.recusaGestao,
-    metricasRecrutamento.desistencias
+    metricasRecrutamentoPainel.recusaGestao,
+    metricasRecrutamentoPainel.desistencias
   ).map((item, indice) => ({
     ...item,
     cor: indice === 0 ? "#0057b8" : "#f97316",
   }));
 
   const barraPercentual = (valor: number) =>
-    `${Math.max(8, Math.min(100, valor))}%`;
+    `${valor <= 0 ? 0 : Math.max(8, Math.min(100, valor))}%`;
 
   const fonteMaxima = Math.max(
     1,
@@ -939,8 +965,8 @@ function DashboardRH({
       <section className="cards-indicadores">
         <div className="card demanda">
           <span>Demanda Acumulada</span>
-          <strong>{cards.totalVagas}</strong>
-          <small>Total do ciclo</small>
+          <strong>{cardsPainel.totalVagas}</strong>
+          <small>{exibindoConsolidado ? "Total do ciclo" : unidadeSelecionada.nome}</small>
         </div>
 
         <button
@@ -954,8 +980,8 @@ function DashboardRH({
           title="Ver contratações por unidade"
         >
           <span>Contratações Efetivadas</span>
-          <strong>{cards.totalAdmitidos}</strong>
-          <small>No ciclo</small>
+          <strong>{cardsPainel.totalAdmitidos}</strong>
+          <small>{exibindoConsolidado ? "No ciclo" : unidadeSelecionada.nome}</small>
         </button>
 
         <button
@@ -969,8 +995,8 @@ function DashboardRH({
           title="Ver pendências por unidade"
         >
           <span>Vagas Pendentes</span>
-          <strong>{cards.totalPendentes}</strong>
-          <small>Aguardando</small>
+          <strong>{cardsPainel.totalPendentes}</strong>
+          <small>{exibindoConsolidado ? "Aguardando" : unidadeSelecionada.nome}</small>
         </button>
 
         <button
@@ -982,8 +1008,8 @@ function DashboardRH({
           title="Ver unidades estáveis"
         >
           <span>Unidades Estáveis</span>
-          <strong>{cards.totalUnidadesEstaveis}</strong>
-          <small>Sem pendências</small>
+          <strong>{cardsPainel.totalUnidadesEstaveis}</strong>
+          <small>{exibindoConsolidado ? "Sem pendências" : unidadeSelecionada.nome}</small>
         </button>
 
         <div className="mini-indicadores-dashboard">
@@ -996,7 +1022,7 @@ function DashboardRH({
             title="Ver unidades com vagas PCD"
           >
             <span>PCD</span>
-            <strong>{cards.totalPCD}</strong>
+            <strong>{cardsPainel.totalPCD}</strong>
           </button>
 
           <button
@@ -1008,7 +1034,7 @@ function DashboardRH({
             title="Ver unidades com vagas de Jovem Aprendiz"
           >
             <span>Aprendiz</span>
-            <strong>{cards.totalAprendiz}</strong>
+            <strong>{cardsPainel.totalAprendiz}</strong>
           </button>
 
           <button
@@ -1020,7 +1046,7 @@ function DashboardRH({
             title="Ver unidades com vagas ADM"
           >
             <span>ADM</span>
-            <strong>{cards.totalADM}</strong>
+            <strong>{cardsPainel.totalADM}</strong>
           </button>
 
           <button
@@ -1032,7 +1058,7 @@ function DashboardRH({
             title="Ver unidades com vagas de Inventário"
           >
             <span>Inventário</span>
-            <strong>{cards.totalInventario}</strong>
+            <strong>{cardsPainel.totalInventario}</strong>
           </button>
         </div>
       </section>
@@ -1075,8 +1101,8 @@ function DashboardRH({
             </div>
 
             <div className="modal-indicador-conteudo">
-              {unidadesPorIndicador.length > 0 ? (
-                unidadesPorIndicador.map((item) => (
+              {unidadesPorIndicadorPainel.length > 0 ? (
+                unidadesPorIndicadorPainel.map((item) => (
                   <div
                     className="modal-indicador-unidade"
                     key={item.unidade}
@@ -1095,13 +1121,13 @@ function DashboardRH({
 
             <div className="modal-indicador-total">
               <span>Total</span>
-              <strong>{totalIndicadorAberto}</strong>
+              <strong>{totalIndicadorAbertoPainel}</strong>
             </div>
           </div>
         </div>
       )}
 
-      {dadosResumoDashboard && (
+      {dadosResumoDashboardPainel && (
         <div
           className="modal-indicador-fundo"
           onClick={() =>
@@ -1118,7 +1144,7 @@ function DashboardRH({
               <div>
                 <span>Resumo</span>
                 <h3>
-                  {dadosResumoDashboard.titulo}
+                  {dadosResumoDashboardPainel.titulo}
                 </h3>
               </div>
 
@@ -1135,9 +1161,9 @@ function DashboardRH({
             </div>
 
             <div className="modal-indicador-conteudo">
-              {dadosResumoDashboard.itens.length >
+              {dadosResumoDashboardPainel.itens.length >
               0 ? (
-                dadosResumoDashboard.itens.map(
+                dadosResumoDashboardPainel.itens.map(
                   (item) => (
                     <div
                       className="modal-indicador-unidade"
@@ -1150,7 +1176,7 @@ function DashboardRH({
                 )
               ) : (
                 <div className="modal-indicador-vazio">
-                  {dadosResumoDashboard.vazio}
+                  {dadosResumoDashboardPainel.vazio}
                 </div>
               )}
             </div>
@@ -1158,7 +1184,7 @@ function DashboardRH({
             <div className="modal-indicador-total">
               <span>Total</span>
               <strong>
-                {dadosResumoDashboard.total}
+                {dadosResumoDashboardPainel.total}
               </strong>
             </div>
           </div>
@@ -1197,9 +1223,9 @@ function DashboardRH({
             </div>
 
             <div className="modal-indicador-conteudo">
-              {unidadesEstaveisDashboard.length >
+              {unidadesEstaveisPainel.length >
               0 ? (
-                unidadesEstaveisDashboard.map(
+                unidadesEstaveisPainel.map(
                   (unidade) => (
                     <div
                       className="modal-indicador-unidade"
@@ -1220,7 +1246,7 @@ function DashboardRH({
             <div className="modal-indicador-total">
               <span>Total</span>
               <strong>
-                {unidadesEstaveisDashboard.length}
+                {unidadesEstaveisPainel.length}
               </strong>
             </div>
           </div>
@@ -1325,9 +1351,9 @@ function DashboardRH({
       </section>
 
       <GraficosDashboard
-        cards={cards}
-        vagas={vagasCadastro}
-        unidades={unidadesDashboard}
+        cards={cardsPainel}
+        vagas={vagasPainel}
+        unidades={unidadesPainel}
         funil={funilRecrutamento}
         conversaoFunil={conversaoFunilRecrutamento}
       />
@@ -1336,7 +1362,8 @@ function DashboardRH({
         <div className="painel painel-largo painel-turnover-premium">
           <div className="turnover-premium-cabecalho">
             <div>
-              <h2>Turnover Estimado - {unidadeSelecionada.nome}</h2>
+              <span>Turnover Estimado</span>
+              <h2>{unidadeSelecionada.nome.toUpperCase()}</h2>
             </div>
             <strong className={`turnover-premium-status status-${nivelTurnover.toLowerCase()}`}>
               {nivelTurnover}
@@ -1593,7 +1620,7 @@ function DashboardRH({
             <article className="grafico-inteligencia grafico-especial-rh">
               <header>
                 <span>Indicadores</span>
-                <strong>{unidadesDashboard.length}</strong>
+                <strong>{unidadesPainel.length}</strong>
               </header>
 
               <div className="especial-rh-grid">
@@ -1620,31 +1647,31 @@ function DashboardRH({
             </div>
 
             <div className="alerta-card amarelo">
-              <strong>{cards.totalPendentes}</strong>
+              <strong>{cardsPainel.totalPendentes}</strong>
               <small>Total atual de pendências</small>
               <h3>⏳ Pendências</h3>
               <p>
                 Total atual de pendências:{" "}
-                <strong>{cards.totalPendentes}</strong>.
+                <strong>{cardsPainel.totalPendentes}</strong>.
               </p>
             </div>
 
             <div className="alerta-card verde">
-              <strong>{cards.totalAdmitidos}</strong>
+              <strong>{cardsPainel.totalAdmitidos}</strong>
               <small>Total de admissões no ciclo</small>
               <h3>✓ Admissões</h3>
               <p>
                 Total de admissões no ciclo:{" "}
-                <strong>{cards.totalAdmitidos}</strong>.
+                <strong>{cardsPainel.totalAdmitidos}</strong>.
               </p>
             </div>
 
             <div className="alerta-card azul">
-              <strong>{unidadesDashboard.length}</strong>
+              <strong>{unidadesPainel.length}</strong>
               <small>Unidades monitoradas</small>
               <h3>ðŸ“Š Cobertura Regional</h3>
               <p>
-                {unidadesDashboard.length} unidades
+                {unidadesPainel.length} unidades
                 monitoradas em tempo real.
               </p>
             </div>
