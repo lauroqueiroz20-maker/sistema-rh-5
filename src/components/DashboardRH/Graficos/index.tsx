@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ResponsiveContainer,
   XAxis,
@@ -277,6 +278,19 @@ function GraficoVazio() {
 }
 
 function RankingCircular({ dados }: { dados: ItemRotacao[] }) {
+  const [tooltip, setTooltip] = useState<{
+    item: ItemRotacao;
+    esquerda: number;
+    topo: number;
+    largura: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!tooltip) return;
+
+    const temporizador = window.setTimeout(() => setTooltip(null), 6000);
+    return () => window.clearTimeout(temporizador);
+  }, [tooltip]);
   const maiorValor = Math.max(
     1,
     ...dados.map((item) => item.taxa)
@@ -294,8 +308,19 @@ function RankingCircular({ dados }: { dados: ItemRotacao[] }) {
           <div
             className="ranking-circular-item"
             key={item.nome}
-            title={`${item.nome} | Vagas: ${item.vagas} | Admitidos: ${item.admitidos} | Pendentes: ${item.pendentes}`}
-            data-tooltip={`${item.nome}\A Vagas: ${item.vagas}\A Admitidos: ${item.admitidos}\A Pendentes: ${item.pendentes}`}
+            onClick={(evento) => {
+              const card = evento.currentTarget.closest(".grafico-card");
+              const posicao = card?.getBoundingClientRect()
+                ?? evento.currentTarget.getBoundingClientRect();
+              setTooltip((atual) => atual?.item.nome === item.nome
+                ? null
+                : {
+                    item,
+                    esquerda: posicao.left + 10,
+                    topo: posicao.top + posicao.height / 2,
+                    largura: Math.max(220, posicao.width - 20),
+                  });
+            }}
           >
             <span>{index + 1}</span>
             <div>
@@ -318,6 +343,30 @@ function RankingCircular({ dados }: { dados: ItemRotacao[] }) {
           </div>
         );
       })}
+      {tooltip && createPortal(
+        <div
+          className="ranking-tooltip-flutuante"
+          style={{
+            left: tooltip.esquerda,
+            top: tooltip.topo,
+            width: tooltip.largura,
+          }}
+        >
+          <button
+            className="ranking-tooltip-fechar"
+            type="button"
+            aria-label="Fechar detalhes da rotatividade"
+            onClick={() => setTooltip(null)}
+          >
+            ×
+          </button>
+          <strong>{tooltip.item.nome}</strong>
+          <span>Vagas: {tooltip.item.vagas}</span>
+          <span>Admitidos: {tooltip.item.admitidos}</span>
+          <span>Pendentes: {tooltip.item.pendentes}</span>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
@@ -480,10 +529,20 @@ function GraficosDashboard({
 
   const [cargoAberto, setCargoAberto] = useState("");
 
+  useEffect(() => {
+    if (!cargoAberto) return;
+
+    const temporizador = window.setTimeout(() => {
+      setCargoAberto("");
+    }, 6000);
+
+    return () => window.clearTimeout(temporizador);
+  }, [cargoAberto]);
+
   const cargoSelecionado =
     dados.porCargo.find(
       (item) => item.nome === cargoAberto
-    ) || dados.porCargo[0];
+    );
 
   return (
     <section className="dashboard-graficos">
@@ -606,7 +665,10 @@ function GraficosDashboard({
           <span>{totalCargo}</span>
         </header>
 
-        <div className="grafico-corpo grafico-pendencias-cargo">
+        <div
+          className="grafico-corpo grafico-pendencias-cargo"
+          onMouseLeave={() => setCargoAberto("")}
+        >
           {dados.porCargo.length > 0 ? (
             <>
               <div className="pendencias-cargo-lista">
@@ -629,7 +691,9 @@ function GraficosDashboard({
                       key={item.nome}
                       type="button"
                       onClick={() =>
-                        setCargoAberto(item.nome)
+                        setCargoAberto((cargoAtual) =>
+                          cargoAtual === item.nome ? "" : item.nome
+                        )
                       }
                     >
                       <strong title={item.nome}>
@@ -655,6 +719,14 @@ function GraficosDashboard({
 
               {cargoSelecionado && (
                 <section className="pendencias-cargo-detalhe">
+                  <button
+                    className="pendencias-cargo-fechar"
+                    type="button"
+                    aria-label="Fechar detalhes do cargo"
+                    onClick={() => setCargoAberto("")}
+                  >
+                    ×
+                  </button>
                   <h4>
                     {nomeCurto(cargoSelecionado.nome, 22)}
                   </h4>

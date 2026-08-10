@@ -617,7 +617,7 @@
 .indicadores-ranking span {
   min-width: 0;
   color: #334155;
-  font-size: 11px;
+  font-size: 13.5px;
   font-weight: 850;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1218,7 +1218,7 @@
 }
 
 .pendencias-cargo-lista::-webkit-scrollbar {
-  width: 5px;
+  width: 9px;
 }
 
 .pendencias-cargo-lista::-webkit-scrollbar-thumb {
@@ -1290,11 +1290,11 @@
 
 .pendencias-cargo-detalhe {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: -10%;
+  right: 30%;
   z-index: 8;
-  width: 126px;
-  max-height: 156px;
+  width: 277px;
+  max-height: 343px;
   display: grid;
   align-content: start;
   gap: 6px;
@@ -1305,25 +1305,47 @@
   color: #13233c;
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.16);
   overflow-y: auto;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(4px) scale(0.98);
-  transition:
-    opacity 0.16s ease,
-    transform 0.16s ease;
-}
-
-.grafico-pendencias-cargo:hover .pendencias-cargo-detalhe,
-.grafico-pendencias-cargo:focus-within .pendencias-cargo-detalhe {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
 }
 
+.pendencias-cargo-detalhe::-webkit-scrollbar {
+  width: 9px;
+}
+
+.pendencias-cargo-detalhe::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 999px;
+}
+
+.pendencias-cargo-detalhe::-webkit-scrollbar-track {
+  background: #e8eef6;
+  border-radius: 999px;
+}
+
+.pendencias-cargo-fechar {
+  position: sticky;
+  top: 0;
+  justify-self: end;
+  width: 20px;
+  height: 20px;
+  margin-bottom: -20px;
+  z-index: 2;
+  border: 0;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .pendencias-cargo-detalhe h4 {
   margin: 0 0 2px;
   color: #003b7a;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 950;
   white-space: nowrap;
   overflow: hidden;
@@ -1337,7 +1359,7 @@
   gap: 6px;
   margin: 0;
   color: #13233c;
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 850;
 }
 
@@ -1350,7 +1372,7 @@
 
 .pendencias-cargo-detalhe p strong {
   color: #2563eb;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 950;
   text-align: right;
 }
@@ -1689,13 +1711,11 @@
   box-shadow: 0 6px 12px rgba(15, 23, 42, 0.14);
 }
 
-.ranking-circular-item::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  z-index: 20;
-  min-width: 168px;
+.ranking-tooltip-flutuante {
+  position: fixed;
+  z-index: 10000;
+  display: grid;
+  gap: 5px;
   padding: 9px 10px;
   border-radius: 9px;
   border: 1px solid #dbe7f5;
@@ -1705,18 +1725,33 @@
   font-size: 11px;
   font-weight: 800;
   line-height: 1.45;
-  white-space: pre-line;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(8px, -50%);
-  transition:
-    opacity 0.16s ease,
-    transform 0.16s ease;
+  transform: translateY(-50%);
+  pointer-events: auto;
 }
 
-.ranking-circular-item:hover::after {
-  opacity: 1;
-  transform: translate(0, -50%);
+.ranking-tooltip-fechar {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ranking-tooltip-flutuante strong {
+  color: #003b7a;
+  font-size: 14px;
+}
+
+.ranking-tooltip-flutuante span {
+  font-size: 13px;
 }
 
 .resumo-executivo-grafico {
