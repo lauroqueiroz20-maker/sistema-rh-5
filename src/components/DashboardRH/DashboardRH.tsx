@@ -815,7 +815,7 @@ function DashboardRH({
       nome: "Quadro monitorado",
       valor: unidadeSelecionada.colaboradores,
       resumo: "colaboradores",
-      explicacao: "Quantidade de colaboradores considerada no cálculo da unidade selecionada.",
+      explicacao: "a quantidade de colaboradores considerada no cálculo da unidade selecionada.",
     },
     {
       id: "demanda",
@@ -825,7 +825,7 @@ function DashboardRH({
       nome: "Demanda Acumulada",
       valor: unidadeSelecionada.vagas,
       resumo: "total solicitado",
-      explicacao: "Total de vagas solicitadas durante o ciclo para a unidade selecionada.",
+      explicacao: "o total de vagas solicitadas durante o ciclo para a unidade selecionada.",
     },
     {
       id: "entradas",
@@ -835,7 +835,7 @@ function DashboardRH({
       nome: "Contratações Efetivadas",
       valor: unidadeSelecionada.admitidos,
       resumo: "total contratado",
-      explicacao: "Total de candidatos admitidos e efetivamente contratados na unidade selecionada.",
+      explicacao: "o total de candidatos admitidos e efetivamente contratados na unidade selecionada.",
     },
     {
       id: "pendentes",
@@ -845,7 +845,7 @@ function DashboardRH({
       nome: "Vagas Pendentes",
       valor: unidadeSelecionada.pendentes,
       resumo: "aguardando conclusão",
-      explicacao: "Vagas que continuam abertas porque o processo de contratação ainda não foi concluído.",
+      explicacao: "o total de vagas que continuam abertas porque o processo de contratação ainda não foi concluído.",
     },
     {
       id: "pressao-contratacao",
@@ -1393,7 +1393,7 @@ function DashboardRH({
                       ) : (
                         card.valor
                       )}
-                      {card.linha === "inferior" ? " " : " - "}
+                      {card.linha === "inferior" ? " " : " representa "}
                       {card.explicacao}
                     </>
                   )}
